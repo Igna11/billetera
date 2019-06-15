@@ -11,7 +11,28 @@ import os
 directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
 # %%
-# cuenta:
+
+
+def Info():
+    # lista con los nombres de los archivos de cuenta
+    lista = os.listdir()
+    for elem in lista:
+        if "CUENTA.txt" not in elem:
+            lista.remove(elem)
+    # lista con el saldo total de dinero de cada cuenta
+    total = []
+    for elem in lista:
+        total.append(pd.read_csv(elem, sep="\t").values[-1, 4])
+    # lista con sólo el nombre de las cuentas
+    lista_de_cuentas = []
+    for elem in lista:
+        lista_de_cuentas.append(elem[:-10])
+    # nombre de la cuenta con el saldo total
+    informacion = ""
+    for i in range(len(lista_de_cuentas)):
+        informacion += "\n" + lista_de_cuentas[i] + ":" + "Saldo total $"\
+            + str(total[i]) + "\n"
+    return informacion
 
 
 def Fecha():
@@ -30,7 +51,7 @@ def datos_cuenta():
     los datos crudos de la cuenta
     """
     nombre = input("\nIngrese la cuenta\n")
-    nombre += ".txt"
+    nombre += "CUENTA.txt"
     if os.path.isfile(nombre):
         datos = pd.read_csv(nombre, sep="\t")
         return datos
@@ -43,7 +64,7 @@ def Crear_cuenta():
     Crea un .txt cuyo nombre será el nombre de la cuenta
     """
     nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
-    nombre += ".txt"
+    nombre += "CUENTA.txt"
     Encabezados = ["Fecha", "hora", "Ingresos", "Extracciones", "Total",
                    "Balance"]
     fila = ""
@@ -57,7 +78,7 @@ def Crear_cuenta():
 
 def Eliminar_cuenta():
     nombre = input("\nIngrese la cuenta\n")
-    nombre += ".txt"
+    nombre += "CUENTA.txt"
     if os.path.isfile(nombre):
         advertencia = "¿Seguro que queres eliminar la cuenta?\n\n\
         todos los datos contenidos en ella se perderán para siempre.\n\n\
@@ -81,7 +102,7 @@ def Ingresar_dinero():
     necesario
     """
     nombre = input("\nIngrese la cuenta\n")
-    nombre += ".txt"
+    nombre += "CUENTA.txt"
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t")
     datos = contenido_cuenta.values
@@ -115,7 +136,7 @@ def Extraer_dinero():
     necesario
     """
     nombre = input("\nIngrese la cuenta\n")
-    nombre += ".txt"
+    nombre += "CUENTA.txt"
     # se fija si el archivo existe
     if os.path.isfile(nombre):
         # Abre y lee los datos de la cuenta
