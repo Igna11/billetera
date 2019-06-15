@@ -165,3 +165,7 @@ def Extraer_dinero():
         print("\nNo existe la cuenta\n")
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 4]
     print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
+# %%
+
+
+print(Info())
