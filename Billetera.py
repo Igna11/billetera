@@ -13,7 +13,7 @@ os.chdir(directorio)
 # %%
 
 
-def Info():
+def Info():  # TODO: Solucionar error al haber archivos en el directorio sin extension
     # lista con los nombres de los archivos de cuenta
     lista = os.listdir()
     for elem in lista:
