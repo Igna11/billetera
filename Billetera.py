@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Created on Thu Jun 13 01:20:15 2019
 
@@ -13,26 +13,34 @@ os.chdir(directorio)
 # %%
 
 
-def Info():  # TODO: Solucionar error al haber archivos en el directorio sin extension
+def Info():  # TODO solucionar el error que aparece al no haber cuentas o al
+    # haber cuentas creadas sin datos dentro
+    # asd
+    # directorio sin extension
     # lista con los nombres de los archivos de cuenta
     lista = os.listdir()
+    Lista = []
     for elem in lista:
-        if "CUENTA.txt" not in elem:
-            lista.remove(elem)
+        if "CUENTA.txt" in elem:
+            Lista.append(elem)
     # lista con el saldo total de dinero de cada cuenta
     total = []
-    for elem in lista:
-        total.append(pd.read_csv(elem, sep="\t").values[-1, 4])
+    for elem in Lista:
+        total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
     # lista con sólo el nombre de las cuentas
     lista_de_cuentas = []
-    for elem in lista:
+    for elem in Lista:
         lista_de_cuentas.append(elem[:-10])
     # nombre de la cuenta con el saldo total
     informacion = ""
     for i in range(len(lista_de_cuentas)):
         informacion += "\n" + lista_de_cuentas[i] + ":" + "Saldo total $"\
             + str(total[i]) + "\n"
-    return informacion
+    print("Cuentas existentes:\n", informacion)
+    str_funciones = "\nInfo()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
+        + "Eliminar_cuenta()\nIngresar_dinero()\nExtraer_dinero()\nGasto()\n"
+    print("Funciones:\n", str_funciones)
+    # return informacion
 
 
 def Fecha():
@@ -46,7 +54,7 @@ def Fecha():
     return fecha, hora
 
 
-def datos_cuenta():
+def Datos_cuenta():
     """
     los datos crudos de la cuenta
     """
@@ -56,7 +64,7 @@ def datos_cuenta():
         datos = pd.read_csv(nombre, sep="\t")
         return datos
     else:
-        print("\nNo existe la cuenta %s\n" % nombre[:-4])
+        print("\nNo existe la cuenta %s\n" % nombre[:-10])
 
 
 def Crear_cuenta():
@@ -65,7 +73,8 @@ def Crear_cuenta():
     """
     nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
     nombre += "CUENTA.txt"
-    Encabezados = ["Fecha", "hora", "Ingresos", "Extracciones", "Total",
+    Encabezados = ["Fecha", "hora", "Total", "Ingresos", "Extracciones",
+                   "Gasto", "Categoria", "Subcategoria", "Descripcion",
                    "Balance"]
     fila = ""
     for elementos in Encabezados:
@@ -73,7 +82,7 @@ def Crear_cuenta():
     fila += "\n"
     with open(nombre, "x") as micuenta:
         micuenta.write(fila)
-    print("\nSe ha creado la cuenta %s\n" % nombre[:-4])
+    print("\nSe ha creado la cuenta %s\n" % nombre[:-10])
 
 
 def Eliminar_cuenta():
@@ -88,11 +97,11 @@ def Eliminar_cuenta():
         posibles_respuestas = ["1", "si", "y"]
         if respuesta in posibles_respuestas:
             os.remove(nombre)
-            print("\nSe eliminó la cuenta %s\n" % nombre[:-4])
+            print("\nSe eliminó la cuenta %s\n" % nombre[:-10])
         else:
-            print("\nNo se eliminó la cuenta %s\n" % nombre[:-4])
+            print("\nNo se eliminó la cuenta %s\n" % nombre[:-10])
     else:
-        print("\nNo existe la cuenta %s\n" % nombre[:-4])
+        print("\nNo existe la cuenta %s\n" % nombre[:-10])
 
 
 def Ingresar_dinero():
@@ -110,13 +119,19 @@ def Ingresar_dinero():
         fecha = Fecha()[0]
         hora = Fecha()[1]
         ingreso = input("\nCantidad de dinero a ingresar\n")
+        categoria = input("\nCategoria: \n")
+        subcategoria = input("\nSubcategoria: \n")
+        descripcion = input("\nDescripcion: \n")
         extraccion = "0"  # esto siempre debería ser 0 al ingresar dinero
+        gasto = "0"  # esto siempre debería ser 0 al ingresar dinero
         if len(datos) == 0:
             total = ingreso
         else:
-            total = str(float(ingreso) + datos[-1, 4])
+            total = str(float(ingreso) + datos[-1, 2])
         balance = "0"  # TODO: ver si balance es necesario
-        Campos = [fecha, hora, ingreso, extraccion, total, balance]
+        Campos = [fecha, hora, total, ingreso, extraccion,
+                  gasto, categoria, subcategoria, descripcion,
+                  balance]
         fila = ""
         for elementos in Campos:
             fila += elementos + "\t"  # TODO: Arreglar el tab al final
@@ -125,7 +140,7 @@ def Ingresar_dinero():
             micuenta.write(fila)
     else:
         print("\nNo existe la cuenta\n")
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 4]
+    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
 
 
@@ -137,7 +152,7 @@ def Extraer_dinero():
     """
     nombre = input("\nIngrese la cuenta\n")
     nombre += "CUENTA.txt"
-    # se fija si el archivo existe
+    # se fija si el archivo de la cuenta existe
     if os.path.isfile(nombre):
         # Abre y lee los datos de la cuenta
         contenido_cuenta = pd.read_csv(nombre, sep="\t")
@@ -145,16 +160,59 @@ def Extraer_dinero():
         fecha = Fecha()[0]
         hora = Fecha()[1]
         ingreso = "0"  # esto siempre debería ser 0 al extraer dinero
+        gasto = "0"  # esto es 0 por definicion de extraccion =/= gasto
         if len(datos) == 0:
-            print("\nNo se ha ingresado dinero en la cuenta\n")
+            print("\nAún no se ha ingresado dinero en la cuenta\n")
         else:
             extraccion = input("\nCantidad de dinero a extraer\n")
             if datos[-1, 4] < float(extraccion):
                 print("\nNo hay dinero suficiente en la cuenta\n")
             else:
-                total = str(datos[-1, 4] - float(extraccion))
+                categoria = input("\nCategoria: \n")
+                subcategoria = input("\nSubcategoria: \n")
+                descripcion = input("\nDescripcion: \n")
+                total = str(datos[-1, 2] - float(extraccion))
                 balance = "0"  # TODO: ver si balance es necesario
-                Campos = [fecha, hora, ingreso, extraccion, total, balance]
+                Campos = [fecha, hora, total, ingreso, extraccion,
+                          gasto, categoria, subcategoria, descripcion,
+                          balance]
+                fila = ""
+                for elementos in Campos:
+                    fila += elementos + "\t"  # TODO: Arreglar el tab al final
+                fila += "\n"
+                with open(nombre, "a") as micuenta:
+                    micuenta.write(fila)
+    else:
+        print("\nNo existe la cuenta\n")
+    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
+
+
+def Gasto():
+    """
+    Genera un gasto en la cuenta indicada
+    """
+    nombre = input("\nIngrese la cuenta\n")
+    nombre += "CUENTA.txt"
+    if os.path.isfile(nombre):
+        # Abre y lee los datos de la cuenta
+        contenido_cuenta = pd.read_csv(nombre, sep="\t")
+        datos = contenido_cuenta.values
+        fecha = Fecha()[0]
+        hora = Fecha()[1]
+        if len(datos) == 0:
+            print("\nNo hay dinero en la cuenta\n")
+        else:
+            valor = input("\nValor del gasto\n")
+            if datos[-1, 4] < float(valor):
+                print("\nNo hay dinero suficiente en la cuenta\n")
+            else:
+                categoria = input("\nCategoria: \n")
+                subcategoria = input("\nSubategoria: \n")
+                descripcion = input("\nDescripcion: \n")
+                total = str(datos[-1, 4] - float(valor))
+                Campos = [fecha, hora, descripcion, valor, categoria,
+                          subcategoria]
                 fila = ""
                 for elementos in Campos:
                     fila += elementos + "\t"  # TODO: Arreglar el tab al final
@@ -168,4 +226,4 @@ def Extraer_dinero():
 # %%
 
 
-print(Info())
+Info()
