@@ -165,7 +165,7 @@ def Extraer_dinero():
             print("\nAún no se ha ingresado dinero en la cuenta\n")
         else:
             extraccion = input("\nCantidad de dinero a extraer\n")
-            if datos[-1, 4] < float(extraccion):
+            if datos[-1, 2] < float(extraccion):
                 print("\nNo hay dinero suficiente en la cuenta\n")
             else:
                 categoria = input("\nCategoria: \n")
@@ -200,19 +200,23 @@ def Gasto():
         datos = contenido_cuenta.values
         fecha = Fecha()[0]
         hora = Fecha()[1]
+        ingreso = "0"  # esto siempre debería ser 0 al hacer un gasto
+        extraccion = "0"  # esto siempre debería ser 0 al hacer un gasto
         if len(datos) == 0:
             print("\nNo hay dinero en la cuenta\n")
         else:
             valor = input("\nValor del gasto\n")
-            if datos[-1, 4] < float(valor):
+            if datos[-1, 2] < float(valor):
                 print("\nNo hay dinero suficiente en la cuenta\n")
             else:
                 categoria = input("\nCategoria: \n")
                 subcategoria = input("\nSubategoria: \n")
                 descripcion = input("\nDescripcion: \n")
-                total = str(datos[-1, 4] - float(valor))
-                Campos = [fecha, hora, descripcion, valor, categoria,
-                          subcategoria]
+                total = str(datos[-1, 2] - float(valor))
+                balance = "0"  # TODO: ver si balance es necesario
+                Campos = [fecha, hora, total, ingreso, extraccion,
+                          valor, categoria, subcategoria, descripcion,
+                          balance]
                 fila = ""
                 for elementos in Campos:
                     fila += elementos + "\t"  # TODO: Arreglar el tab al final
@@ -221,7 +225,7 @@ def Gasto():
                     micuenta.write(fila)
     else:
         print("\nNo existe la cuenta\n")
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 4]
+    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
 # %%
 
