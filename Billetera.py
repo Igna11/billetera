@@ -37,7 +37,6 @@ def CerrarSesion():
 
 def Info():  # TODO solucionar el error que aparece al no haber cuentas o al
     # haber cuentas creadas sin datos dentro
-    # asd
     # directorio sin extension
     # lista con los nombres de los archivos de cuenta
     lista = os.listdir()
@@ -103,6 +102,7 @@ def Crear_cuenta():
     fila = ""
     for elementos in Encabezados:
         fila += elementos + "\t"  # TODO: arreglar el tab al final
+    fila = fila[:-1]  # Borra el "\t" del final
     fila += "\n"
     with open(nombre, "x") as micuenta:
         micuenta.write(fila)
@@ -159,6 +159,7 @@ def Ingresar_dinero():
         fila = ""
         for elementos in Campos:
             fila += elementos + "\t"  # TODO: Arreglar el tab al final
+        fila = fila[:-1]  # Borra el "\t" del final
         fila += "\n"
         with open(nombre, "a") as micuenta:
             micuenta.write(fila)
@@ -203,6 +204,7 @@ def Extraer_dinero():
                 fila = ""
                 for elementos in Campos:
                     fila += elementos + "\t"  # TODO: Arreglar el tab al final
+                fila = fila[:-1]  # Borra el "\t" del final
                 fila += "\n"
                 with open(nombre, "a") as micuenta:
                     micuenta.write(fila)
@@ -231,7 +233,7 @@ def Transferencia():
         else:
             valor = input("\nCantidad de dinero a transferir\n")
             if datos_salida[-1, 2] < float(valor):
-                print("\nNo hay dinero suficiente en la cuenta %s" 
+                print("\nNo hay dinero suficiente en la cuenta %s"
                       % nombre_salida[:-10])
             categoria = "Transferencia"
             subcategoria_salida = "Transferencia de salida"
@@ -252,9 +254,11 @@ def Transferencia():
             fila_salida = ""
             for elementos in Campos_entrada:
                 fila_entrada += elementos + "\t"  # TODO: Arreglar el tab al final
+            fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
             fila_entrada += "\n"
             for elementos in Campos_salida:
                 fila_salida += elementos + "\t"  # TODO: Arreglar el tab al final
+            fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
             fila_salida += "\n"
             with open(nombre_entrada, "a") as micuenta:
                 micuenta.write(fila_entrada)
@@ -303,6 +307,7 @@ def Gasto():
                 fila = ""
                 for elementos in Campos:
                     fila += elementos + "\t"  # TODO: Arreglar el tab al final
+                fila = fila[:-1]  # Borra el "\t" del final
                 fila += "\n"
                 with open(nombre, "a") as micuenta:
                     micuenta.write(fila)
