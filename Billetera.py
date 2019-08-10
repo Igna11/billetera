@@ -10,7 +10,29 @@ from datetime import datetime
 import os
 directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
+pd.set_option("display.max_columns", 11)
 # %%
+
+
+def CrearUsuario():
+    nombre = input("\nIngrese el nombre de usuario\n") + "USR"
+    os.makedirs(nombre)
+    print("\nSe creo el usuario %s\n" % nombre[:-3])
+
+
+def IniciarSesion():
+    nombre = input("\nNombre de usuario\n") + "USR"
+    if os.path.isdir(nombre):
+        Dir = directorio + "\\" + "%s" % nombre
+        os.chdir(Dir)
+        print("\nInicio de sesion de %s\n" % nombre[:-3])
+        Info()
+    else:
+        print("\nNo existe el usuario\n")
+
+
+def CerrarSesion():
+    os.chdir(directorio)
 
 
 def Info():  # TODO solucionar el error que aparece al no haber cuentas o al
@@ -37,8 +59,10 @@ def Info():  # TODO solucionar el error que aparece al no haber cuentas o al
         informacion += "\n" + lista_de_cuentas[i] + ":" + "Saldo total $"\
             + str(total[i]) + "\n"
     print("Cuentas existentes:\n", informacion)
-    str_funciones = "\nInfo()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
-        + "Eliminar_cuenta()\nIngresar_dinero()\nExtraer_dinero()\nGasto()\n"
+    str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
+        + "\nInfo()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
+        + "Eliminar_cuenta()\nIngresar_dinero()\nExtraer_dinero()\n"\
+        + "Transferencia()\nGasto()\n"
     print("Funciones:\n", str_funciones)
     # return informacion
 
@@ -188,6 +212,65 @@ def Extraer_dinero():
     print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
 
 
+def Transferencia():
+    """
+    Funcion de transferencias
+    """
+    nombre_salida = input("\nIngrese la cuenta de salida\n") + "CUENTA.txt"
+    nombre_entrada = input("\nIngrese la cuenta de entrada\n") + "CUENTA.txt"
+    if os.path.isfile(nombre_salida) and os.path.isfile(nombre_entrada):
+        # si las dos cuentas existen
+        contenido_salida = pd.read_csv(nombre_salida, sep="\t")
+        contenido_entrada = pd.read_csv(nombre_entrada, sep="\t")
+        datos_salida = contenido_salida.values
+        datos_entrada = contenido_entrada.values
+        fecha = Fecha()[0]
+        hora = Fecha()[1]
+        if len(datos_salida) == 0:
+            print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
+        else:
+            valor = input("\nCantidad de dinero a transferir\n")
+            if datos_salida[-1, 2] < float(valor):
+                print("\nNo hay dinero suficiente en la cuenta %s" 
+                      % nombre_salida[:-10])
+            categoria = "Transferencia"
+            subcategoria_salida = "Transferencia de salida"
+            descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
+            subcategoria_entrada = "Transferencia de entrada"
+            descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
+            total_salida = str(datos_salida[-1, 2] - float(valor))
+            total_entrada = str(datos_entrada[-1, 2] + float(valor))
+            balance = gasto = extraccion = ingreso = "0"
+            # TODO: ver si balance es necesario
+            Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
+                              gasto, categoria, subcategoria_entrada,
+                              descripcion_entrada, balance]
+            Campos_salida = [fecha, hora, total_salida, ingreso, valor,
+                             gasto, categoria, subcategoria_salida,
+                             descripcion_salida, balance]
+            fila_entrada = ""
+            fila_salida = ""
+            for elementos in Campos_entrada:
+                fila_entrada += elementos + "\t"  # TODO: Arreglar el tab al final
+            fila_entrada += "\n"
+            for elementos in Campos_salida:
+                fila_salida += elementos + "\t"  # TODO: Arreglar el tab al final
+            fila_salida += "\n"
+            with open(nombre_entrada, "a") as micuenta:
+                micuenta.write(fila_entrada)
+            with open(nombre_salida, "a") as micuenta:
+                micuenta.write(fila_salida)
+    elif os.path.isfile(nombre_salida) and not os.path.isfile(nombre_entrada):
+        # si no existe la cuenta entrada
+        print("\nNo existe la cuenta '%s' de entrada\n" % nombre_entrada[:-10])
+    elif not os.path.isfile(nombre_salida) and os.path.isfile(nombre_entrada):
+        # si no existe la cuenta entrada
+        print("\nNo existe la cuenta '%s' de salida\n" % nombre_salida[:-10])
+    else:
+        print("\nNo existen las cuentas '%s'" % nombre_salida[:-10],
+              "ni la cuenta '%s'" % nombre_entrada[:-10])
+
+
 def Gasto():
     """
     Genera un gasto en la cuenta indicada
@@ -230,4 +313,4 @@ def Gasto():
 # %%
 
 
-Info()
+IniciarSesion()
