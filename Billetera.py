@@ -12,15 +12,41 @@ directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
 pd.set_option("display.max_columns", 11)
 # %%
+"""
+Cosas que quisiera ir agregándole al script:
+
+    Contador de saldo total entre cuentas:
+        Quizás también podría ir guardando el saldo total en un .txt junto
+        con las fechas de forma de poder hacer gráficos de saldo total vs dia
+
+    Diferentes tipos de cuentas:
+        Cuentas comunes con dinero gastable y cuentas especiales con dinero
+        solo para ahorrar. Ejemplo: Quisiera que las cuentas en dólares sean
+        solo cuentas para ahorrar y que se sumen o no (como opcion) al saldo
+        total.
+        También un scraper del precio del dolar para transformar esos valores
+        a pesos.
+
+    Editor de entradas:
+        Alguna manera para editar un gasto, un ingreso, o algo que fue mal
+        ingresado
+
+    Graficos:
+        Alguna forma fácil de ver gastos/ingresos/whatever por día, por semana
+        por mes, por año. (acá quizás podría estar el balance)
+
+    Interfaz Gráfica y ejectuable:
+        nada, eso, a futuro (lejano)
+"""
 
 
-def CrearUsuario():
+def CrearUsuario():  # creada 10-02-2019
     nombre = input("\nIngrese el nombre de usuario\n") + "USR"
     os.makedirs(nombre)
     print("\nSe creo el usuario %s\n" % nombre[:-3])
 
 
-def IniciarSesion():
+def IniciarSesion():  # creada 10-02-2019
     nombre = input("\nNombre de usuario\n") + "USR"
     if os.path.isdir(nombre):
         Dir = directorio + "\\" + "%s" % nombre
@@ -31,13 +57,11 @@ def IniciarSesion():
         print("\nNo existe el usuario\n")
 
 
-def CerrarSesion():
+def CerrarSesion():  # creada 10-02-2019
     os.chdir(directorio)
 
 
-def Info():  # TODO solucionar el error que aparece al no haber cuentas o al
-    # haber cuentas creadas sin datos dentro
-    # directorio sin extension
+def Info():  # Creada 15-06-2019
     # lista con los nombres de los archivos de cuenta
     lista = os.listdir()
     Lista = []
@@ -56,14 +80,30 @@ def Info():  # TODO solucionar el error que aparece al no haber cuentas o al
     informacion = ""
     for i in range(len(lista_de_cuentas)):
         informacion += "\n" + lista_de_cuentas[i] + ":" + "Saldo total $"\
-            + str(total[i]) + "\n"
+            + str("%.2f" % total[i]) + "\n"
+    total = Total()
     print("Cuentas existentes:\n", informacion)
     str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
-        + "\nInfo()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
+        + "\nInfo()\nTotal()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
         + "Eliminar_cuenta()\nIngresar_dinero()\nExtraer_dinero()\n"\
         + "Transferencia()\nGasto()\n"
     print("Funciones:\n", str_funciones)
+    print("\nDinero total en cuentas: $%.2f" % total)
     # return informacion
+
+
+def Total():
+    # lista con los nombres de los archivos de cuenta
+    lista = os.listdir()
+    Lista = []
+    for elem in lista:
+        if "CUENTA.txt" in elem:
+            Lista.append(elem)
+    # lista con el saldo total de dinero de cada cuenta
+    total = []
+    for elem in Lista:
+        total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
+    return sum(total)
 
 
 def Fecha():
@@ -101,7 +141,7 @@ def Crear_cuenta():
                    "Balance"]
     fila = ""
     for elementos in Encabezados:
-        fila += elementos + "\t"  # TODO: arreglar el tab al final
+        fila += elementos + "\t"
     fila = fila[:-1]  # Borra el "\t" del final
     fila += "\n"
     with open(nombre, "x") as micuenta:
@@ -158,7 +198,7 @@ def Ingresar_dinero():
                   balance]
         fila = ""
         for elementos in Campos:
-            fila += elementos + "\t"  # TODO: Arreglar el tab al final
+            fila += elementos + "\t"
         fila = fila[:-1]  # Borra el "\t" del final
         fila += "\n"
         with open(nombre, "a") as micuenta:
@@ -166,7 +206,10 @@ def Ingresar_dinero():
     else:
         print("\nNo existe la cuenta\n")
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
+    total = Total()
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+          "\nDinero total %.2f\n" % total)
+    Balance()  # agregado 12-08-2019
 
 
 def Extraer_dinero():
@@ -203,7 +246,7 @@ def Extraer_dinero():
                           balance]
                 fila = ""
                 for elementos in Campos:
-                    fila += elementos + "\t"  # TODO: Arreglar el tab al final
+                    fila += elementos + "\t"
                 fila = fila[:-1]  # Borra el "\t" del final
                 fila += "\n"
                 with open(nombre, "a") as micuenta:
@@ -211,10 +254,13 @@ def Extraer_dinero():
     else:
         print("\nNo existe la cuenta\n")
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
+    total = Total()
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+          "\nDinero total %.2f\n" % total)
+    Balance()  # agregado 12-08-2019
 
 
-def Transferencia():
+def Transferencia():  # creada 10-02-2019
     """
     Funcion de transferencias
     """
@@ -253,11 +299,11 @@ def Transferencia():
             fila_entrada = ""
             fila_salida = ""
             for elementos in Campos_entrada:
-                fila_entrada += elementos + "\t"  # TODO: Arreglar el tab al final
+                fila_entrada += elementos + "\t"
             fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
             fila_entrada += "\n"
             for elementos in Campos_salida:
-                fila_salida += elementos + "\t"  # TODO: Arreglar el tab al final
+                fila_salida += elementos + "\t"
             fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
             fila_salida += "\n"
             with open(nombre_entrada, "a") as micuenta:
@@ -306,7 +352,7 @@ def Gasto():
                           balance]
                 fila = ""
                 for elementos in Campos:
-                    fila += elementos + "\t"  # TODO: Arreglar el tab al final
+                    fila += elementos + "\t"
                 fila = fila[:-1]  # Borra el "\t" del final
                 fila += "\n"
                 with open(nombre, "a") as micuenta:
@@ -314,7 +360,33 @@ def Gasto():
     else:
         print("\nNo existe la cuenta\n")
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    print("\nDinero total en cuenta: $%.2f\n" % dinero_final)
+    total = Total()
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+          "\nDinero total %.2f\n" % total)
+    Balance()  # agregado 12-08-2019
+
+
+def Balance():  # creada 12-08-2019
+    """
+    Funcion que guarda en cada transaccion el saldo total de las cuentas
+    en función de la fecha.
+        Si no está creado el archivo 'Balance.txt' lo crea y guarda el
+        primer dato.
+        Si ya está creado el archivo 'Balance.txt' appendea los nuevos
+        datos.
+    """
+    total = round(Total(), 2)
+    hora = Fecha()[0]
+    fecha = Fecha()[1]
+    if not os.path.isfile("Balance.txt"):
+        with open("Balance.txt", "x") as balance:
+            balance.write("Hora\tFecha\tTotal\n")
+            balance.write("%s\t%s\t%s\n" % (fecha, hora, total))
+    elif os.path.isfile("Balance.txt"):
+        with open("Balance.txt", "a") as balance:
+            balance.write("%s\t%s\t%s\n" % (fecha, hora, total))
+    else:
+        print("\nO Se ErRoR rE lOcO\n")
 # %%
 
 
