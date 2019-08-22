@@ -85,7 +85,7 @@ def Info():  # Creada 15-06-2019
     print("Cuentas existentes:\n", informacion)
     str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
         + "\nInfo()\nTotal()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
-        + "Eliminar_cuenta()\nIngresar_dinero()\nExtraer_dinero()\n"\
+        + "Eliminar_cuenta()\nIngreso()\nExtraccion()\n"\
         + "Transferencia()\nGasto()\n"
     print("Funciones:\n", str_funciones)
     print("\nDinero total en cuentas: $%.2f" % total)
@@ -168,7 +168,7 @@ def Eliminar_cuenta():
         print("\nNo existe la cuenta %s\n" % nombre[:-10])
 
 
-def Ingresar_dinero():
+def Ingreso():
     """
     Ingresa el dinero en la cuenta correcta, en la columna correcta
     Completa el resto de las columnas con información repetida de ser
@@ -212,7 +212,7 @@ def Ingresar_dinero():
     Balance()  # agregado 12-08-2019
 
 
-def Extraer_dinero():
+def Extraccion():
     """
     Extrae el dinero en la cuenta correcta, en la columna correcta
     Completa el resto de las columnas con información repetida de ser
