@@ -8,6 +8,8 @@ Intento de billetera para control de gastos
 import pandas as pd
 from datetime import datetime
 import os
+import matplotlib.pyplot as plt  # agregado 30-08-2019
+import matplotlib.dates as pdt  # agregado 30-08-2019
 directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
 pd.set_option("display.max_columns", 11)
@@ -16,8 +18,10 @@ pd.set_option("display.max_columns", 11)
 Cosas que quisiera ir agregándole al script:
 
     Contador de saldo total entre cuentas:
-        Quizás también podría ir guardando el saldo total en un .txt junto
-        con las fechas de forma de poder hacer gráficos de saldo total vs dia
+        09-09-2019: Hecho el contador de Balance. Falta poder graficar el
+        los balances con fecha y hora y no de forma equiespaciada. PD: El
+        Balance no fue hecho en esta fecha, fue antes.
+        Hacer el graficador de balances.
 
     Diferentes tipos de cuentas:
         Cuentas comunes con dinero gastable y cuentas especiales con dinero
@@ -26,10 +30,12 @@ Cosas que quisiera ir agregándole al script:
         total.
         También un scraper del precio del dolar para transformar esos valores
         a pesos.
+        Usar el mismo scraper para tener un control de devaluación de ahorro.
 
     Editor de entradas:
         Alguna manera para editar un gasto, un ingreso, o algo que fue mal
-        ingresado
+        ingresado (puede que haga falta usar archivos temporales y librerias
+        afines)
 
     Graficos:
         Alguna forma fácil de ver gastos/ingresos/whatever por día, por semana
@@ -86,7 +92,8 @@ def Info():  # Creada 15-06-2019
     str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
         + "\nInfo()\nTotal()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
         + "Eliminar_cuenta()\nIngreso()\nExtraccion()\n"\
-        + "Transferencia()\nGasto()\n"
+        + "Transferencia()\nGasto()\nBalance()<---NO USAR-Ver help(Balance)\n"\
+        + "BalanceGraf()\n"
     print("Funciones:\n", str_funciones)
     print("\nDinero total en cuentas: $%.2f" % total)
     # return informacion
@@ -374,6 +381,9 @@ def Balance():  # creada 12-08-2019
         primer dato.
         Si ya está creado el archivo 'Balance.txt' appendea los nuevos
         datos.
+    Esta función está sólo para ser usada por las funciones que modifican
+    los saldos de las cuentas de alguna manera (Gasto(), Ingreso(), etc). No
+    usar por usar porque va a appendear datos al pedo.
     """
     total = round(Total(), 2)
     hora = Fecha()[0]
@@ -387,6 +397,29 @@ def Balance():  # creada 12-08-2019
             balance.write("%s\t%s\t%s\n" % (fecha, hora, total))
     else:
         print("\nO Se ErRoR rE lOcO\n")
+
+
+def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
+    """
+    30-08-2019
+    Primera aproximación a grafico de balance con fechas y horas.
+    Lo que quiero lograr:
+        Lograr poner tics solo en los meses.
+            Lograr que los puntos se separen
+            segun su valor horario. ->10-09-201 solucionado
+    """
+    data = pd.read_csv("Balance.txt", sep="\t", skiprows=1)
+    Data = data.values
+    horas = Data[:, 0]
+    dias = Data[:, 1]
+    T = dias + "-" + horas
+    formato = "%d-%m-%Y-%H:%M:%S"
+    Tiempo = [datetime.strptime(i, formato) for i in T]
+    plt.plot(Tiempo, Data[:, 2], 'o-', fillstyle="none")
+    plt.grid()
+    plt.xticks(rotation=25)
+    plt.show()
+
 # %%
 
 
