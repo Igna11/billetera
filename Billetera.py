@@ -17,13 +17,8 @@ pd.set_option("display.max_columns", 11)
 """
 Cosas que quisiera ir agregándole al script:
 
-    Contador de saldo total entre cuentas:
-        09-09-2019: Hecho el contador de Balance. Falta poder graficar el
-        los balances con fecha y hora y no de forma equiespaciada. PD: El
-        Balance no fue hecho en esta fecha, fue antes.
-        Hacer el graficador de balances.
 
-    Diferentes tipos de cuentas:
+#TODO    Diferentes tipos de cuentas:
         Cuentas comunes con dinero gastable y cuentas especiales con dinero
         solo para ahorrar. Ejemplo: Quisiera que las cuentas en dólares sean
         solo cuentas para ahorrar y que se sumen o no (como opcion) al saldo
@@ -32,16 +27,16 @@ Cosas que quisiera ir agregándole al script:
         a pesos.
         Usar el mismo scraper para tener un control de devaluación de ahorro.
 
-    Editor de entradas:
+#TODO    Editor de entradas:
         Alguna manera para editar un gasto, un ingreso, o algo que fue mal
         ingresado (puede que haga falta usar archivos temporales y librerias
         afines)
 
-    Graficos:
+#TODO    Graficos:
         Alguna forma fácil de ver gastos/ingresos/whatever por día, por semana
         por mes, por año. (acá quizás podría estar el balance)
 
-    Interfaz Gráfica y ejectuable:
+#TODO    Interfaz Gráfica y ejectuable:
         nada, eso, a futuro (lejano)
 """
 
@@ -88,13 +83,13 @@ def Info():  # Creada 15-06-2019
         informacion += "\n" + lista_de_cuentas[i] + ":" + "Saldo total $"\
             + str("%.2f" % total[i]) + "\n"
     total = Total()
-    print("Cuentas existentes:\n", informacion)
     str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
         + "\nInfo()\nTotal()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
         + "Eliminar_cuenta()\nIngreso()\nExtraccion()\n"\
         + "Transferencia()\nGasto()\nBalance()<---NO USAR-Ver help(Balance)\n"\
         + "BalanceGraf()\n"
     print("Funciones:\n", str_funciones)
+    print("Cuentas existentes:\n", informacion)
     print("\nDinero total en cuentas: $%.2f" % total)
     # return informacion
 
@@ -419,6 +414,63 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     plt.grid()
     plt.xticks(rotation=25)
     plt.show()
+    
+    
+def Reajuste():
+    """
+    17-12-2019
+    Funcion que modifica el total del dinero en la cuenta y lo guarda como
+    gasto(ingreso) llenando los campos de categoria, subcategoria y
+    descripción de la siguiente manera
+        Categoria: Reajuste
+        Subcategoria: Negativo(Positivo)
+        Descripción: Reajuste Negativo(Positivo) de saldo
+    """
+    nombre = input("\nIngrese la cuenta\n")
+    nombre += "CUENTA.txt"
+    if os.path.isfile(nombre):
+        # Abre y lee los datos de la cuenta
+        contenido_cuenta = pd.read_csv(nombre, sep="\t")
+        datos = contenido_cuenta.values
+        fecha = Fecha()[0]
+        hora = Fecha()[1]
+        total = input("\nIngrese el saldo actual\n")
+        categoria = "Reajuste"
+        if datos[-1, 2] < float(total):
+            subcategoria = "Positivo"
+            descripcion = "Reajuste positivo de saldo"
+            extraccion = "0"
+            gasto = "0"
+            balance = "0"
+            ingreso = str(float(total) - datos[-1, 2])
+            Campos = [fecha, hora, total, ingreso, extraccion,
+                      gasto, categoria, subcategoria, descripcion,
+                      balance]
+        else:
+            subcategoria = "Negativo"
+            descripcion = "Reajuste negativo de saldo"
+            ingreso = "0"
+            gasto = "0"
+            balance = "0"
+            extraccion = str(datos[-1, 2] - float(total))
+            Campos = [fecha, hora, total, ingreso, extraccion,
+                      gasto, categoria, subcategoria, descripcion,
+                      balance]
+        fila = ""
+        for elementos in Campos:
+            fila += elementos + "\t"
+        fila = fila[:-1]  # Borra el "\t" del final
+        fila += "\n"
+        with open(nombre, "a") as micuenta:
+            micuenta.write(fila)
+    else:
+        print("\nNo existe la cuenta\n")
+    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    total = Total()
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+          "\nDinero total %.2f\n" % total)
+    Balance()  # agregado 12-08-2019
+
 
 # %%
 
