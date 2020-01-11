@@ -9,7 +9,6 @@ import pandas as pd
 from datetime import datetime
 import os
 import matplotlib.pyplot as plt  # agregado 30-08-2019
-import matplotlib.dates as pdt  # agregado 30-08-2019
 directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
 pd.set_option("display.max_columns", 11)
@@ -43,8 +42,11 @@ Cosas que quisiera ir agregándole al script:
 
 def CrearUsuario():  # creada 10-02-2019
     nombre = input("\nIngrese el nombre de usuario\n") + "USR"
-    os.makedirs(nombre)
-    print("\nSe creo el usuario %s\n" % nombre[:-3])
+    if os.path.isdir(nombre):  # 10/01/2020 msj al intentar crear usr existente
+        print("\nYa existe el usuario\n")
+    else:
+        os.makedirs(nombre)
+        print("\nSe creo el usuario %s\n" % nombre[:-3])
 
 
 def IniciarSesion():  # creada 10-02-2019
@@ -60,6 +62,24 @@ def IniciarSesion():  # creada 10-02-2019
 
 def CerrarSesion():  # creada 10-02-2019
     os.chdir(directorio)
+
+
+def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
+    nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
+    if os.path.isdir(nombre):
+        advertencia = "¿Seguro que queres eliminar el usuario?\n\n\
+        todos los datos contenidos en ella se perderán para siempre.\n\n\
+        Ingrese '1', 'si' o 'y' para borrar\n\
+        Ingrese cualquier otra cosa para cancelar\n"
+        respuesta = input(advertencia)
+        posibles_respuestas = ["1", "si", "y"]
+        if respuesta in posibles_respuestas:
+            os.remove(nombre)
+            print("\nSe eliminó el usuario %s\n" % nombre[:-10])
+        else:
+            print("\nNo se eliminó el usuario %s\n" % nombre[:-10])
+    else:
+        print("\nNo existe el usuario\n")
 
 
 def Info():  # Creada 15-06-2019
@@ -414,8 +434,8 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     plt.grid()
     plt.xticks(rotation=25)
     plt.show()
-    
-    
+
+
 def Reajuste():
     """
     17-12-2019
@@ -472,6 +492,29 @@ def Reajuste():
     Balance()  # agregado 12-08-2019
 
 
+def Filtro():  # 10/01/2020
+    """
+    Con esta funcion se puede ver puntualmente categorias de gastos/ingresos
+    para poder llevar un control más sencillo y rápido de cuánto se está 
+    gastando/ingresando.
+    """
+    nombre = input("\nIngrese la cuenta\n")
+    nombre = nombre + "CUENTA.txt"
+    if os.path.isfile(nombre):
+        # Abre y lee los datos de la cuenta
+        datos = pd.read_csv(nombre, sep="\t")
+        Categoria = input("\nIngrese la categoria\n")
+        datos = datos[datos["Categoria"] == Categoria]
+        print(datos)
+        respuesta = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
+        if respuesta == "si":
+            Subcategoria = input("\nIngrese la subcategoria\n")
+            datos = datos[datos["Subcategoria"] == Subcategoria]
+            return datos
+        else:
+            return datos
+    else:
+        print("\nNo existe la cuenta\n")
 # %%
 
 
