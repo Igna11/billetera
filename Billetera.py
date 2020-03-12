@@ -9,6 +9,8 @@ import pandas as pd
 from datetime import datetime
 import os
 import matplotlib.pyplot as plt  # agregado 30-08-2019
+from bs4 import BeautifulSoup  # agregado 11-03-2020
+from urllib.request import urlopen  # agregado 11-03-2020
 directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
 pd.set_option("display.max_columns", 11)
@@ -125,7 +127,7 @@ def Total():
     total = []
     for elem in Lista:
         total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
-    return sum(total)
+    return round(sum(total),2)
 
 
 def Fecha():
@@ -516,6 +518,30 @@ def Filtro():  # 10/01/2020
     else:
         print("\nNo existe la cuenta\n")
 
+#%%
+
+urlDOLAR1 = "http://www.bna.com.ar/Personas"
+#urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
+#urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
+#urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/dolares_\
+#bip/dolares_bip_info_gral"
+#urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/Productosy\
+#Servicios/Cotizador"
+try:
+    url = urlopen(urlDOLAR1)
+except:
+    print("ERROR: No anda la página o no hay internet")
+try:
+    soup = BeautifulSoup(url.read(), "html.parser")
+except:
+    print("ERROR: Falló el soup = BeautifulSoup(url.read(), html.parser)")
+try:
+    target = soup.find("table")
+    text = target.text
+except:
+    print("ERROR: Falló el find(table)")
+PrecioDolar = text[50:55]
+PrecioDolar
 
 # %%
 
