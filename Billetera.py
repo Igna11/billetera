@@ -119,7 +119,10 @@ def Asignador_cuentas():
     Cuentas = ""
     for i in range(len(alfabeto)):
         Dic.update({str(i+1): alfabeto[i]})
-        Cuentas += "\n" + str(i+1) + ": " + alfabeto[i] + "\n"
+        cuenta = alfabeto[i].replace("CUENTA", "")
+        cuenta = cuenta.replace("_DOL", "")
+        cuenta = cuenta.replace(".txt", "")
+        Cuentas += "\n" + str(i+1) + ": " + cuenta + "\n"
     numero = input("\nElija la cuenta\n" + Cuentas + "\n")
     return Dic[numero]
 
@@ -144,7 +147,7 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     # nombre de la cuenta con el saldo total
     informacion = ""
     for i in range(len(lista_de_cuentas)):
-        informacion += "\n" + lista_de_cuentas[i] + ":" + "Saldo total $"\
+        informacion += "\n" + lista_de_cuentas[i] + ": " + "Saldo total $"\
             + str("%.2f" % total[i]) + "\n"
     total = Total()
     str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
@@ -211,29 +214,25 @@ def Crear_cuenta():
         fila += elementos + "\t"
     fila = fila[:-1]  # Borra el "\t" del final
     fila += "\n"
-    fila += "0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\n"
+    fila += "0\t0\t0\t0\t0\t0\t0\t0\t0\t0\n"
     with open(archivo, "x") as micuenta:
         micuenta.write(fila)
     print("\nSe ha creado la cuenta %s\n" % nombre)
 
 
 def Eliminar_cuenta():
-    nombre = input("\nIngrese la cuenta\n")
-    nombre += "CUENTA.txt"
-    if os.path.isfile(nombre):
-        advertencia = "¿Seguro que queres eliminar la cuenta?\n\n\
-        todos los datos contenidos en ella se perderán para siempre.\n\n\
-        Ingrese '1', 'si' o 'y' para borrar\n\
-        Ingrese cualquier otra cosa para cancelar\n"
-        respuesta = input(advertencia)
-        posibles_respuestas = ["1", "si", "y"]
-        if respuesta in posibles_respuestas:
-            os.remove(nombre)
-            print("\nSe eliminó la cuenta %s\n" % nombre[:-10])
-        else:
-            print("\nNo se eliminó la cuenta %s\n" % nombre[:-10])
+    nombre = Asignador_cuentas()
+    advertencia = "¿Seguro que queres eliminar la cuenta?\n\n\
+    todos los datos contenidos en ella se perderán para siempre.\n\n\
+    Ingrese '1', 'si' o 'y' para borrar\n\
+    Ingrese cualquier otra cosa para cancelar\n"
+    respuesta = input(advertencia)
+    posibles_respuestas = ["1", "si", "y"]
+    if respuesta in posibles_respuestas:
+        os.remove(nombre)
+        print("\nSe eliminó la cuenta %s\n" % nombre[:-10])
     else:
-        print("\nNo existe la cuenta %s\n" % nombre[:-10])
+        print("\nNo se eliminó la cuenta %s\n" % nombre[:-10])
 
 
 def Ingreso():
@@ -241,38 +240,36 @@ def Ingreso():
     Ingresa el dinero en la cuenta correcta, en la columna correcta
     Completa el resto de las columnas con información repetida de ser
     necesario
+    Modificado: 21-03-2020  01:38
+        Ahora se elije la cuenta en vez de ingresarla manualmente
     """
-    nombre = input("\nIngrese la cuenta\n")
-    nombre += "CUENTA.txt"
+    nombre = Asignador_cuentas()
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t")
     datos = contenido_cuenta.values
-    if os.path.isfile(nombre):
-        fecha = Fecha()[0]
-        hora = Fecha()[1]
-        ingreso = input("\nCantidad de dinero a ingresar\n")
-        categoria = input("\nCategoria: \n")
-        subcategoria = input("\nSubcategoria: \n")
-        descripcion = input("\nDescripcion: \n")
-        extraccion = "0"  # esto siempre debería ser 0 al ingresar dinero
-        gasto = "0"  # esto siempre debería ser 0 al ingresar dinero
-        if len(datos) == 0:
-            total = ingreso
-        else:
-            total = str(float(ingreso) + datos[-1, 2])
-        balance = "0"  # TODO: ver si balance es necesario
-        Campos = [fecha, hora, total, ingreso, extraccion,
-                  gasto, categoria, subcategoria, descripcion,
-                  balance]
-        fila = ""
-        for elementos in Campos:
-            fila += elementos + "\t"
-        fila = fila[:-1]  # Borra el "\t" del final
-        fila += "\n"
-        with open(nombre, "a") as micuenta:
-            micuenta.write(fila)
+    fecha = Fecha()[0]
+    hora = Fecha()[1]
+    ingreso = input("\nCantidad de dinero a ingresar\n")
+    categoria = input("\nCategoria: \n")
+    subcategoria = input("\nSubcategoria: \n")
+    descripcion = input("\nDescripcion: \n")
+    extraccion = "0"  # esto siempre debería ser 0 al ingresar dinero
+    gasto = "0"  # esto siempre debería ser 0 al ingresar dinero
+    if len(datos) == 0:
+        total = ingreso
     else:
-        print("\nNo existe la cuenta\n")
+        total = str(float(ingreso) + datos[-1, 2])
+    balance = "0"  # TODO: ver si balance es necesario
+    Campos = [fecha, hora, total, ingreso, extraccion,
+              gasto, categoria, subcategoria, descripcion,
+              balance]
+    fila = ""
+    for elementos in Campos:
+        fila += elementos + "\t"
+    fila = fila[:-1]  # Borra el "\t" del final
+    fila += "\n"
+    with open(nombre, "a") as micuenta:
+        micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     total = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
@@ -285,42 +282,40 @@ def Extraccion():
     Extrae el dinero en la cuenta correcta, en la columna correcta
     Completa el resto de las columnas con información repetida de ser
     necesario
+    Modificado: 21-03-2020  01:39
+        Ahora se elije la cuenta en vez de ingresarla manualmente
     """
-    nombre = input("\nIngrese la cuenta\n")
-    nombre += "CUENTA.txt"
+    nombre = Asignador_cuentas()
     # se fija si el archivo de la cuenta existe
-    if os.path.isfile(nombre):
-        # Abre y lee los datos de la cuenta
-        contenido_cuenta = pd.read_csv(nombre, sep="\t")
-        datos = contenido_cuenta.values
-        fecha = Fecha()[0]
-        hora = Fecha()[1]
-        ingreso = "0"  # esto siempre debería ser 0 al extraer dinero
-        gasto = "0"  # esto es 0 por definicion de extraccion =/= gasto
-        if len(datos) == 0:
-            print("\nAún no se ha ingresado dinero en la cuenta\n")
-        else:
-            extraccion = input("\nCantidad de dinero a extraer\n")
-            if datos[-1, 2] < float(extraccion):
-                print("\nNo hay dinero suficiente en la cuenta\n")
-            else:
-                categoria = input("\nCategoria: \n")
-                subcategoria = input("\nSubcategoria: \n")
-                descripcion = input("\nDescripcion: \n")
-                total = str(datos[-1, 2] - float(extraccion))
-                balance = "0"  # TODO: ver si balance es necesario
-                Campos = [fecha, hora, total, ingreso, extraccion,
-                          gasto, categoria, subcategoria, descripcion,
-                          balance]
-                fila = ""
-                for elementos in Campos:
-                    fila += elementos + "\t"
-                fila = fila[:-1]  # Borra el "\t" del final
-                fila += "\n"
-                with open(nombre, "a") as micuenta:
-                    micuenta.write(fila)
+    # Abre y lee los datos de la cuenta
+    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    datos = contenido_cuenta.values
+    fecha = Fecha()[0]
+    hora = Fecha()[1]
+    ingreso = "0"  # esto siempre debería ser 0 al extraer dinero
+    gasto = "0"  # esto es 0 por definicion de extraccion =/= gasto
+    if len(datos) == 0:
+        print("\nAún no se ha ingresado dinero en la cuenta\n")
     else:
-        print("\nNo existe la cuenta\n")
+        extraccion = input("\nCantidad de dinero a extraer\n")
+        if datos[-1, 2] < float(extraccion):
+            print("\nNo hay dinero suficiente en la cuenta\n")
+        else:
+            categoria = input("\nCategoria: \n")
+            subcategoria = input("\nSubcategoria: \n")
+            descripcion = input("\nDescripcion: \n")
+            total = str(datos[-1, 2] - float(extraccion))
+            balance = "0"  # TODO: ver si balance es necesario
+            Campos = [fecha, hora, total, ingreso, extraccion,
+                      gasto, categoria, subcategoria, descripcion,
+                      balance]
+            fila = ""
+            for elementos in Campos:
+                fila += elementos + "\t"
+            fila = fila[:-1]  # Borra el "\t" del final
+            fila += "\n"
+            with open(nombre, "a") as micuenta:
+                micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     total = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
@@ -328,105 +323,94 @@ def Extraccion():
     Balance()  # agregado 12-08-2019
 
 
-def Transferencia():  # creada 10-02-2019
+def Transferencia():
     """
+    creada 10-02-2019
     Funcion de transferencias
+    Modificado: 21-03-2020  01:42
+        Ahora se elijen las cuentas en vez de ingresarlas manualmente
     """
-    nombre_salida = input("\nIngrese la cuenta de salida\n") + "CUENTA.txt"
-    nombre_entrada = input("\nIngrese la cuenta de entrada\n") + "CUENTA.txt"
-    if os.path.isfile(nombre_salida) and os.path.isfile(nombre_entrada):
-        # si las dos cuentas existen
-        contenido_salida = pd.read_csv(nombre_salida, sep="\t")
-        contenido_entrada = pd.read_csv(nombre_entrada, sep="\t")
-        datos_salida = contenido_salida.values
-        datos_entrada = contenido_entrada.values
-        fecha = Fecha()[0]
-        hora = Fecha()[1]
-        if len(datos_salida) == 0:
-            print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
-        else:
-            valor = input("\nCantidad de dinero a transferir\n")
-            if datos_salida[-1, 2] < float(valor):
-                print("\nNo hay dinero suficiente en la cuenta %s"
-                      % nombre_salida[:-10])
-            categoria = "Transferencia"
-            subcategoria_salida = "Transferencia de salida"
-            descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
-            subcategoria_entrada = "Transferencia de entrada"
-            descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
-            total_salida = str(datos_salida[-1, 2] - float(valor))
-            total_entrada = str(datos_entrada[-1, 2] + float(valor))
-            balance = gasto = extraccion = ingreso = "0"
-            # TODO: ver si balance es necesario
-            Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
-                              gasto, categoria, subcategoria_entrada,
-                              descripcion_entrada, balance]
-            Campos_salida = [fecha, hora, total_salida, ingreso, valor,
-                             gasto, categoria, subcategoria_salida,
-                             descripcion_salida, balance]
-            fila_entrada = ""
-            fila_salida = ""
-            for elementos in Campos_entrada:
-                fila_entrada += elementos + "\t"
-            fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
-            fila_entrada += "\n"
-            for elementos in Campos_salida:
-                fila_salida += elementos + "\t"
-            fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
-            fila_salida += "\n"
-            with open(nombre_entrada, "a") as micuenta:
-                micuenta.write(fila_entrada)
-            with open(nombre_salida, "a") as micuenta:
-                micuenta.write(fila_salida)
-    elif os.path.isfile(nombre_salida) and not os.path.isfile(nombre_entrada):
-        # si no existe la cuenta entrada
-        print("\nNo existe la cuenta '%s' de entrada\n" % nombre_entrada[:-10])
-    elif not os.path.isfile(nombre_salida) and os.path.isfile(nombre_entrada):
-        # si no existe la cuenta entrada
-        print("\nNo existe la cuenta '%s' de salida\n" % nombre_salida[:-10])
+    nombre_salida = Asignador_cuentas()
+    nombre_entrada = Asignador_cuentas()
+    # si las dos cuentas existen
+    contenido_salida = pd.read_csv(nombre_salida, sep="\t")
+    contenido_entrada = pd.read_csv(nombre_entrada, sep="\t")
+    datos_salida = contenido_salida.values
+    datos_entrada = contenido_entrada.values
+    fecha = Fecha()[0]
+    hora = Fecha()[1]
+    if len(datos_salida) == 0:
+        print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
     else:
-        print("\nNo existen las cuentas '%s'" % nombre_salida[:-10],
-              "ni la cuenta '%s'" % nombre_entrada[:-10])
+        valor = input("\nCantidad de dinero a transferir\n")
+        if datos_salida[-1, 2] < float(valor):
+            print("\nNo hay dinero suficiente en la cuenta %s"
+                  % nombre_salida[:-10])
+        categoria = "Transferencia"
+        subcategoria_salida = "Transferencia de salida"
+        descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
+        subcategoria_entrada = "Transferencia de entrada"
+        descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
+        total_salida = str(datos_salida[-1, 2] - float(valor))
+        total_entrada = str(datos_entrada[-1, 2] + float(valor))
+        balance = gasto = extraccion = ingreso = "0"
+        # TODO: ver si balance es necesario
+        Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
+                          gasto, categoria, subcategoria_entrada,
+                          descripcion_entrada, balance]
+        Campos_salida = [fecha, hora, total_salida, ingreso, valor,
+                         gasto, categoria, subcategoria_salida,
+                         descripcion_salida, balance]
+        fila_entrada = ""
+        fila_salida = ""
+        for elementos in Campos_entrada:
+            fila_entrada += elementos + "\t"
+        fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
+        fila_entrada += "\n"
+        for elementos in Campos_salida:
+            fila_salida += elementos + "\t"
+        fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
+        fila_salida += "\n"
+        with open(nombre_entrada, "a") as micuenta:
+            micuenta.write(fila_entrada)
+        with open(nombre_salida, "a") as micuenta:
+            micuenta.write(fila_salida)
 
 
 def Gasto():
     """
     Genera un gasto en la cuenta indicada
     """
-    nombre = input("\nIngrese la cuenta\n")
-    nombre += "CUENTA.txt"
-    if os.path.isfile(nombre):
-        # Abre y lee los datos de la cuenta
-        contenido_cuenta = pd.read_csv(nombre, sep="\t")
-        datos = contenido_cuenta.values
-        fecha = Fecha()[0]
-        hora = Fecha()[1]
-        ingreso = "0"  # esto siempre debería ser 0 al hacer un gasto
-        extraccion = "0"  # esto siempre debería ser 0 al hacer un gasto
-        if len(datos) == 0:
-            print("\nNo hay dinero en la cuenta\n")
-        else:
-            valor = input("\nValor del gasto\n")
-            if datos[-1, 2] < float(valor):
-                print("\nNo hay dinero suficiente en la cuenta\n")
-            else:
-                categoria = input("\nCategoria: \n")
-                subcategoria = input("\nSubategoria: \n")
-                descripcion = input("\nDescripcion: \n")
-                total = str(datos[-1, 2] - float(valor))
-                balance = "0"  # TODO: ver si balance es necesario
-                Campos = [fecha, hora, total, ingreso, extraccion,
-                          valor, categoria, subcategoria, descripcion,
-                          balance]
-                fila = ""
-                for elementos in Campos:
-                    fila += elementos + "\t"
-                fila = fila[:-1]  # Borra el "\t" del final
-                fila += "\n"
-                with open(nombre, "a") as micuenta:
-                    micuenta.write(fila)
+    nombre = Asignador_cuentas()
+    # Abre y lee los datos de la cuenta
+    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    datos = contenido_cuenta.values
+    fecha = Fecha()[0]
+    hora = Fecha()[1]
+    ingreso = "0"  # esto siempre debería ser 0 al hacer un gasto
+    extraccion = "0"  # esto siempre debería ser 0 al hacer un gasto
+    if len(datos) == 0:
+        print("\nNo hay dinero en la cuenta\n")
     else:
-        print("\nNo existe la cuenta\n")
+        valor = input("\nValor del gasto\n")
+        if datos[-1, 2] < float(valor):
+            print("\nNo hay dinero suficiente en la cuenta\n")
+        else:
+            categoria = input("\nCategoria: \n")
+            subcategoria = input("\nSubategoria: \n")
+            descripcion = input("\nDescripcion: \n")
+            total = str(datos[-1, 2] - float(valor))
+            balance = "0"  # TODO: ver si balance es necesario
+            Campos = [fecha, hora, total, ingreso, extraccion,
+                      valor, categoria, subcategoria, descripcion,
+                      balance]
+            fila = ""
+            for elementos in Campos:
+                fila += elementos + "\t"
+            fila = fila[:-1]  # Borra el "\t" del final
+            fila += "\n"
+            with open(nombre, "a") as micuenta:
+                micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     total = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
@@ -491,46 +475,45 @@ def Reajuste():
         Categoria: Reajuste
         Subcategoria: Negativo(Positivo)
         Descripción: Reajuste Negativo(Positivo) de saldo
+    Modificada 21-03-2020  01:52
+        Ahora se ingresa el numero de la cuenta en vez de manualmente el 
+        nombre de la cuenta
     """
-    nombre = input("\nIngrese la cuenta\n")
-    nombre += "CUENTA.txt"
-    if os.path.isfile(nombre):
-        # Abre y lee los datos de la cuenta
-        contenido_cuenta = pd.read_csv(nombre, sep="\t")
-        datos = contenido_cuenta.values
-        fecha = Fecha()[0]
-        hora = Fecha()[1]
-        total = input("\nIngrese el saldo actual\n")
-        categoria = "Reajuste"
-        if datos[-1, 2] < float(total):
-            subcategoria = "Positivo"
-            descripcion = "Reajuste positivo de saldo"
-            extraccion = "0"
-            gasto = "0"
-            balance = "0"
-            ingreso = str(float(total) - datos[-1, 2])
-            Campos = [fecha, hora, total, ingreso, extraccion,
-                      gasto, categoria, subcategoria, descripcion,
-                      balance]
-        else:
-            subcategoria = "Negativo"
-            descripcion = "Reajuste negativo de saldo"
-            ingreso = "0"
-            gasto = "0"
-            balance = "0"
-            extraccion = str(datos[-1, 2] - float(total))
-            Campos = [fecha, hora, total, ingreso, extraccion,
-                      gasto, categoria, subcategoria, descripcion,
-                      balance]
-        fila = ""
-        for elementos in Campos:
-            fila += elementos + "\t"
-        fila = fila[:-1]  # Borra el "\t" del final
-        fila += "\n"
-        with open(nombre, "a") as micuenta:
-            micuenta.write(fila)
+    nombre = Asignador_cuentas()
+    # Abre y lee los datos de la cuenta
+    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    datos = contenido_cuenta.values
+    fecha = Fecha()[0]
+    hora = Fecha()[1]
+    total = input("\nIngrese el saldo actual\n")
+    categoria = "Reajuste"
+    if datos[-1, 2] < float(total):
+        subcategoria = "Positivo"
+        descripcion = "Reajuste positivo de saldo"
+        extraccion = "0"
+        gasto = "0"
+        balance = "0"
+        ingreso = str(float(total) - datos[-1, 2])
+        Campos = [fecha, hora, total, ingreso, extraccion,
+                  gasto, categoria, subcategoria, descripcion,
+                  balance]
     else:
-        print("\nNo existe la cuenta\n")
+        subcategoria = "Negativo"
+        descripcion = "Reajuste negativo de saldo"
+        ingreso = "0"
+        gasto = "0"
+        balance = "0"
+        extraccion = str(datos[-1, 2] - float(total))
+        Campos = [fecha, hora, total, ingreso, extraccion,
+                  gasto, categoria, subcategoria, descripcion,
+                  balance]
+    fila = ""
+    for elementos in Campos:
+        fila += elementos + "\t"
+    fila = fila[:-1]  # Borra el "\t" del final
+    fila += "\n"
+    with open(nombre, "a") as micuenta:
+        micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     total = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
@@ -544,23 +527,19 @@ def Filtro():  # 10/01/2020
     para poder llevar un control más sencillo y rápido de cuánto se está
     gastando/ingresando.
     """
-    nombre = input("\nIngrese la cuenta\n")
-    nombre = nombre + "CUENTA.txt"
-    if os.path.isfile(nombre):
-        # Abre y lee los datos de la cuenta
-        datos = pd.read_csv(nombre, sep="\t")
-        Categoria = input("\nIngrese la categoria\n")
-        datos = datos[datos["Categoria"] == Categoria]
-        print(datos)
-        respuesta = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
-        if respuesta == "si":
-            Subcategoria = input("\nIngrese la subcategoria\n")
-            datos = datos[datos["Subcategoria"] == Subcategoria]
-            return datos
-        else:
-            return datos
+    nombre = Asignador_cuentas()
+    # Abre y lee los datos de la cuenta
+    datos = pd.read_csv(nombre, sep="\t")
+    Categoria = input("\nIngrese la categoria\n")
+    datos = datos[datos["Categoria"] == Categoria]
+    print(datos)
+    respuesta = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
+    if respuesta == "si":
+        Subcategoria = input("\nIngrese la subcategoria\n")
+        datos = datos[datos["Subcategoria"] == Subcategoria]
+        return datos
     else:
-        print("\nNo existe la cuenta\n")
+        return datos
 
 #%%
 
