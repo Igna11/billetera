@@ -39,6 +39,10 @@ Cosas que quisiera ir agregándole al script:
 
 #TODO    Interfaz Gráfica y ejectuable:
         nada, eso, a futuro (lejano)
+
+#TODO    Solucionar error
+        PermissionError: [WinError 5] Acceso denegado: "nombreusuarUSR"
+        al intentar borrar un usuario
 """
 
 
@@ -84,21 +88,59 @@ def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
         print("\nNo existe el usuario\n")
 
 
-def Info():  # Creada 15-06-2019
-    # lista con los nombres de los archivos de cuenta
+def Lista_cuentas():
+    """
+    Hace una list de todas las cuentas, en pesos y en dolares
+    función auxiliar creada el 20-03-2020, a las 02:25 primeras horas de la
+    cuarentena obligatoria por el COVID-19
+    """
+    """
+    EVALUAR LA POSIBILIDAD DE USAR glob.glob: (gracias paui 20-03-2020 -13:26)
+        El código se simplifica a una linea así:
+    Lista = glob.glob(r"*CUENTA*.txt")
+    """
     lista = os.listdir()
     Lista = []
     for elem in lista:
-        if "CUENTA.txt" in elem:
+        if "CUENTA.txt" in elem or "CUENTA_DOL.txt" in elem:
             Lista.append(elem)
+    return Lista
+
+
+def Asignador_cuentas():
+    """
+    20-03-2020  15:03
+    Genera un diccionario con el nombre de las cuentas existentes y un numero
+    para que el usuario elija a qué cuenta ingresar un gasto o un ingreso
+    mediante un input numérico
+    """
+    alfabeto = Lista_cuentas()
+    Dic = {}
+    Cuentas = ""
+    for i in range(len(alfabeto)):
+        Dic.update({str(i+1): alfabeto[i]})
+        Cuentas += "\n" + str(i+1) + ": " + alfabeto[i] + "\n"
+    numero = input("\nElija la cuenta\n" + Cuentas + "\n")
+    return Dic[numero]
+
+
+def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
+    # lista con los nombres de los archivos de cuenta
+    Lista = Lista_cuentas()
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for elem in Lista:
-        total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
+        try:
+            total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
+        except ValueError:
+            total.append(0)
     # lista con sólo el nombre de las cuentas
     lista_de_cuentas = []
     for elem in Lista:
-        lista_de_cuentas.append(elem[:-10])
+        elem = elem.replace("CUENTA", "")
+        elem = elem.replace("_DOL", "")
+        elem = elem.replace(".txt", "")
+        lista_de_cuentas.append(elem)
     # nombre de la cuenta con el saldo total
     informacion = ""
     for i in range(len(lista_de_cuentas)):
@@ -118,16 +160,12 @@ def Info():  # Creada 15-06-2019
 
 def Total():
     # lista con los nombres de los archivos de cuenta
-    lista = os.listdir()
-    Lista = []
-    for elem in lista:
-        if "CUENTA.txt" in elem:
-            Lista.append(elem)
+    Lista = Lista_cuentas()
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for elem in Lista:
         total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
-    return round(sum(total),2)
+    return round(sum(total), 2)
 
 
 def Fecha():
@@ -144,14 +182,11 @@ def Fecha():
 def Datos_cuenta():
     """
     los datos crudos de la cuenta
+    Modificada 21-03-2020  01:00
     """
-    nombre = input("\nIngrese la cuenta\n")
-    nombre += "CUENTA.txt"
-    if os.path.isfile(nombre):
-        datos = pd.read_csv(nombre, sep="\t")
-        return datos
-    else:
-        print("\nNo existe la cuenta %s\n" % nombre[:-10])
+    nombre = Asignador_cuentas()
+    datos = pd.read_csv(nombre, sep="\t")
+    return datos
 
 
 def Crear_cuenta():
@@ -159,7 +194,15 @@ def Crear_cuenta():
     Crea un .txt cuyo nombre será el nombre de la cuenta
     """
     nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
-    nombre += "CUENTA.txt"
+    tipo_cuenta = input("\nIngresar 0 para cuenta en pesos\n"
+                        "Ingresar 1 para cuenta en dolares\n")
+    archivo = nombre
+    if tipo_cuenta == "0":
+        archivo += "CUENTA.txt"
+    elif tipo_cuenta == "1":
+        archivo += "CUENTA_DOL.txt"
+    else:
+        print("\n %s inválido\n" % tipo_cuenta)
     Encabezados = ["Fecha", "hora", "Total", "Ingresos", "Extracciones",
                    "Gasto", "Categoria", "Subcategoria", "Descripcion",
                    "Balance"]
@@ -168,9 +211,10 @@ def Crear_cuenta():
         fila += elementos + "\t"
     fila = fila[:-1]  # Borra el "\t" del final
     fila += "\n"
-    with open(nombre, "x") as micuenta:
+    fila += "0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\n"
+    with open(archivo, "x") as micuenta:
         micuenta.write(fila)
-    print("\nSe ha creado la cuenta %s\n" % nombre[:-10])
+    print("\nSe ha creado la cuenta %s\n" % nombre)
 
 
 def Eliminar_cuenta():
@@ -497,7 +541,7 @@ def Reajuste():
 def Filtro():  # 10/01/2020
     """
     Con esta funcion se puede ver puntualmente categorias de gastos/ingresos
-    para poder llevar un control más sencillo y rápido de cuánto se está 
+    para poder llevar un control más sencillo y rápido de cuánto se está
     gastando/ingresando.
     """
     nombre = input("\nIngrese la cuenta\n")
@@ -540,7 +584,7 @@ try:
     text = target.text
 except:
     print("ERROR: Falló el find(table)")
-PrecioDolar = text[50:55]
+PrecioDolar = text[42:47]
 PrecioDolar
 
 # %%
