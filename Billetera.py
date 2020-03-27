@@ -119,37 +119,45 @@ def Asignador_cuentas():
     Cuentas = ""
     for i in range(len(alfabeto)):
         Dic.update({str(i+1): alfabeto[i]})
-        cuenta = alfabeto[i].replace("CUENTA", "")
-        cuenta = cuenta.replace("_DOL", "")
-        cuenta = cuenta.replace(".txt", "")
+        cuenta = alfabeto[i].replace("CUENTA", "").replace("_DOL", "")\
+            .replace(".txt", "")
         Cuentas += "\n" + str(i+1) + ": " + cuenta + "\n"
     numero = input("\nElija la cuenta\n" + Cuentas + "\n")
-    return Dic[numero]
+    try:
+        NombreCuenta = Dic[numero]
+        return NombreCuenta
+    except KeyError:
+        print("\nEl numero pifiaste ameo\n")
 
 
 def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     # lista con los nombres de los archivos de cuenta
     Lista = Lista_cuentas()
+    DolVal = Precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for elem in Lista:
         try:
             total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
-        except ValueError:
+        except IndexError:
             total.append(0)
-    # lista con sólo el nombre de las cuentas
-    lista_de_cuentas = []
-    for elem in Lista:
-        elem = elem.replace("CUENTA", "")
-        elem = elem.replace("_DOL", "")
-        elem = elem.replace(".txt", "")
-        lista_de_cuentas.append(elem)
     # nombre de la cuenta con el saldo total
     informacion = ""
-    for i in range(len(lista_de_cuentas)):
-        informacion += "\n" + lista_de_cuentas[i] + ": " + "Saldo total $"\
-            + str("%.2f" % total[i]) + "\n"
-    total = Total()
+    for i in range(len(Lista)):
+        if "DOL" in Lista[i]:
+            try:
+                total[i]*DolVal
+            except TypeError:
+                total[i] = 0
+            informacion += "\n" + Lista[i] + ": " + "Saldo total u$s"\
+                + str("%.2f" % total[i]) + " Saldo total $"\
+                + str("%.2f" % (total[i]*DolVal)) + "\n"
+        else:
+            informacion += "\n" + Lista[i] + ": " + "Saldo total $"\
+                + str("%.2f" % total[i]) + "\n"
+    informacion = informacion.replace("CUENTA", "").replace("_DOL", "")\
+        .replace(".txt", "")
+    total, total_pesos, total_dolares = Total()
     str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
         + "\nInfo()\nTotal()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
         + "Eliminar_cuenta()\nIngreso()\nExtraccion()\n"\
@@ -157,18 +165,36 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
         + "BalanceGraf()\n"
     print("Funciones:\n", str_funciones)
     print("Cuentas existentes:\n", informacion)
-    print("\nDinero total en cuentas: $%.2f" % total)
+    print("Dolares totales: $%.2f" % total_dolares)
+    print("Pesos totales: $%.2f" % total_pesos)
+    print("Dinero total en cuentas: $%.2f" % total)
     # return informacion
 
 
 def Total():
     # lista con los nombres de los archivos de cuenta
     Lista = Lista_cuentas()
+    DolVal = Precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
+    total_pesos = []
+    total_dolares = []
     for elem in Lista:
-        total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
-    return round(sum(total), 2)
+        valor_elem = pd.read_csv(elem, sep="\t").values[-1, 2]
+        try:
+            if "DOL" in elem:
+                total_dolares.append(valor_elem)
+                total.append(valor_elem*DolVal)
+            else:
+                total_pesos.append(valor_elem)
+                total.append(valor_elem)
+        except IndexError:
+            total.append(0)
+    # Reciclo las variables reescribiéndolas
+    total = round(sum(total), 2)
+    total_pesos = round(sum(total_pesos), 2)
+    total_dolares = round(sum(total_dolares), 2)
+    return total, total_pesos, total_dolares
 
 
 def Fecha():
@@ -271,7 +297,7 @@ def Ingreso():
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    total = Total()
+    total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
@@ -317,7 +343,7 @@ def Extraccion():
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    total = Total()
+    total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
@@ -412,7 +438,7 @@ def Gasto():
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    total = Total()
+    total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
@@ -430,7 +456,7 @@ def Balance():  # creada 12-08-2019
     los saldos de las cuentas de alguna manera (Gasto(), Ingreso(), etc). No
     usar por usar porque va a appendear datos al pedo.
     """
-    total = round(Total(), 2)
+    total, total_pesos, total_dolares = Total()
     hora = Fecha()[0]
     fecha = Fecha()[1]
     if not os.path.isfile("Balance.txt"):
@@ -476,7 +502,7 @@ def Reajuste():
         Subcategoria: Negativo(Positivo)
         Descripción: Reajuste Negativo(Positivo) de saldo
     Modificada 21-03-2020  01:52
-        Ahora se ingresa el numero de la cuenta en vez de manualmente el 
+        Ahora se ingresa el numero de la cuenta en vez de manualmente el
         nombre de la cuenta
     """
     nombre = Asignador_cuentas()
@@ -515,7 +541,7 @@ def Reajuste():
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    total = Total()
+    total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
@@ -541,30 +567,28 @@ def Filtro():  # 10/01/2020
     else:
         return datos
 
-#%%
 
-urlDOLAR1 = "http://www.bna.com.ar/Personas"
-#urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
-#urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
-#urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/dolares_\
-#bip/dolares_bip_info_gral"
-#urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/Productosy\
-#Servicios/Cotizador"
-try:
+def Precio_dolar():
+    """
+    Scrapea el precio deldolar del banco nacion
+    TODO: meter exceptions que manejen las excepciones
+    ver la forma que si no anda la pagina del banco central, use otra.
+    Si no anda ninguna página, use el último precio conocido
+    """
+    urlDOLAR1 = "http://www.bna.com.ar/Personas"
+    # urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
+    # urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
+    # urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/
+    # dolares_bip/dolares_bip_info_gral"
+    # urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/
+    # ProductosyServicios/Cotizador"
     url = urlopen(urlDOLAR1)
-except:
-    print("ERROR: No anda la página o no hay internet")
-try:
     soup = BeautifulSoup(url.read(), "html.parser")
-except:
-    print("ERROR: Falló el soup = BeautifulSoup(url.read(), html.parser)")
-try:
     target = soup.find("table")
     text = target.text
-except:
-    print("ERROR: Falló el find(table)")
-PrecioDolar = text[42:47]
-PrecioDolar
+    PrecioDolar = text[42:47]
+    return float(PrecioDolar.replace(",", "."))
+
 
 # %%
 
