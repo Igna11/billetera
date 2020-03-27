@@ -461,11 +461,19 @@ def Balance():  # creada 12-08-2019
     fecha = Fecha()[1]
     if not os.path.isfile("Balance.txt"):
         with open("Balance.txt", "x") as balance:
-            balance.write("Hora\tFecha\tTotal\n")
-            balance.write("%s\t%s\t%s\n" % (fecha, hora, total))
+            balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
+            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha,
+                                                    hora,
+                                                    total,
+                                                    total_pesos,
+                                                    total_dolares))
     elif os.path.isfile("Balance.txt"):
         with open("Balance.txt", "a") as balance:
-            balance.write("%s\t%s\t%s\n" % (fecha, hora, total))
+            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha,
+                                                    hora,
+                                                    total,
+                                                    total_pesos,
+                                                    total_dolares))
     else:
         print("\nO Se ErRoR rE lOcO\n")
 
@@ -486,8 +494,22 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     T = dias + "-" + horas
     formato = "%d-%m-%Y-%H:%M:%S"
     Tiempo = [datetime.strptime(i, formato) for i in T]
-    plt.plot(Tiempo, Data[:, 2], 'o-', fillstyle="none")
+    plt.plot(Tiempo, Data[:, 2],
+             'o-',
+             fillstyle="full",
+             markersize=7,
+             label="Total")
+    plt.plot(Tiempo, Data[:, 3],
+             'o-',
+             fillstyle="none",
+             markersize=3,
+             label="Total de pesos $")
+    plt.plot(Tiempo, Data[:, 4],
+             '-',
+             fillstyle="none",
+             label="Total de dolares u$s")
     plt.grid()
+    plt.legend()
     plt.xticks(rotation=25)
     plt.show()
 
