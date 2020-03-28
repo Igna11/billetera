@@ -19,115 +19,59 @@ pd.set_option("display.max_columns", 11)
 Cosas que quisiera ir agregándole al script:
 
 
-#TODO    Diferentes tipos de cuentas:
-        Cuentas comunes con dinero gastable y cuentas especiales con dinero
-        solo para ahorrar. Ejemplo: Quisiera que las cuentas en dólares sean
-        solo cuentas para ahorrar y que se sumen o no (como opcion) al saldo
-        total.
-        También un scraper del precio del dolar para transformar esos valores
-        a pesos.
-        Usar el mismo scraper para tener un control de devaluación de ahorro.
-
-#TODO    Editor de entradas:
+TODO    Editor de entradas:
         Alguna manera para editar un gasto, un ingreso, o algo que fue mal
         ingresado (puede que haga falta usar archivos temporales y librerias
         afines)
 
-#TODO    Graficos:
+TODO    Graficos:
         Alguna forma fácil de ver gastos/ingresos/whatever por día, por semana
-        por mes, por año. (acá quizás podría estar el balance)
+        por mes, por año.
 
-#TODO    Interfaz Gráfica y ejectuable:
+TODO    Interfaz Gráfica y ejectuable:
         nada, eso, a futuro (lejano)
 
-#TODO    Solucionar error
+TODO    Solucionar error
         PermissionError: [WinError 5] Acceso denegado: "nombreusuarUSR"
         al intentar borrar un usuario
+
+TODO    Separar todo este script en módulos específicos para que no sea
+        tanta paja ponerse a editar una función y scrollear como un pelotudo.
 """
 
 
-def CrearUsuario():  # creada 10-02-2019
-    nombre = input("\nIngrese el nombre de usuario\n") + "USR"
-    if os.path.isdir(nombre):  # 10/01/2020 msj al intentar crear usr existente
-        print("\nYa existe el usuario\n")
-    else:
-        os.makedirs(nombre)
-        print("\nSe creo el usuario %s\n" % nombre[:-3])
-
-
-def IniciarSesion():  # creada 10-02-2019
-    nombre = input("\nNombre de usuario\n") + "USR"
-    if os.path.isdir(nombre):
-        Dir = directorio + "\\" + "%s" % nombre
-        os.chdir(Dir)
-        print("\nInicio de sesion de %s\n" % nombre[:-3])
-        Info()
-    else:
-        print("\nNo existe el usuario\n")
-
-
-def CerrarSesion():  # creada 10-02-2019
-    os.chdir(directorio)
-
-
-def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
-    nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
-    if os.path.isdir(nombre):
-        advertencia = "¿Seguro que queres eliminar el usuario?\n\n\
-        todos los datos contenidos en ella se perderán para siempre.\n\n\
-        Ingrese '1', 'si' o 'y' para borrar\n\
-        Ingrese cualquier otra cosa para cancelar\n"
-        respuesta = input(advertencia)
-        posibles_respuestas = ["1", "si", "y"]
-        if respuesta in posibles_respuestas:
-            os.remove(nombre)
-            print("\nSe eliminó el usuario %s\n" % nombre[:-10])
-        else:
-            print("\nNo se eliminó el usuario %s\n" % nombre[:-10])
-    else:
-        print("\nNo existe el usuario\n")
-
-
-def Lista_cuentas():
+def Fecha():
     """
-    Hace una list de todas las cuentas, en pesos y en dolares
-    función auxiliar creada el 20-03-2020, a las 02:25 primeras horas de la
-    cuarentena obligatoria por el COVID-19
+    simplemente genera la hora en formato argento
     """
-    """
-    EVALUAR LA POSIBILIDAD DE USAR glob.glob: (gracias paui 20-03-2020 -13:26)
-        El código se simplifica a una linea así:
-    Lista = glob.glob(r"*CUENTA*.txt")
-    """
-    lista = os.listdir()
-    Lista = []
-    for elem in lista:
-        if "CUENTA.txt" in elem or "CUENTA_DOL.txt" in elem:
-            Lista.append(elem)
-    return Lista
+    fecha_hora = datetime.now()
+    fecha = str(fecha_hora)[:10]
+    hora = str(fecha_hora)[11:19]
+    fecha = datetime.strptime(fecha, "%Y-%m-%d").strftime("%d-%m-%Y")
+    return fecha, hora
 
 
-def Asignador_cuentas():
+def Precio_dolar():
     """
-    20-03-2020  15:03
-    Genera un diccionario con el nombre de las cuentas existentes y un numero
-    para que el usuario elija a qué cuenta ingresar un gasto o un ingreso
-    mediante un input numérico
+    Creada (aprox) 21-03-2020
+    Scrapea el precio deldolar del banco nacion
+    TODO: meter exceptions que manejen las excepciones
+    ver la forma que si no anda la pagina del banco central, use otra.
+    Si no anda ninguna página, use el último precio conocido
     """
-    alfabeto = Lista_cuentas()
-    Dic = {}
-    Cuentas = ""
-    for i in range(len(alfabeto)):
-        Dic.update({str(i+1): alfabeto[i]})
-        cuenta = alfabeto[i].replace("CUENTA", "").replace("_DOL", "")\
-            .replace(".txt", "")
-        Cuentas += "\n" + str(i+1) + ": " + cuenta + "\n"
-    numero = input("\nElija la cuenta\n" + Cuentas + "\n")
-    try:
-        NombreCuenta = Dic[numero]
-        return NombreCuenta
-    except KeyError:
-        print("\nEl numero pifiaste ameo\n")
+    urlDOLAR1 = "http://www.bna.com.ar/Personas"
+    # urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
+    # urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
+    # urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/
+    # dolares_bip/dolares_bip_info_gral"
+    # urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/
+    # ProductosyServicios/Cotizador"
+    url = urlopen(urlDOLAR1)
+    soup = BeautifulSoup(url.read(), "html.parser")
+    target = soup.find("table")
+    text = target.text
+    PrecioDolar = text[42:47]
+    return float(PrecioDolar.replace(",", "."))
 
 
 def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
@@ -158,11 +102,13 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     informacion = informacion.replace("CUENTA", "").replace("_DOL", "")\
         .replace(".txt", "")
     total, total_pesos, total_dolares = Total()
-    str_funciones = "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
-        + "\nInfo()\nTotal()\nFecha()\nDatos_cuenta()\nCrear_cuenta()\n"\
-        + "Eliminar_cuenta()\nIngreso()\nExtraccion()\n"\
-        + "Transferencia()\nGasto()\nBalance()<---NO USAR-Ver help(Balance)\n"\
-        + "BalanceGraf()\n"
+    str_funciones = "\nFecha()\nPrecio_dolar()\nInfo()\n"\
+        + "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
+        + "\nCrear_cuenta()\nLista_cuentas()\nDatos_cuenta()"\
+        + "\nAsignador_cuentas()\nTotal()\n"\
+        + "\nIngreso()\nExtraccion()\nGasto()\nTransferencia()\nReajuste()"\
+        + "\nBalance()<---NO USAR-Ver help(Balance)"\
+        + "\nBalanceGraf()\nFiltro()\n"
     print("Funciones:\n", str_funciones)
     print("Cuentas existentes:\n", informacion)
     print("Dolares totales: $%.2f" % total_dolares)
@@ -171,51 +117,54 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     # return informacion
 
 
-def Total():
-    # lista con los nombres de los archivos de cuenta
-    Lista = Lista_cuentas()
-    DolVal = Precio_dolar()
-    # lista con el saldo total de dinero de cada cuenta
-    total = []
-    total_pesos = []
-    total_dolares = []
-    for elem in Lista:
-        valor_elem = pd.read_csv(elem, sep="\t").values[-1, 2]
-        try:
-            if "DOL" in elem:
-                total_dolares.append(valor_elem)
-                total.append(valor_elem*DolVal)
-            else:
-                total_pesos.append(valor_elem)
-                total.append(valor_elem)
-        except IndexError:
-            total.append(0)
-    # Reciclo las variables reescribiéndolas
-    total = round(sum(total), 2)
-    total_pesos = round(sum(total_pesos), 2)
-    total_dolares = round(sum(total_dolares), 2)
-    return total, total_pesos, total_dolares
+# %%
 
 
-def Fecha():
-    """
-    simplemente genera la hora en formato argento
-    """
-    fecha_hora = datetime.now()
-    fecha = str(fecha_hora)[:10]
-    hora = str(fecha_hora)[11:19]
-    fecha = datetime.strptime(fecha, "%Y-%m-%d").strftime("%d-%m-%Y")
-    return fecha, hora
+def CrearUsuario():  # creada 10-02-2019
+    nombre = input("\nIngrese el nombre de usuario\n") + "USR"
+    if os.path.isdir(nombre):  # 10/01/2020 msj al intentar crear usr existente
+        print("\nYa existe el usuario\n")
+    else:
+        os.makedirs(nombre)
+        print("\nSe creo el usuario %s\n" % nombre[:-3])
 
 
-def Datos_cuenta():
-    """
-    los datos crudos de la cuenta
-    Modificada 21-03-2020  01:00
-    """
-    nombre = Asignador_cuentas()
-    datos = pd.read_csv(nombre, sep="\t")
-    return datos
+def IniciarSesion():  # creada 10-02-2019
+    nombre = input("\nNombre de usuario\n") + "USR"
+    if os.path.isdir(nombre):
+        Dir = directorio + "\\" + "%s" % nombre
+        os.chdir(Dir)
+        print("\nInicio de sesion de %s\n" % nombre[:-3])
+        Info()
+    else:
+        print("\nNo existe el usuario\n")
+
+
+def CerrarSesion():  # creada 10-02-2019
+    os.chdir(directorio)
+    print("\nSe ha cerrado sesión\n")
+
+
+"""
+def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
+    nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
+    if os.path.isdir(nombre):
+        advertencia = "¿Seguro que queres eliminar el usuario?\n\n\
+        todos los datos contenidos en ella se perderán para siempre.\n\n\
+        Ingrese '1', 'si' o 'y' para borrar\n\
+        Ingrese cualquier otra cosa para cancelar\n"
+        respuesta = input(advertencia)
+        posibles_respuestas = ["1", "si", "y"]
+        if respuesta in posibles_respuestas:
+            os.remove(nombre)
+            print("\nSe eliminó el usuario %s\n" % nombre[:-10])
+        else:
+            print("\nNo se eliminó el usuario %s\n" % nombre[:-10])
+    else:
+        print("\nNo existe el usuario\n")
+"""
+
+# %%
 
 
 def Crear_cuenta():
@@ -259,6 +208,87 @@ def Eliminar_cuenta():
         print("\nSe eliminó la cuenta %s\n" % nombre[:-10])
     else:
         print("\nNo se eliminó la cuenta %s\n" % nombre[:-10])
+
+
+def Lista_cuentas():
+    """
+    Hace una list de todas las cuentas, en pesos y en dolares
+    función auxiliar creada el 20-03-2020, a las 02:25 primeras horas de la
+    cuarentena obligatoria por el COVID-19
+    """
+    """
+    EVALUAR LA POSIBILIDAD DE USAR glob.glob: (gracias paui 20-03-2020 -13:26)
+        El código se simplifica a una linea así:
+    Lista = glob.glob(r"*CUENTA*.txt")
+    """
+    lista = os.listdir()
+    Lista = []
+    for elem in lista:
+        if "CUENTA.txt" in elem or "CUENTA_DOL.txt" in elem:
+            Lista.append(elem)
+    return Lista
+
+
+def Datos_cuenta():
+    """
+    los datos crudos de la cuenta
+    Modificada 21-03-2020  01:00
+    """
+    nombre = Asignador_cuentas()
+    datos = pd.read_csv(nombre, sep="\t")
+    return datos
+
+
+def Asignador_cuentas():
+    """
+    20-03-2020  15:03
+    Genera un diccionario con el nombre de las cuentas existentes y un numero
+    para que el usuario elija a qué cuenta ingresar un gasto o un ingreso
+    mediante un input numérico
+    """
+    alfabeto = Lista_cuentas()
+    Dic = {}
+    Cuentas = ""
+    for i in range(len(alfabeto)):
+        Dic.update({str(i+1): alfabeto[i]})
+        cuenta = alfabeto[i].replace("CUENTA", "").replace("_DOL", "")\
+            .replace(".txt", "")
+        Cuentas += "\n" + str(i+1) + ": " + cuenta + "\n"
+    numero = input("\nElija la cuenta\n" + Cuentas + "\n")
+    try:
+        NombreCuenta = Dic[numero]
+        return NombreCuenta
+    except KeyError:
+        print("\nEl numero pifiaste ameo\n")
+
+
+def Total():
+    # lista con los nombres de los archivos de cuenta
+    Lista = Lista_cuentas()
+    DolVal = Precio_dolar()
+    # lista con el saldo total de dinero de cada cuenta
+    total = []
+    total_pesos = []
+    total_dolares = []
+    for elem in Lista:
+        valor_elem = pd.read_csv(elem, sep="\t").values[-1, 2]
+        try:
+            if "DOL" in elem:
+                total_dolares.append(valor_elem)
+                total.append(valor_elem*DolVal)
+            else:
+                total_pesos.append(valor_elem)
+                total.append(valor_elem)
+        except IndexError:
+            total.append(0)
+    # Reciclo las variables reescribiéndolas
+    total = round(sum(total), 2)
+    total_pesos = round(sum(total_pesos), 2)
+    total_dolares = round(sum(total_dolares), 2)
+    return total, total_pesos, total_dolares
+
+
+# %%
 
 
 def Ingreso():
@@ -349,6 +379,47 @@ def Extraccion():
     Balance()  # agregado 12-08-2019
 
 
+def Gasto():
+    """
+    Genera un gasto en la cuenta indicada
+    """
+    nombre = Asignador_cuentas()
+    # Abre y lee los datos de la cuenta
+    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    datos = contenido_cuenta.values
+    fecha = Fecha()[0]
+    hora = Fecha()[1]
+    ingreso = "0"  # esto siempre debería ser 0 al hacer un gasto
+    extraccion = "0"  # esto siempre debería ser 0 al hacer un gasto
+    if len(datos) == 0:
+        print("\nNo hay dinero en la cuenta\n")
+    else:
+        valor = input("\nValor del gasto\n")
+        if datos[-1, 2] < float(valor):
+            print("\nNo hay dinero suficiente en la cuenta\n")
+        else:
+            categoria = input("\nCategoria: \n")
+            subcategoria = input("\nSubategoria: \n")
+            descripcion = input("\nDescripcion: \n")
+            total = str(datos[-1, 2] - float(valor))
+            balance = "0"  # TODO: ver si balance es necesario
+            Campos = [fecha, hora, total, ingreso, extraccion,
+                      valor, categoria, subcategoria, descripcion,
+                      balance]
+            fila = ""
+            for elementos in Campos:
+                fila += elementos + "\t"
+            fila = fila[:-1]  # Borra el "\t" del final
+            fila += "\n"
+            with open(nombre, "a") as micuenta:
+                micuenta.write(fila)
+    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    total, total_pesos, total_dolares = Total()
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+          "\nDinero total %.2f\n" % total)
+    Balance()  # agregado 12-08-2019
+
+
 def Transferencia():
     """
     creada 10-02-2019
@@ -403,9 +474,18 @@ def Transferencia():
             micuenta.write(fila_salida)
 
 
-def Gasto():
+def Reajuste():
     """
-    Genera un gasto en la cuenta indicada
+    17-12-2019
+    Funcion que modifica el total del dinero en la cuenta y lo guarda como
+    gasto(ingreso) llenando los campos de categoria, subcategoria y
+    descripción de la siguiente manera
+        Categoria: Reajuste
+        Subcategoria: Negativo(Positivo)
+        Descripción: Reajuste Negativo(Positivo) de saldo
+    Modificada 21-03-2020  01:52
+        Ahora se ingresa el numero de la cuenta en vez de manualmente el
+        nombre de la cuenta
     """
     nombre = Asignador_cuentas()
     # Abre y lee los datos de la cuenta
@@ -413,30 +493,35 @@ def Gasto():
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
-    ingreso = "0"  # esto siempre debería ser 0 al hacer un gasto
-    extraccion = "0"  # esto siempre debería ser 0 al hacer un gasto
-    if len(datos) == 0:
-        print("\nNo hay dinero en la cuenta\n")
+    total = input("\nIngrese el saldo actual\n")
+    categoria = "Reajuste"
+    if datos[-1, 2] < float(total):
+        subcategoria = "Positivo"
+        descripcion = "Reajuste positivo de saldo"
+        extraccion = "0"
+        gasto = "0"
+        balance = "0"
+        ingreso = str(float(total) - datos[-1, 2])
+        Campos = [fecha, hora, total, ingreso, extraccion,
+                  gasto, categoria, subcategoria, descripcion,
+                  balance]
     else:
-        valor = input("\nValor del gasto\n")
-        if datos[-1, 2] < float(valor):
-            print("\nNo hay dinero suficiente en la cuenta\n")
-        else:
-            categoria = input("\nCategoria: \n")
-            subcategoria = input("\nSubategoria: \n")
-            descripcion = input("\nDescripcion: \n")
-            total = str(datos[-1, 2] - float(valor))
-            balance = "0"  # TODO: ver si balance es necesario
-            Campos = [fecha, hora, total, ingreso, extraccion,
-                      valor, categoria, subcategoria, descripcion,
-                      balance]
-            fila = ""
-            for elementos in Campos:
-                fila += elementos + "\t"
-            fila = fila[:-1]  # Borra el "\t" del final
-            fila += "\n"
-            with open(nombre, "a") as micuenta:
-                micuenta.write(fila)
+        subcategoria = "Negativo"
+        descripcion = "Reajuste negativo de saldo"
+        ingreso = "0"
+        gasto = "0"
+        balance = "0"
+        extraccion = str(datos[-1, 2] - float(total))
+        Campos = [fecha, hora, total, ingreso, extraccion,
+                  gasto, categoria, subcategoria, descripcion,
+                  balance]
+    fila = ""
+    for elementos in Campos:
+        fila += elementos + "\t"
+    fila = fila[:-1]  # Borra el "\t" del final
+    fila += "\n"
+    with open(nombre, "a") as micuenta:
+        micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
     total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
@@ -514,61 +599,6 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     plt.show()
 
 
-def Reajuste():
-    """
-    17-12-2019
-    Funcion que modifica el total del dinero en la cuenta y lo guarda como
-    gasto(ingreso) llenando los campos de categoria, subcategoria y
-    descripción de la siguiente manera
-        Categoria: Reajuste
-        Subcategoria: Negativo(Positivo)
-        Descripción: Reajuste Negativo(Positivo) de saldo
-    Modificada 21-03-2020  01:52
-        Ahora se ingresa el numero de la cuenta en vez de manualmente el
-        nombre de la cuenta
-    """
-    nombre = Asignador_cuentas()
-    # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t")
-    datos = contenido_cuenta.values
-    fecha = Fecha()[0]
-    hora = Fecha()[1]
-    total = input("\nIngrese el saldo actual\n")
-    categoria = "Reajuste"
-    if datos[-1, 2] < float(total):
-        subcategoria = "Positivo"
-        descripcion = "Reajuste positivo de saldo"
-        extraccion = "0"
-        gasto = "0"
-        balance = "0"
-        ingreso = str(float(total) - datos[-1, 2])
-        Campos = [fecha, hora, total, ingreso, extraccion,
-                  gasto, categoria, subcategoria, descripcion,
-                  balance]
-    else:
-        subcategoria = "Negativo"
-        descripcion = "Reajuste negativo de saldo"
-        ingreso = "0"
-        gasto = "0"
-        balance = "0"
-        extraccion = str(datos[-1, 2] - float(total))
-        Campos = [fecha, hora, total, ingreso, extraccion,
-                  gasto, categoria, subcategoria, descripcion,
-                  balance]
-    fila = ""
-    for elementos in Campos:
-        fila += elementos + "\t"
-    fila = fila[:-1]  # Borra el "\t" del final
-    fila += "\n"
-    with open(nombre, "a") as micuenta:
-        micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
-    total, total_pesos, total_dolares = Total()
-    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
-          "\nDinero total %.2f\n" % total)
-    Balance()  # agregado 12-08-2019
-
-
 def Filtro():  # 10/01/2020
     """
     Con esta funcion se puede ver puntualmente categorias de gastos/ingresos
@@ -588,28 +618,6 @@ def Filtro():  # 10/01/2020
         return datos
     else:
         return datos
-
-
-def Precio_dolar():
-    """
-    Scrapea el precio deldolar del banco nacion
-    TODO: meter exceptions que manejen las excepciones
-    ver la forma que si no anda la pagina del banco central, use otra.
-    Si no anda ninguna página, use el último precio conocido
-    """
-    urlDOLAR1 = "http://www.bna.com.ar/Personas"
-    # urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
-    # urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
-    # urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/
-    # dolares_bip/dolares_bip_info_gral"
-    # urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/
-    # ProductosyServicios/Cotizador"
-    url = urlopen(urlDOLAR1)
-    soup = BeautifulSoup(url.read(), "html.parser")
-    target = soup.find("table")
-    text = target.text
-    PrecioDolar = text[42:47]
-    return float(PrecioDolar.replace(",", "."))
 
 
 # %%
