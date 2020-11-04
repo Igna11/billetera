@@ -11,7 +11,8 @@ import os
 import matplotlib.pyplot as plt  # agregado 30-08-2019
 from bs4 import BeautifulSoup  # agregado 11-03-2020
 from urllib.request import urlopen  # agregado 11-03-2020
-directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
+directorio = os.path.dirname(os.path.abspath(__file__))  # agregado 22-10-2020
+#  directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
 pd.set_option("display.max_columns", 11)
 # %%
@@ -35,8 +36,13 @@ TODO    Solucionar error
         PermissionError: [WinError 5] Acceso denegado: "nombreusuarUSR"
         al intentar borrar un usuario
 
+TODO    Que no se pueda crear usuario estando logueado en algún usuario
+
 TODO    Separar todo este script en módulos específicos para que no sea
         tanta paja ponerse a editar una función y scrollear como un pelotudo.
+
+TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
+        (de pesos a dolares o dolares a pesos)
 """
 
 
@@ -54,7 +60,7 @@ def Fecha():
 def Precio_dolar():
     """
     Creada (aprox) 21-03-2020
-    Scrapea el precio deldolar del banco nacion
+    Scrapea el precio del dolar del banco nacion
     TODO: meter exceptions que manejen las excepciones
     ver la forma que si no anda la pagina del banco central, use otra.
     Si no anda ninguna página, use el último precio conocido
@@ -70,6 +76,8 @@ def Precio_dolar():
     soup = BeautifulSoup(url.read(), "html.parser")
     target = soup.find("table")
     text = target.text
+    # indice_i = text.find("Dolar")  # Donde arranca el dolar
+    # indice_f = text.find("Euro")  # Donde termina el dolar
     PrecioDolar = text[42:47]
     return float(PrecioDolar.replace(",", "."))
 
@@ -82,7 +90,9 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     total = []
     for elem in Lista:
         try:
-            total.append(pd.read_csv(elem, sep="\t").values[-1, 2])
+            total.append(pd.read_csv(elem,
+                                     sep="\t",
+                                     encoding="latin1").values[-1, 2])
         except IndexError:
             total.append(0)
     # nombre de la cuenta con el saldo total
@@ -235,7 +245,7 @@ def Datos_cuenta():
     Modificada 21-03-2020  01:00
     """
     nombre = Asignador_cuentas()
-    datos = pd.read_csv(nombre, sep="\t")
+    datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
     return datos
 
 
@@ -271,7 +281,9 @@ def Total():
     total_pesos = []
     total_dolares = []
     for elem in Lista:
-        valor_elem = pd.read_csv(elem, sep="\t").values[-1, 2]
+        valor_elem = pd.read_csv(elem,
+                                 sep="\t",
+                                 encoding="latin1").values[-1, 2]
         try:
             if "DOL" in elem:
                 total_dolares.append(valor_elem)
@@ -301,14 +313,14 @@ def Ingreso():
     """
     nombre = Asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
     ingreso = input("\nCantidad de dinero a ingresar\n")
-    categoria = input("\nCategoria: \n")
-    subcategoria = input("\nSubcategoria: \n")
-    descripcion = input("\nDescripcion: \n")
+    categoria = input("\nCategoría: \n")
+    subcategoria = input("\nSubcategoría: \n")
+    descripcion = input("\nDescripción: \n")
     extraccion = "0"  # esto siempre debería ser 0 al ingresar dinero
     gasto = "0"  # esto siempre debería ser 0 al ingresar dinero
     if len(datos) == 0:
@@ -326,7 +338,9 @@ def Ingreso():
     fila += "\n"
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    dinero_final = pd.read_csv(nombre,
+                               sep="\t",
+                               encoding="latin1").values[-1, 2]
     total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
@@ -344,7 +358,7 @@ def Extraccion():
     nombre = Asignador_cuentas()
     # se fija si el archivo de la cuenta existe
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
@@ -357,9 +371,9 @@ def Extraccion():
         if datos[-1, 2] < float(extraccion):
             print("\nNo hay dinero suficiente en la cuenta\n")
         else:
-            categoria = input("\nCategoria: \n")
-            subcategoria = input("\nSubcategoria: \n")
-            descripcion = input("\nDescripcion: \n")
+            categoria = input("\nCategoría: \n")
+            subcategoria = input("\nSubcategoría: \n")
+            descripcion = input("\nDescripción: \n")
             total = str(datos[-1, 2] - float(extraccion))
             balance = "0"  # TODO: ver si balance es necesario
             Campos = [fecha, hora, total, ingreso, extraccion,
@@ -372,7 +386,9 @@ def Extraccion():
             fila += "\n"
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    dinero_final = pd.read_csv(nombre,
+                               sep="\t",
+                               encoding="latin1").values[-1, 2]
     total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
@@ -385,7 +401,7 @@ def Gasto():
     """
     nombre = Asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
@@ -398,9 +414,9 @@ def Gasto():
         if datos[-1, 2] < float(valor):
             print("\nNo hay dinero suficiente en la cuenta\n")
         else:
-            categoria = input("\nCategoria: \n")
-            subcategoria = input("\nSubategoria: \n")
-            descripcion = input("\nDescripcion: \n")
+            categoria = input("\nCategoría: \n")
+            subcategoria = input("\nSubcategoría: \n")
+            descripcion = input("\nDescripción: \n")
             total = str(datos[-1, 2] - float(valor))
             balance = "0"  # TODO: ver si balance es necesario
             Campos = [fecha, hora, total, ingreso, extraccion,
@@ -413,7 +429,9 @@ def Gasto():
             fila += "\n"
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    dinero_final = pd.read_csv(nombre,
+                               sep="\t",
+                               encoding="latin1").values[-1, 2]
     total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
@@ -427,11 +445,17 @@ def Transferencia():
     Modificado: 21-03-2020  01:42
         Ahora se elijen las cuentas en vez de ingresarlas manualmente
     """
+    print("Cuenta salida:")
     nombre_salida = Asignador_cuentas()
+    print("cuenta entrada:")
     nombre_entrada = Asignador_cuentas()
     # si las dos cuentas existen
-    contenido_salida = pd.read_csv(nombre_salida, sep="\t")
-    contenido_entrada = pd.read_csv(nombre_entrada, sep="\t")
+    contenido_salida = pd.read_csv(nombre_salida,
+                                   sep="\t",
+                                   encoding="latin1")
+    contenido_entrada = pd.read_csv(nombre_entrada,
+                                    sep="\t",
+                                    encoding="latin1")
     datos_salida = contenido_salida.values
     datos_entrada = contenido_entrada.values
     fecha = Fecha()[0]
@@ -489,7 +513,7 @@ def Reajuste():
     """
     nombre = Asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t")
+    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
@@ -522,7 +546,9 @@ def Reajuste():
     fila += "\n"
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t").values[-1, 2]
+    dinero_final = pd.read_csv(nombre,
+                               sep="\t",
+                               encoding="latin1").values[-1, 2]
     total, total_pesos, total_dolares = Total()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
@@ -582,7 +608,7 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     plt.plot(Tiempo, Data[:, 2],
              'o-',
              fillstyle="full",
-             markersize=7,
+             markersize=5,
              label="Total")
     plt.plot(Tiempo, Data[:, 3],
              'o-',
@@ -607,13 +633,13 @@ def Filtro():  # 10/01/2020
     """
     nombre = Asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    datos = pd.read_csv(nombre, sep="\t")
-    Categoria = input("\nIngrese la categoria\n")
+    datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
+    Categoria = input("\nIngrese la categoría\n")
     datos = datos[datos["Categoria"] == Categoria]
     print(datos)
     respuesta = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
     if respuesta == "si":
-        Subcategoria = input("\nIngrese la subcategoria\n")
+        Subcategoria = input("\nIngrese la subcategoría\n")
         datos = datos[datos["Subcategoria"] == Subcategoria]
         return datos
     else:
