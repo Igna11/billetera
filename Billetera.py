@@ -326,7 +326,7 @@ def Ingreso():
     if len(datos) == 0:
         total = ingreso
     else:
-        total = str(float(ingreso) + datos[-1, 2])
+        total = str(round(float(ingreso) + datos[-1, 2],2))
     balance = "0"  # TODO: ver si balance es necesario
     Campos = [fecha, hora, total, ingreso, extraccion,
               gasto, categoria, subcategoria, descripcion,
@@ -374,7 +374,7 @@ def Extraccion():
             categoria = input("\nCategoría: \n")
             subcategoria = input("\nSubcategoría: \n")
             descripcion = input("\nDescripción: \n")
-            total = str(datos[-1, 2] - float(extraccion))
+            total = str(round(datos[-1, 2] - float(extraccion),2))
             balance = "0"  # TODO: ver si balance es necesario
             Campos = [fecha, hora, total, ingreso, extraccion,
                       gasto, categoria, subcategoria, descripcion,
@@ -417,7 +417,7 @@ def Gasto():
             categoria = input("\nCategoría: \n")
             subcategoria = input("\nSubcategoría: \n")
             descripcion = input("\nDescripción: \n")
-            total = str(datos[-1, 2] - float(valor))
+            total = str(round(datos[-1, 2] - float(valor),2))
             balance = "0"  # TODO: ver si balance es necesario
             Campos = [fecha, hora, total, ingreso, extraccion,
                       valor, categoria, subcategoria, descripcion,
@@ -472,8 +472,8 @@ def Transferencia():
         descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
         subcategoria_entrada = "Transferencia de entrada"
         descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
-        total_salida = str(datos_salida[-1, 2] - float(valor))
-        total_entrada = str(datos_entrada[-1, 2] + float(valor))
+        total_salida = str(round(datos_salida[-1, 2] - float(valor),2))
+        total_entrada = str(round(datos_entrada[-1, 2] + float(valor),2))
         balance = gasto = extraccion = ingreso = "0"
         # TODO: ver si balance es necesario
         Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
@@ -525,7 +525,7 @@ def Reajuste():
         extraccion = "0"
         gasto = "0"
         balance = "0"
-        ingreso = str(float(total) - datos[-1, 2])
+        ingreso = str(round(float(total) - datos[-1, 2],2))
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
                   balance]
@@ -535,7 +535,7 @@ def Reajuste():
         ingreso = "0"
         gasto = "0"
         balance = "0"
-        extraccion = str(datos[-1, 2] - float(total))
+        extraccion = str(round(datos[-1, 2] - float(total),2))
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
                   balance]
