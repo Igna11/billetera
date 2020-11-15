@@ -4,6 +4,13 @@ Created on Thu Jun 13 01:20:15 2019
 
 @author: igna
 Intento de billetera para control de gastos
+
+Historial de modificaciones:
+14/11/2020: Se agrega la excepción a la función Precio_dolar(), si no hay inet
+            y se intenta scrapear, captura la excepción y usa el último precio
+            de dolar registrado usando los datos del archivo Balance.txt.
+            Si no hay dolares en la cuenta, te dice que no hay y te pone el 
+            dolar a 0.0, ya que no hace falta usarlo.
 """
 import pandas as pd
 from datetime import datetime
@@ -43,6 +50,10 @@ TODO    Separar todo este script en módulos específicos para que no sea
 
 TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
         (de pesos a dolares o dolares a pesos)
+        
+TODO    Ver qué son las excepciones que no están comentadas ni explicadas
+        porque ya no me acuerdo si están al pedo, si están bien puestas,
+        si están haciendo cagada, etc.
 """
 
 
@@ -63,7 +74,7 @@ def Precio_dolar():
     Scrapea el precio del dolar del banco nacion
     TODO: meter exceptions que manejen las excepciones
     ver la forma que si no anda la pagina del banco central, use otra.
-    Si no anda ninguna página, use el último precio conocido
+    Modificada 14/11/2020 para manejar algunas excepciones
     """
     urlDOLAR1 = "http://www.bna.com.ar/Personas"
     # urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
@@ -72,13 +83,38 @@ def Precio_dolar():
     # dolares_bip/dolares_bip_info_gral"
     # urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/
     # ProductosyServicios/Cotizador"
-    url = urlopen(urlDOLAR1)
-    soup = BeautifulSoup(url.read(), "html.parser")
-    target = soup.find("table")
-    text = target.text
-    # indice_i = text.find("Dolar")  # Donde arranca el dolar
-    # indice_f = text.find("Euro")  # Donde termina el dolar
-    PrecioDolar = text[42:47]
+    # Try: intenta scrappear, si no puede captura la excepción
+    try:
+        url = urlopen(urlDOLAR1)
+        soup = BeautifulSoup(url.read(), "html.parser")
+        target = soup.find("table")
+        text = target.text
+        PrecioDolar = text[42:47]
+    except:
+        # Si no pude escrapear viene acá y te avisa que no pudo.
+        # Lo proximo que intenta es calcular el último valor del dolar usando
+        # los datos el archivo Balance.txt. Si el ultimo dato de Balance es 0
+        # dolares, captura la excepción
+        print("no se pudo scrappear el dolar, se usó la ultima cotización")
+    
+        # acá voy a calcular cuánto estuvo el dolar la última vez
+        bal_datos = pd.read_csv("Balance.txt",
+                                skiprows = 1,
+                                sep="\t",
+                                encoding="latin1").values
+        tot_dinero = bal_datos[-1,2]
+        tot_pesos = bal_datos[-1,3]
+        tot_dolares = bal_datos[-1,4]
+        # si el ultima dato de balance es 0 dolares, necesito capturar la 
+        # division por 0 de la siguiente cuenta. En ese caso, asumo que no hay
+        # dolares en la cuenta (si en balance la columna de dolar es 0,
+        # entonces no hay dolares)
+        try:
+            PrecioDolar = str(round((tot_dinero - tot_pesos)/tot_dolares, 2))
+        except ZeroDivisionError:
+            print("No hay dolares, asi que no importa cuanto vale")
+            PrecioDolar = "0.0"
+        
     return float(PrecioDolar.replace(",", "."))
 
 
