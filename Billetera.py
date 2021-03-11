@@ -53,7 +53,7 @@ TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
         
 TODO    Ver qué son las excepciones que no están comentadas ni explicadas
         porque ya no me acuerdo si están al pedo, si están bien puestas,
-        si están haciendo cagada, etc.
+             si están haciendo cagada, etc.
 """
 
 
@@ -89,7 +89,7 @@ def Precio_dolar():
         soup = BeautifulSoup(url.read(), "html.parser")
         target = soup.find("table")
         text = target.text
-        PrecioDolar = text[42:47]
+        PrecioDolar = text[41:46]
     except:
         # Si no pude escrapear viene acá y te avisa que no pudo.
         # Lo proximo que intenta es calcular el último valor del dolar usando
@@ -304,7 +304,7 @@ def Asignador_cuentas():
     try:
         NombreCuenta = Dic[numero]
         return NombreCuenta
-    except KeyError:
+    except:
         print("\nEl numero pifiaste ameo\n")
 
 
