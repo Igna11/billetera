@@ -11,6 +11,14 @@ Historial de modificaciones:
             de dolar registrado usando los datos del archivo Balance.txt.
             Si no hay dolares en la cuenta, te dice que no hay y te pone el 
             dolar a 0.0, ya que no hace falta usarlo.
+12/03/2021: Se modifica sutilmente la función BalanceGraf(). Antes usaba el 
+            DataFrame de pandas con los datos del archivo balance, para pasar-
+            los a un array de numpy, es decir: 
+                data = pd.read_csv(etc...)
+                Data = data.values
+                ...
+            como eso es un paso innecesario, se cambio. Además el código queda
+            más descriptivo
 """
 import pandas as pd
 from datetime import datetime
@@ -632,26 +640,23 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     Lo que quiero lograr:
         Lograr poner tics solo en los meses.
             Lograr que los puntos se separen
-            segun su valor horario. ->10-09-201 solucionado
+            segun su valor horario. ->10-09-2020 solucionado
     """
-    data = pd.read_csv("Balance.txt", sep="\t", skiprows=1)
-    Data = data.values
-    horas = Data[:, 0]
-    dias = Data[:, 1]
-    T = dias + "-" + horas
+    data = pd.read_csv("Balance.txt", sep="\t")
+    T = data["Fecha"] + "-" +data["Hora"]
     formato = "%d-%m-%Y-%H:%M:%S"
     Tiempo = [datetime.strptime(i, formato) for i in T]
-    plt.plot(Tiempo, Data[:, 2],
+    plt.plot(Tiempo, data["Total"],
              'o-',
              fillstyle="full",
              markersize=5,
              label="Total")
-    plt.plot(Tiempo, Data[:, 3],
+    plt.plot(Tiempo, data["Total_pesos"],
              'o-',
              fillstyle="none",
              markersize=3,
              label="Total de pesos $")
-    plt.plot(Tiempo, Data[:, 4],
+    plt.plot(Tiempo, data["Total_dolares"],
              '-',
              fillstyle="none",
              label="Total de dolares u$s")
@@ -680,7 +685,7 @@ def Filtro():  # 10/01/2020
         return datos
     else:
         return datos
-
+    
 
 # %%
 
