@@ -186,7 +186,7 @@ def CrearUsuario():  # creada 10-02-2019
 def IniciarSesion():  # creada 10-02-2019
     nombre = input("\nNombre de usuario\n") + "USR"
     if os.path.isdir(nombre):
-        Dir = directorio + "\\" + "%s" % nombre
+        Dir = directorio + "/" + "%s" % nombre
         os.chdir(Dir)
         print("\nInicio de sesion de %s\n" % nombre[:-3])
         Info()
