@@ -180,15 +180,15 @@ def CrearUsuario():  # creada 10-02-2019
         print("\nYa existe el usuario\n")
     else:
         os.makedirs(nombre)
-        print("\nSe creo el usuario %s\n" % nombre[:-3])
+        print("\nSe creo el usuario %s\n" % nombre.strip("USR"))
 
 
 def IniciarSesion():  # creada 10-02-2019
     nombre = input("\nNombre de usuario\n") + "USR"
     if os.path.isdir(nombre):
-        Dir = directorio + "/" + "%s" % nombre
+        Dir = directorio + "/" + nombre
         os.chdir(Dir)
-        print("\nInicio de sesion de %s\n" % nombre[:-3])
+        print("\nInicio de sesion de %s\n" % nombre.strip("USR"))
         Info()
     else:
         print("\nNo existe el usuario\n")
@@ -199,7 +199,7 @@ def CerrarSesion():  # creada 10-02-2019
     print("\nSe ha cerrado sesión\n")
 
 
-"""
+
 def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
     nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
     if os.path.isdir(nombre):
@@ -210,13 +210,13 @@ def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
         respuesta = input(advertencia)
         posibles_respuestas = ["1", "si", "y"]
         if respuesta in posibles_respuestas:
-            os.remove(nombre)
-            print("\nSe eliminó el usuario %s\n" % nombre[:-10])
+            os.rmdir(nombre)
+            print("\nSe eliminó el usuario %s\n" % nombre.strip("USR"))
         else:
-            print("\nNo se eliminó el usuario %s\n" % nombre[:-10])
+            print("\nNo se eliminó el usuario %s\n" % nombre.strip("USR"))
     else:
         print("\nNo existe el usuario\n")
-"""
+
 
 # %%
 
