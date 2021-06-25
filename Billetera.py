@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Created on Thu Jun 13 01:20:15 2019
 
@@ -9,23 +9,25 @@ Historial de modificaciones:
 14/11/2020: Se agrega la excepción a la función Precio_dolar(), si no hay inet
             y se intenta scrapear, captura la excepción y usa el último precio
             de dolar registrado usando los datos del archivo Balance.txt.
-            Si no hay dolares en la cuenta, te dice que no hay y te pone el 
+            Si no hay dolares en la cuenta, te dice que no hay y te pone el
             dolar a 0.0, ya que no hace falta usarlo.
-12/03/2021: Se modifica sutilmente la función BalanceGraf(). Antes usaba el 
+12/03/2021: Se modifica sutilmente la función BalanceGraf(). Antes usaba el
             DataFrame de pandas con los datos del archivo balance, para pasar-
-            los a un array de numpy, es decir: 
+            los a un array de numpy, es decir:
                 data = pd.read_csv(etc...)
                 Data = data.values
                 ...
             como eso es un paso innecesario, se cambio. Además el código queda
             más descriptivo
 """
-import pandas as pd
-from datetime import datetime
 import os
+from datetime import datetime
+from urllib.request import urlopen  # agregado 11-03-2020
+
+import pandas as pd
 import matplotlib.pyplot as plt  # agregado 30-08-2019
 from bs4 import BeautifulSoup  # agregado 11-03-2020
-from urllib.request import urlopen  # agregado 11-03-2020
+
 directorio = os.path.dirname(os.path.abspath(__file__))  # agregado 22-10-2020
 #  directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
@@ -58,7 +60,7 @@ TODO    Separar todo este script en módulos específicos para que no sea
 
 TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
         (de pesos a dolares o dolares a pesos)
-        
+
 TODO    Ver qué son las excepciones que no están comentadas ni explicadas
         porque ya no me acuerdo si están al pedo, si están bien puestas,
              si están haciendo cagada, etc.
@@ -89,8 +91,6 @@ def Precio_dolar():
     # urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
     # urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/
     # dolares_bip/dolares_bip_info_gral"
-    # urlDOLAR5 = "https://www.bancogalicia.com/banca/online/web/Personas/
-    # ProductosyServicios/Cotizador"
     # Try: intenta scrappear, si no puede captura la excepción
     try:
         url = urlopen(urlDOLAR1)
@@ -104,25 +104,24 @@ def Precio_dolar():
         # los datos el archivo Balance.txt. Si el ultimo dato de Balance es 0
         # dolares, captura la excepción
         print("no se pudo scrappear el dolar, se usó la ultima cotización")
-    
+
         # acá voy a calcular cuánto estuvo el dolar la última vez
         bal_datos = pd.read_csv("Balance.txt",
-                                skiprows = 1,
+                                skiprows=1,
                                 sep="\t",
                                 encoding="latin1").values
-        tot_dinero = bal_datos[-1,2]
-        tot_pesos = bal_datos[-1,3]
-        tot_dolares = bal_datos[-1,4]
-        # si el ultima dato de balance es 0 dolares, necesito capturar la 
+        tot_dinero = bal_datos[-1, 2]
+        tot_pesos = bal_datos[-1, 3]
+        tot_dolares = bal_datos[-1, 4]
+        # si el ultima dato de balance es 0 dolares, necesito capturar la
         # division por 0 de la siguiente cuenta. En ese caso, asumo que no hay
         # dolares en la cuenta (si en balance la columna de dolar es 0,
-        # entonces no hay dolares)
         try:
             PrecioDolar = str(round((tot_dinero - tot_pesos)/tot_dolares, 2))
         except ZeroDivisionError:
             print("No hay dolares, asi que no importa cuanto vale")
             PrecioDolar = "0.0"
-        
+
     return float(PrecioDolar.replace(",", "."))
 
 
@@ -164,10 +163,15 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
         + "\nBalance()<---NO USAR-Ver help(Balance)"\
         + "\nBalanceGraf()\nFiltro()\n"
     print("Funciones:\n", str_funciones)
+    print("="*50)
     print("Cuentas existentes:\n", informacion)
+    print("="*50)
     print("Dolares totales: $%.2f" % total_dolares)
+    print("="*50)
     print("Pesos totales: $%.2f" % total_pesos)
+    print("="*50)
     print("Dinero total en cuentas: $%.2f" % total)
+    print("="*50)
     # return informacion
 
 
@@ -199,7 +203,6 @@ def CerrarSesion():  # creada 10-02-2019
     print("\nSe ha cerrado sesión\n")
 
 
-
 def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
     nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
     if os.path.isdir(nombre):
@@ -228,11 +231,10 @@ def Crear_cuenta():
     nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
     tipo_cuenta = input("\nIngresar 0 para cuenta en pesos\n"
                         "Ingresar 1 para cuenta en dolares\n")
-    archivo = nombre
     if tipo_cuenta == "0":
-        archivo += "CUENTA.txt"
+        nombre += "CUENTA.txt"
     elif tipo_cuenta == "1":
-        archivo += "CUENTA_DOL.txt"
+        nombre += "CUENTA_DOL.txt"
     else:
         print("\n %s inválido\n" % tipo_cuenta)
     Encabezados = ["Fecha", "hora", "Total", "Ingresos", "Extracciones",
@@ -244,9 +246,10 @@ def Crear_cuenta():
     fila = fila[:-1]  # Borra el "\t" del final
     fila += "\n"
     fila += "0\t0\t0\t0\t0\t0\t0\t0\t0\t0\n"
-    with open(archivo, "x") as micuenta:
+    with open(nombre, "x") as micuenta:
         micuenta.write(fila)
-    print("\nSe ha creado la cuenta %s\n" % nombre)
+    print("\nSe ha creado la cuenta %s\n"
+          % nombre.strip("_DOL.txt").strip("CUENTA"))
 
 
 def Eliminar_cuenta():
@@ -259,9 +262,11 @@ def Eliminar_cuenta():
     posibles_respuestas = ["1", "si", "y"]
     if respuesta in posibles_respuestas:
         os.remove(nombre)
-        print("\nSe eliminó la cuenta %s\n" % nombre[:-10])
+        print("\nSe eliminó la cuenta %s\n"
+              % nombre.strip("_DOL.txt").strip("CUENTA"))
     else:
-        print("\nNo se eliminó la cuenta %s\n" % nombre[:-10])
+        print("\nNo se eliminó la cuenta %s\n"
+              % nombre.strip("_DOL.txt").strip("CUENTA"))
 
 
 def Lista_cuentas():
@@ -303,17 +308,26 @@ def Asignador_cuentas():
     alfabeto = Lista_cuentas()
     Dic = {}
     Cuentas = ""
-    for i in range(len(alfabeto)):
-        Dic.update({str(i+1): alfabeto[i]})
-        cuenta = alfabeto[i].replace("CUENTA", "").replace("_DOL", "")\
-            .replace(".txt", "")
-        Cuentas += "\n" + str(i+1) + ": " + cuenta + "\n"
-    numero = input("\nElija la cuenta\n" + Cuentas + "\n")
-    try:
-        NombreCuenta = Dic[numero]
-        return NombreCuenta
-    except:
-        print("\nEl numero pifiaste ameo\n")
+    for i, elem in enumerate(alfabeto):
+        # voy armando un diccionario que asigna un numero a cada cuenta
+        Dic.update({str(i+1): elem})
+        # defino una variable sin sufijos para printear
+        cuenta_str = (elem.replace("CUENTA", "")
+                      .replace("_DOL", "")
+                      .replace(".txt", ""))
+        # actualizo el string final que se imprime en consola
+        Cuentas += "\n" + str(i+1) + ": " + cuenta_str + "\n"
+    # Meto un input de teclado
+    while True:
+        numero_cta = input("\nElija la cuenta\n" + Cuentas + "\n")
+        try:
+            nombre_cuenta = Dic[numero_cta]
+            return nombre_cuenta
+        except KeyError:
+            print("="*50)
+            print("\nValor elegido erroneo, intente de nuevo.")
+            print("Presione Ctrol+C para salir\n")
+            print("="*50)
 
 
 def Total():
@@ -370,7 +384,7 @@ def Ingreso():
     if len(datos) == 0:
         total = ingreso
     else:
-        total = str(round(float(ingreso) + datos[-1, 2],2))
+        total = str(round(float(ingreso) + datos[-1, 2], 2))
     balance = "0"  # TODO: ver si balance es necesario
     Campos = [fecha, hora, total, ingreso, extraccion,
               gasto, categoria, subcategoria, descripcion,
@@ -418,7 +432,7 @@ def Extraccion():
             categoria = input("\nCategoría: \n")
             subcategoria = input("\nSubcategoría: \n")
             descripcion = input("\nDescripción: \n")
-            total = str(round(datos[-1, 2] - float(extraccion),2))
+            total = str(round(datos[-1, 2] - float(extraccion), 2))
             balance = "0"  # TODO: ver si balance es necesario
             Campos = [fecha, hora, total, ingreso, extraccion,
                       gasto, categoria, subcategoria, descripcion,
@@ -461,7 +475,7 @@ def Gasto():
             categoria = input("\nCategoría: \n")
             subcategoria = input("\nSubcategoría: \n")
             descripcion = input("\nDescripción: \n")
-            total = str(round(datos[-1, 2] - float(valor),2))
+            total = str(round(datos[-1, 2] - float(valor), 2))
             balance = "0"  # TODO: ver si balance es necesario
             Campos = [fecha, hora, total, ingreso, extraccion,
                       valor, categoria, subcategoria, descripcion,
@@ -511,35 +525,36 @@ def Transferencia():
         if datos_salida[-1, 2] < float(valor):
             print("\nNo hay dinero suficiente en la cuenta %s"
                   % nombre_salida[:-10])
-        categoria = "Transferencia"
-        subcategoria_salida = "Transferencia de salida"
-        descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
-        subcategoria_entrada = "Transferencia de entrada"
-        descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
-        total_salida = str(round(datos_salida[-1, 2] - float(valor),2))
-        total_entrada = str(round(datos_entrada[-1, 2] + float(valor),2))
-        balance = gasto = extraccion = ingreso = "0"
-        # TODO: ver si balance es necesario
-        Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
-                          gasto, categoria, subcategoria_entrada,
-                          descripcion_entrada, balance]
-        Campos_salida = [fecha, hora, total_salida, ingreso, valor,
-                         gasto, categoria, subcategoria_salida,
-                         descripcion_salida, balance]
-        fila_entrada = ""
-        fila_salida = ""
-        for elementos in Campos_entrada:
-            fila_entrada += elementos + "\t"
-        fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
-        fila_entrada += "\n"
-        for elementos in Campos_salida:
-            fila_salida += elementos + "\t"
-        fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
-        fila_salida += "\n"
-        with open(nombre_entrada, "a") as micuenta:
-            micuenta.write(fila_entrada)
-        with open(nombre_salida, "a") as micuenta:
-            micuenta.write(fila_salida)
+        else:
+            categoria = "Transferencia"
+            subcategoria_salida = "Transferencia de salida"
+            descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
+            subcategoria_entrada = "Transferencia de entrada"
+            descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
+            total_salida = str(round(datos_salida[-1, 2] - float(valor), 2))
+            total_entrada = str(round(datos_entrada[-1, 2] + float(valor), 2))
+            balance = gasto = extraccion = ingreso = "0"
+            # TODO: ver si balance es necesario
+            Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
+                              gasto, categoria, subcategoria_entrada,
+                              descripcion_entrada, balance]
+            Campos_salida = [fecha, hora, total_salida, ingreso, valor,
+                             gasto, categoria, subcategoria_salida,
+                             descripcion_salida, balance]
+            fila_entrada = ""
+            fila_salida = ""
+            for elementos in Campos_entrada:
+                fila_entrada += elementos + "\t"
+            fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
+            fila_entrada += "\n"
+            for elementos in Campos_salida:
+                fila_salida += elementos + "\t"
+            fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
+            fila_salida += "\n"
+            with open(nombre_entrada, "a") as micuenta:
+                micuenta.write(fila_entrada)
+            with open(nombre_salida, "a") as micuenta:
+                micuenta.write(fila_salida)
 
 
 def Reajuste():
@@ -569,7 +584,7 @@ def Reajuste():
         extraccion = "0"
         gasto = "0"
         balance = "0"
-        ingreso = str(round(float(total) - datos[-1, 2],2))
+        ingreso = str(round(float(total) - datos[-1, 2], 2))
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
                   balance]
@@ -579,7 +594,7 @@ def Reajuste():
         ingreso = "0"
         gasto = "0"
         balance = "0"
-        extraccion = str(round(datos[-1, 2] - float(total),2))
+        extraccion = str(round(datos[-1, 2] - float(total), 2))
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
                   balance]
@@ -643,23 +658,32 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
             segun su valor horario. ->10-09-2020 solucionado
     """
     data = pd.read_csv("Balance.txt", sep="\t")
-    T = data["Fecha"] + "-" +data["Hora"]
+    # Armo un string con la fecha y la hora en el formato del .txt
+    T = data["Fecha"] + "-" + data["Hora"]
+    # Especifico ese formato acá, para usarlo en la funcion strptime
     formato = "%d-%m-%Y-%H:%M:%S"
+    # transformo el string a un objeto datetime usando el formato dado
     Tiempo = [datetime.strptime(i, formato) for i in T]
     plt.plot(Tiempo, data["Total"],
              'o-',
+             alpha=.5,
              fillstyle="full",
              markersize=5,
-             label="Total")
+             label="Total: $%.2f"
+             % data["Total"].values[-1])
     plt.plot(Tiempo, data["Total_pesos"],
              'o-',
+             alpha=.5,
              fillstyle="none",
              markersize=3,
-             label="Total de pesos $")
+             label="Total de pesos: $%.2f"
+             % data["Total_pesos"].values[-1])
     plt.plot(Tiempo, data["Total_dolares"],
              '-',
+             alpha=.5,
              fillstyle="none",
-             label="Total de dolares u$s")
+             label="Total de dolares: u$s%.2f"
+             % data["Total_dolares"].values[-1])
     plt.grid()
     plt.legend()
     plt.xticks(rotation=25)
@@ -685,9 +709,52 @@ def Filtro():  # 10/01/2020
         return datos
     else:
         return datos
-    
+
 
 # %%
 
 
 IniciarSesion()
+
+
+# =============================================================================
+# 
+# import matplotlib.dates as mdates
+# def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
+#     """
+#     30-08-2019
+#     Primera aproximación a grafico de balance con fechas y horas.
+#     Lo que quiero lograr:
+#         Lograr poner tics solo en los meses.
+#             Lograr que los puntos se separen
+#             segun su valor horario. ->10-09-2020 solucionado
+#     """
+#     data = pd.read_csv("Balance.txt", sep="\t")
+#     T = data["Fecha"] + "-" + data["Hora"]
+#     formato = "%d-%m-%Y-%H:%M:%S"
+#     Tiempo = [datetime.strptime(i, formato) for i in T]
+#     fig, ax = plt.subplots(figsize = (10,7))
+#     ax.plot(Tiempo, data["Total"],
+#              'o-',
+#              fillstyle="full",
+#              markersize=5,
+#              label="Total: $%.2f" % data["Total"].values[-1])
+#     ax.plot(Tiempo, data["Total_pesos"],
+#              'o-',
+#              fillstyle="none",
+#              markersize=3,
+#              label="Total de pesos: $%.2f" % data["Total_pesos"].values[-1])
+#     ax.plot(Tiempo, data["Total_dolares"],
+#              '-',
+#              fillstyle="none",
+#              label="Total de dolares: u$s%.2f" % data["Total_dolares"].values[-1])
+#     ax.grid()
+#     ax.legend()
+#     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y'))
+#     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%d-%m-%Y - %H:%M:%S'))
+# 
+#     ax.tick_params(axis = "x", rotation = 40)
+# 
+# BalanceGraf()
+# 
+# =============================================================================
