@@ -325,7 +325,8 @@ def Asignador_cuentas():
             return nombre_cuenta
         except KeyError:
             print("="*50)
-            print("\nValor elegido erroneo, intente de nuevo.")
+            print("\nValor elegido: '%s' erroneo, intente de nuevo." 
+                  % numero_cta)
             print("Presione Ctrol+C para salir\n")
             print("="*50)
 
@@ -379,8 +380,8 @@ def Ingreso():
     categoria = input("\nCategoría: \n")
     subcategoria = input("\nSubcategoría: \n")
     descripcion = input("\nDescripción: \n")
-    extraccion = "0"  # esto siempre debería ser 0 al ingresar dinero
-    gasto = "0"  # esto siempre debería ser 0 al ingresar dinero
+    extraccion = "0,00"  # esto siempre debería ser 0 al ingresar dinero
+    gasto = "0.00"  # esto siempre debería ser 0 al ingresar dinero
     if len(datos) == 0:
         total = ingreso
     else:
@@ -420,8 +421,8 @@ def Extraccion():
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
-    ingreso = "0"  # esto siempre debería ser 0 al extraer dinero
-    gasto = "0"  # esto es 0 por definicion de extraccion =/= gasto
+    ingreso = "0.00"  # esto siempre debería ser 0 al extraer dinero
+    gasto = "0.00"  # esto es 0 por definicion de extraccion =/= gasto
     if len(datos) == 0:
         print("\nAún no se ha ingresado dinero en la cuenta\n")
     else:
@@ -463,8 +464,8 @@ def Gasto():
     datos = contenido_cuenta.values
     fecha = Fecha()[0]
     hora = Fecha()[1]
-    ingreso = "0"  # esto siempre debería ser 0 al hacer un gasto
-    extraccion = "0"  # esto siempre debería ser 0 al hacer un gasto
+    ingreso = "0.00"  # esto siempre debería ser 0 al hacer un gasto
+    extraccion = "0.00"  # esto siempre debería ser 0 al hacer un gasto
     if len(datos) == 0:
         print("\nNo hay dinero en la cuenta\n")
     else:
@@ -581,9 +582,9 @@ def Reajuste():
     if datos[-1, 2] < float(total):
         subcategoria = "Positivo"
         descripcion = "Reajuste positivo de saldo"
-        extraccion = "0"
-        gasto = "0"
-        balance = "0"
+        extraccion = "0.00"
+        gasto = "0.00"
+        balance = "0.00"
         ingreso = str(round(float(total) - datos[-1, 2], 2))
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
@@ -591,9 +592,9 @@ def Reajuste():
     else:
         subcategoria = "Negativo"
         descripcion = "Reajuste negativo de saldo"
-        ingreso = "0"
-        gasto = "0"
-        balance = "0"
+        ingreso = "0.00"
+        gasto = "0.00"
+        balance = "0.00"
         extraccion = str(round(datos[-1, 2] - float(total), 2))
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
@@ -713,7 +714,62 @@ def Filtro():  # 10/01/2020
 
 # %%
 
+def balances(cuenta: str, month: int, year: int):
+    """
+    Permite ver de forma fácil el balance mensual de la cuenta: Ingresos,
+    Gastos y Balance = Ingresos - Gastos.
+    Inputs:
+        cuenta: str
+        Nombre de la cuenta como archivo o path del archivo cuenta. Solo hace
+        falta el nombre, ej: MercadoPagoCUENTA.txt
+        month: int
+        Numero del mes deseado para ver el balance: Válidos del 1 al 12
+        year: int
+        Número del año deseado para ver el balance: Válidos 2019, 2020, 2021
+    """
+    df = pd.read_csv(cuenta, sep="\t", index_col=("Fecha"), parse_dates=True,
+                     dayfirst=True, encoding="latin1")
+    montly_src = df[(df.index.month == month) & (df.index.year == year)
+                    & (df["Categoria"] != "Transferencia")]
+    montly_spend = montly_src["Gasto"].sum()
+    montly_spend += montly_src["Extracciones"].sum()
+    montly_earn = montly_src["Ingresos"].sum()
+    balance = montly_earn - montly_spend
 
+    return {"Ingresos_m": round(montly_earn, 2),
+            "Gasto_m": round(montly_spend, 2),
+            "Balance_m": round(balance, 2)}
+
+
+def balances_totales(month: int, year: int, verbose=False):
+    """
+    Permite ver el balance total entre todas las cuentas para un dado mes y año
+    del usuario: Ingresos totales, Gastos totales y Balance total. Usa la
+    función balances().
+    Inputs:
+        month: int
+        Numero del mes deseado para ver el balance: Válidos del 1 al 12
+        year: int
+        Número del año deseado para ver el balance: Válidos 2019, 2020, 2021
+    """
+    ingresos_tot = gastos_tot = balances_tot = 0
+    for cuenta in os.listdir():
+        if "CUENTA" in cuenta and "DOL" not in cuenta:
+            try:
+                dic_c = balances(cuenta, month, year)
+            except AttributeError as e:
+                if verbose is True:
+                    print("Error en la cuenta: ", cuenta)
+                    print(e)
+            ingresos_tot += dic_c["Ingresos_m"]
+            gastos_tot += dic_c["Gasto_m"]
+            balances_tot += dic_c["Balance_m"]
+
+    return {"Ingresos_tot": round(ingresos_tot, 2),
+            "Gasto_tot": round(gastos_tot, 2),
+            "Balance_tot": round(balances_tot, 2)}
+
+# %%
 IniciarSesion()
 
 
