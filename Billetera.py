@@ -28,6 +28,8 @@ import pandas as pd
 import matplotlib.pyplot as plt  # agregado 30-08-2019
 from bs4 import BeautifulSoup  # agregado 11-03-2020
 
+from ConversorClass import ConversorMoneda
+
 directorio = os.path.dirname(os.path.abspath(__file__))  # agregado 22-10-2020
 #  directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
 os.chdir(directorio)
@@ -78,49 +80,38 @@ def Fecha():
     return fecha, hora
 
 
-def Precio_dolar():
+def Precio_dolar(verbose=False):
     """
     Creada (aprox) 21-03-2020
     Scrapea el precio del dolar del banco nacion
-    TODO: meter exceptions que manejen las excepciones
-    ver la forma que si no anda la pagina del banco central, use otra.
+    Ver la forma que si no anda la pagina del banco central, use otra.
     Modificada 14/11/2020 para manejar algunas excepciones
+    Modificada 10/08/2021 Usa una función aparte bien armada para conseguir el
+    precio del dolar
     """
-    urlDOLAR1 = "http://www.bna.com.ar/Personas"
-    # urlDOLAR2 = "https://www.cotizacion-dolar.com.ar/cotizacion_hoy.php"
-    # urlDOLAR3 = "https://banco.santanderrio.com.ar/exec/cotizacion/index.jsp"
-    # urlDOLAR4 = "https://www.bancoprovincia.com.ar/Productos/inversiones/
-    # dolares_bip/dolares_bip_info_gral"
-    # Try: intenta scrappear, si no puede captura la excepción
+    # Creo el objeto que maneja la consulta y me devuelve el precio
+    dolar = ConversorMoneda(verbose=verbose)
     try:
-        url = urlopen(urlDOLAR1)
-        soup = BeautifulSoup(url.read(), "html.parser")
-        target = soup.find("table")
-        text = target.text
-        PrecioDolar = text[41:46]
-    except:
-        # Si no pude escrapear viene acá y te avisa que no pudo.
-        # Lo proximo que intenta es calcular el último valor del dolar usando
-        # los datos el archivo Balance.txt. Si el ultimo dato de Balance es 0
-        # dolares, captura la excepción
-        print("no se pudo scrappear el dolar, se usó la ultima cotización")
-
-        # acá voy a calcular cuánto estuvo el dolar la última vez
-        bal_datos = pd.read_csv("Balance.txt",
-                                skiprows=1,
-                                sep="\t",
-                                encoding="latin1").values
-        tot_dinero = bal_datos[-1, 2]
-        tot_pesos = bal_datos[-1, 3]
-        tot_dolares = bal_datos[-1, 4]
-        # si el ultima dato de balance es 0 dolares, necesito capturar la
-        # division por 0 de la siguiente cuenta. En ese caso, asumo que no hay
-        # dolares en la cuenta (si en balance la columna de dolar es 0,
+        # Trato de conseguir el precio de internet, si no, handleo el error
+        PrecioDolar = dolar.precio()["Dolar U.S.A"]["Compra"]
+    except AttributeError as e:
+        if verbose is True:
+            print("Ocurrio el siguiente error durante la consulta:")
+            print(e)
+            print("Seguramente se debe a un error urlopen y no de Attribute")
+        print("No se pudo obtener el precio del dolar de internet, se usó la",
+              " última cotización")
+        # Como no pude conseguir el precio de internet, lo infiero de el último
+        # balance en la cuenta Balance.txt
+        bal_datos = pd.read_csv("Balance.txt", sep="\t", encoding="latin1")
+        tot_dinero = bal_datos["Total"].values[-1]
+        tot_pesos = bal_datos["Total_pesos"].values[-1]
+        tot_dolares = bal_datos["Total_dolares"].values[-1]
         try:
             PrecioDolar = str(round((tot_dinero - tot_pesos)/tot_dolares, 2))
         except ZeroDivisionError:
             print("No hay dolares, asi que no importa cuanto vale")
-            PrecioDolar = "0.0"
+            PrecioDolar = "0.00"
 
     return float(PrecioDolar.replace(",", "."))
 
