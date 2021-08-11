@@ -602,12 +602,12 @@ def Balance():  # creada 12-08-2019
     if not os.path.isfile("Balance.txt"):
         with open("Balance.txt", "x") as balance:
             balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
-            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha, hora, total,
+            balance.write("%s\t%s\t%s\t%s\t%s\n" % (hora, fecha, total,
                                                     total_pesos,
                                                     total_dolares))
     elif os.path.isfile("Balance.txt"):
         with open("Balance.txt", "a") as balance:
-            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha, hora, total,
+            balance.write("%s\t%s\t%s\t%s\t%s\n" % (hora, fecha, total,
                                                     total_pesos,
                                                     total_dolares))
     else:
