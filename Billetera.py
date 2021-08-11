@@ -22,11 +22,9 @@ Historial de modificaciones:
 """
 import os
 from datetime import datetime
-from urllib.request import urlopen  # agregado 11-03-2020
 
 import pandas as pd
 import matplotlib.pyplot as plt  # agregado 30-08-2019
-from bs4 import BeautifulSoup  # agregado 11-03-2020
 
 from ConversorClass import ConversorMoneda
 
@@ -51,10 +49,6 @@ TODO    Graficos:
 TODO    Interfaz Gráfica y ejectuable:
         nada, eso, a futuro (lejano)
 
-TODO    Solucionar error
-        PermissionError: [WinError 5] Acceso denegado: "nombreusuarUSR"
-        al intentar borrar un usuario
-
 TODO    Que no se pueda crear usuario estando logueado en algún usuario
 
 TODO    Separar todo este script en módulos específicos para que no sea
@@ -65,7 +59,7 @@ TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
 
 TODO    Ver qué son las excepciones que no están comentadas ni explicadas
         porque ya no me acuerdo si están al pedo, si están bien puestas,
-             si están haciendo cagada, etc.
+        si están haciendo cagada, etc.
 """
 
 
@@ -77,7 +71,7 @@ def Fecha():
     fecha = str(fecha_hora)[:10]
     hora = str(fecha_hora)[11:19]
     fecha = datetime.strptime(fecha, "%Y-%m-%d").strftime("%d-%m-%Y")
-    return fecha, hora
+    return {"Fecha": fecha, "hora": hora}
 
 
 def Precio_dolar(verbose=False):
@@ -231,12 +225,7 @@ def Crear_cuenta():
     Encabezados = ["Fecha", "hora", "Total", "Ingresos", "Extracciones",
                    "Gasto", "Categoria", "Subcategoria", "Descripcion",
                    "Balance"]
-    fila = ""
-    for elementos in Encabezados:
-        fila += elementos + "\t"
-    fila = fila[:-1]  # Borra el "\t" del final
-    fila += "\n"
-    fila += "0\t0\t0\t0\t0\t0\t0\t0\t0\t0\n"
+    fila = "\t".join(Encabezados) + "\n"
     with open(nombre, "x") as micuenta:
         micuenta.write(fila)
     print("\nSe ha creado la cuenta %s\n"
@@ -316,7 +305,7 @@ def Asignador_cuentas():
             return nombre_cuenta
         except KeyError:
             print("="*50)
-            print("\nValor elegido: '%s' erroneo, intente de nuevo." 
+            print("\nValor elegido: '%s' erroneo, intente de nuevo."
                   % numero_cta)
             print("Presione Ctrol+C para salir\n")
             print("="*50)
@@ -331,10 +320,11 @@ def Total():
     total_pesos = []
     total_dolares = []
     for elem in Lista:
-        valor_elem = pd.read_csv(elem,
-                                 sep="\t",
-                                 encoding="latin1").values[-1, 2]
+        df = pd.read_csv(elem, sep="\t", encoding="latin1")
+        # Si la cuenta no es nueva, entonces busca el total, si no, al no tener
+        # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
         try:
+            valor_elem = df["Total"].values[-1]
             if "DOL" in elem:
                 total_dolares.append(valor_elem)
                 total.append(valor_elem*DolVal)
@@ -365,13 +355,13 @@ def Ingreso():
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
-    fecha = Fecha()[0]
-    hora = Fecha()[1]
+    fecha = Fecha()["Fecha"]
+    hora = Fecha()["hora"]
     ingreso = input("\nCantidad de dinero a ingresar\n")
     categoria = input("\nCategoría: \n")
     subcategoria = input("\nSubcategoría: \n")
     descripcion = input("\nDescripción: \n")
-    extraccion = "0,00"  # esto siempre debería ser 0 al ingresar dinero
+    extraccion = "0.00"  # esto siempre debería ser 0 al ingresar dinero
     gasto = "0.00"  # esto siempre debería ser 0 al ingresar dinero
     if len(datos) == 0:
         total = ingreso
@@ -381,18 +371,14 @@ def Ingreso():
     Campos = [fecha, hora, total, ingreso, extraccion,
               gasto, categoria, subcategoria, descripcion,
               balance]
-    fila = ""
-    for elementos in Campos:
-        fila += elementos + "\t"
-    fila = fila[:-1]  # Borra el "\t" del final
-    fila += "\n"
+    # Escribo la fila que se va a appendear al archivo
+    fila = "\t".join(Campos) + "\n"
+    # La appendeo al archivo
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre,
-                               sep="\t",
-                               encoding="latin1").values[-1, 2]
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
     total, total_pesos, total_dolares = Total()
-    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
 
@@ -410,8 +396,8 @@ def Extraccion():
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
-    fecha = Fecha()[0]
-    hora = Fecha()[1]
+    fecha = Fecha()["Fecha"]
+    hora = Fecha()["hora"]
     ingreso = "0.00"  # esto siempre debería ser 0 al extraer dinero
     gasto = "0.00"  # esto es 0 por definicion de extraccion =/= gasto
     if len(datos) == 0:
@@ -429,18 +415,14 @@ def Extraccion():
             Campos = [fecha, hora, total, ingreso, extraccion,
                       gasto, categoria, subcategoria, descripcion,
                       balance]
-            fila = ""
-            for elementos in Campos:
-                fila += elementos + "\t"
-            fila = fila[:-1]  # Borra el "\t" del final
-            fila += "\n"
+            # Escribo la fila que se va a appendear al archivo
+            fila = "\t".join(Campos) + "\n"
+            # La appendeo al archivo
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre,
-                               sep="\t",
-                               encoding="latin1").values[-1, 2]
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
     total, total_pesos, total_dolares = Total()
-    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
 
@@ -453,12 +435,12 @@ def Gasto():
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
-    fecha = Fecha()[0]
-    hora = Fecha()[1]
+    fecha = Fecha()["Fecha"]
+    hora = Fecha()["hora"]
     ingreso = "0.00"  # esto siempre debería ser 0 al hacer un gasto
     extraccion = "0.00"  # esto siempre debería ser 0 al hacer un gasto
     if len(datos) == 0:
-        print("\nNo hay dinero en la cuenta\n")
+        return print("\nNo hay dinero en la cuenta\n")
     else:
         valor = input("\nValor del gasto\n")
         if datos[-1, 2] < float(valor):
@@ -472,18 +454,14 @@ def Gasto():
             Campos = [fecha, hora, total, ingreso, extraccion,
                       valor, categoria, subcategoria, descripcion,
                       balance]
-            fila = ""
-            for elementos in Campos:
-                fila += elementos + "\t"
-            fila = fila[:-1]  # Borra el "\t" del final
-            fila += "\n"
+            # Escribo la fila que se va a appendear al archivo
+            fila = "\t".join(Campos) + "\n"
+            # La appendeo al archivo
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre,
-                               sep="\t",
-                               encoding="latin1").values[-1, 2]
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
     total, total_pesos, total_dolares = Total()
-    print("\nDinero en cuenta: $%.2f\n" % dinero_final,
+    print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
     Balance()  # agregado 12-08-2019
 
@@ -495,58 +473,60 @@ def Transferencia():
     Modificado: 21-03-2020  01:42
         Ahora se elijen las cuentas en vez de ingresarlas manualmente
     """
+    # Abro la cuenta de salida
     print("Cuenta salida:")
     nombre_salida = Asignador_cuentas()
+    info_salida = pd.read_csv(nombre_salida, sep="\t", encoding="latin1")
+    # Si la cuenta de saldia está vacía, o no tiene dinero, se cancela la
+    # transferencia
+    if len(info_salida) == 0 or info_salida["Total"].values[-1] == 0:
+        return print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
+    # Abro la cuenta de entrada
     print("cuenta entrada:")
     nombre_entrada = Asignador_cuentas()
-    # si las dos cuentas existen
-    contenido_salida = pd.read_csv(nombre_salida,
-                                   sep="\t",
-                                   encoding="latin1")
-    contenido_entrada = pd.read_csv(nombre_entrada,
-                                    sep="\t",
-                                    encoding="latin1")
-    datos_salida = contenido_salida.values
-    datos_entrada = contenido_entrada.values
-    fecha = Fecha()[0]
-    hora = Fecha()[1]
-    if len(datos_salida) == 0:
-        print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
+    info_entrada = pd.read_csv(nombre_entrada, sep="\t", encoding="latin1")
+    try:
+        tot_entrada_i = info_entrada["Total"].values[-1]
+    except IndexError:
+        tot_entrada_i = 0.0
+    # No permito transferencias a una misma cuenta.
+    if nombre_entrada == nombre_salida:
+        return print("\nNo tiene sentido transferir a una misma cuenta!!\n")
+    # Fecha y hora
+    fecha = Fecha()["Fecha"]
+    hora = Fecha()["hora"]
+    # Valor a transferir
+    valor = input("\nCantidad de dinero a transferir\n")
+    tot_salida_i = info_salida["Total"].values[-1]
+    if tot_salida_i < float(valor):
+        print("\nNo hay dinero suficiente en la cuenta %s"
+              % nombre_salida[:-10])
     else:
-        valor = input("\nCantidad de dinero a transferir\n")
-        if datos_salida[-1, 2] < float(valor):
-            print("\nNo hay dinero suficiente en la cuenta %s"
-                  % nombre_salida[:-10])
-        else:
-            categoria = "Transferencia"
-            subcategoria_salida = "Transferencia de salida"
-            descripcion_salida = "Transferencia a %s" % nombre_entrada[:-10]
-            subcategoria_entrada = "Transferencia de entrada"
-            descripcion_entrada = "Transferencia de %s" % nombre_salida[:-10]
-            total_salida = str(round(datos_salida[-1, 2] - float(valor), 2))
-            total_entrada = str(round(datos_entrada[-1, 2] + float(valor), 2))
-            balance = gasto = extraccion = ingreso = "0"
-            # TODO: ver si balance es necesario
-            Campos_entrada = [fecha, hora, total_entrada, valor, extraccion,
-                              gasto, categoria, subcategoria_entrada,
-                              descripcion_entrada, balance]
-            Campos_salida = [fecha, hora, total_salida, ingreso, valor,
-                             gasto, categoria, subcategoria_salida,
-                             descripcion_salida, balance]
-            fila_entrada = ""
-            fila_salida = ""
-            for elementos in Campos_entrada:
-                fila_entrada += elementos + "\t"
-            fila_entrada = fila_entrada[:-1]  # Borra el "\t" de mas
-            fila_entrada += "\n"
-            for elementos in Campos_salida:
-                fila_salida += elementos + "\t"
-            fila_salida = fila_salida[:-1]  # Borra el "\t" de mas
-            fila_salida += "\n"
-            with open(nombre_entrada, "a") as micuenta:
-                micuenta.write(fila_entrada)
-            with open(nombre_salida, "a") as micuenta:
-                micuenta.write(fila_salida)
+        categoria = "Transferencia"
+        subcategoria_salida = "Transferencia de salida"
+        descripcion_salida = ("Transferencia a %s" % nombre_entrada
+                              .strip("CUENTA.txt"))
+        subcategoria_entrada = "Transferencia de entrada"
+        descripcion_entrada = ("Transferencia de %s" % nombre_salida
+                               .strip("CUENTA.txt"))
+        tot_salida_f = str(round(tot_salida_i - float(valor), 2))
+        tot_entrada_f = str(round(tot_entrada_i + float(valor), 2))
+        balance = gasto = extraccion = ingreso = "0.00"
+        # TODO: ver si balance es necesario
+        Campos_entrada = [fecha, hora, tot_entrada_f, valor, extraccion,
+                          gasto, categoria, subcategoria_entrada,
+                          descripcion_entrada, balance]
+        Campos_salida = [fecha, hora, tot_salida_f, ingreso, valor,
+                         gasto, categoria, subcategoria_salida,
+                         descripcion_salida, balance]
+        # Escribo las filas que se van a appendear al archivo
+        fila_entrada = "\t".join(Campos_entrada) + "\n"
+        fila_salida = "\t".join(Campos_salida) + "\n"
+        # Las appendeo a los archivos
+        with open(nombre_entrada, "a") as micuenta:
+            micuenta.write(fila_entrada)
+        with open(nombre_salida, "a") as micuenta:
+            micuenta.write(fila_salida)
 
 
 def Reajuste():
@@ -566,8 +546,8 @@ def Reajuste():
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
-    fecha = Fecha()[0]
-    hora = Fecha()[1]
+    fecha = Fecha()["Fecha"]
+    hora = Fecha()["hora"]
     total = input("\nIngrese el saldo actual\n")
     categoria = "Reajuste"
     if datos[-1, 2] < float(total):
@@ -590,11 +570,9 @@ def Reajuste():
         Campos = [fecha, hora, total, ingreso, extraccion,
                   gasto, categoria, subcategoria, descripcion,
                   balance]
-    fila = ""
-    for elementos in Campos:
-        fila += elementos + "\t"
-    fila = fila[:-1]  # Borra el "\t" del final
-    fila += "\n"
+    # Escribo la fila que se va a appendear al archivo
+    fila = "\t".join(Campos) + "\n"
+    # La appendeo al archivo
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
     dinero_final = pd.read_csv(nombre,
@@ -619,21 +597,17 @@ def Balance():  # creada 12-08-2019
     usar por usar porque va a appendear datos al pedo.
     """
     total, total_pesos, total_dolares = Total()
-    hora = Fecha()[0]
-    fecha = Fecha()[1]
+    fecha = Fecha()["Fecha"]
+    hora = Fecha()["hora"]
     if not os.path.isfile("Balance.txt"):
         with open("Balance.txt", "x") as balance:
             balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
-            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha,
-                                                    hora,
-                                                    total,
+            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha, hora, total,
                                                     total_pesos,
                                                     total_dolares))
     elif os.path.isfile("Balance.txt"):
         with open("Balance.txt", "a") as balance:
-            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha,
-                                                    hora,
-                                                    total,
+            balance.write("%s\t%s\t%s\t%s\t%s\n" % (fecha, hora, total,
                                                     total_pesos,
                                                     total_dolares))
     else:
