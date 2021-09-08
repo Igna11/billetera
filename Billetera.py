@@ -4,32 +4,17 @@ Created on Thu Jun 13 01:20:15 2019
 
 @author: igna
 Intento de billetera para control de gastos
-
-Historial de modificaciones:
-14/11/2020: Se agrega la excepción a la función Precio_dolar(), si no hay inet
-            y se intenta scrapear, captura la excepción y usa el último precio
-            de dolar registrado usando los datos del archivo Balance.txt.
-            Si no hay dolares en la cuenta, te dice que no hay y te pone el
-            dolar a 0.0, ya que no hace falta usarlo.
-12/03/2021: Se modifica sutilmente la función BalanceGraf(). Antes usaba el
-            DataFrame de pandas con los datos del archivo balance, para pasar-
-            los a un array de numpy, es decir:
-                data = pd.read_csv(etc...)
-                Data = data.values
-                ...
-            como eso es un paso innecesario, se cambio. Además el código queda
-            más descriptivo
 """
 import os
 from datetime import datetime
 
 import pandas as pd
-import matplotlib.pyplot as plt  # agregado 30-08-2019
+import matplotlib.pyplot as plt
 
 from ConversorClass import ConversorMoneda
 
-directorio = os.path.dirname(os.path.abspath(__file__))  # agregado 22-10-2020
-#  directorio = r"C:\Users\igna\Desktop\Igna\Python Scripts\billetera"
+directorio = os.path.dirname(os.path.abspath(__file__))
+
 os.chdir(directorio)
 pd.set_option("display.max_columns", 11)
 # %%
@@ -51,15 +36,10 @@ TODO    Interfaz Gráfica y ejectuable:
 
 TODO    Que no se pueda crear usuario estando logueado en algún usuario
 
-TODO    Separar todo este script en módulos específicos para que no sea
-        tanta paja ponerse a editar una función y scrollear como un pelotudo.
+TODO    Separar todo este script en módulos.
 
 TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
         (de pesos a dolares o dolares a pesos)
-
-TODO    Ver qué son las excepciones que no están comentadas ni explicadas
-        porque ya no me acuerdo si están al pedo, si están bien puestas,
-        si están haciendo cagada, etc.
 """
 
 
@@ -691,6 +671,8 @@ def balances(cuenta: str, month: int, year: int):
         Numero del mes deseado para ver el balance: Válidos del 1 al 12
         year: int
         Número del año deseado para ver el balance: Válidos 2019, 2020, 2021
+    returns: dic
+        Ingresos, Gastos y Balances mensuales por cuenta: float
     """
     df = pd.read_csv(cuenta, sep="\t", index_col=("Fecha"), parse_dates=True,
                      dayfirst=True, encoding="latin1")
@@ -716,6 +698,8 @@ def balances_totales(month: int, year: int, verbose=False):
         Numero del mes deseado para ver el balance: Válidos del 1 al 12
         year: int
         Número del año deseado para ver el balance: Válidos 2019, 2020, 2021
+    returns: dic
+        Ingresos, Gastos y Balances mensuales por usuario: float
     """
     ingresos_tot = gastos_tot = balances_tot = 0
     for cuenta in os.listdir():
@@ -736,46 +720,3 @@ def balances_totales(month: int, year: int, verbose=False):
 
 # %%
 IniciarSesion()
-
-
-# =============================================================================
-# 
-# import matplotlib.dates as mdates
-# def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
-#     """
-#     30-08-2019
-#     Primera aproximación a grafico de balance con fechas y horas.
-#     Lo que quiero lograr:
-#         Lograr poner tics solo en los meses.
-#             Lograr que los puntos se separen
-#             segun su valor horario. ->10-09-2020 solucionado
-#     """
-#     data = pd.read_csv("Balance.txt", sep="\t")
-#     T = data["Fecha"] + "-" + data["Hora"]
-#     formato = "%d-%m-%Y-%H:%M:%S"
-#     Tiempo = [datetime.strptime(i, formato) for i in T]
-#     fig, ax = plt.subplots(figsize = (10,7))
-#     ax.plot(Tiempo, data["Total"],
-#              'o-',
-#              fillstyle="full",
-#              markersize=5,
-#              label="Total: $%.2f" % data["Total"].values[-1])
-#     ax.plot(Tiempo, data["Total_pesos"],
-#              'o-',
-#              fillstyle="none",
-#              markersize=3,
-#              label="Total de pesos: $%.2f" % data["Total_pesos"].values[-1])
-#     ax.plot(Tiempo, data["Total_dolares"],
-#              '-',
-#              fillstyle="none",
-#              label="Total de dolares: u$s%.2f" % data["Total_dolares"].values[-1])
-#     ax.grid()
-#     ax.legend()
-#     ax.xaxis.set_major_formatter(mdates.DateFormatter('%d-%m-%Y'))
-#     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%d-%m-%Y - %H:%M:%S'))
-# 
-#     ax.tick_params(axis = "x", rotation = 40)
-# 
-# BalanceGraf()
-# 
-# =============================================================================
