@@ -102,7 +102,7 @@ def info():
         "Gasto()",
         "Transferencia()",
         "Reajuste()",
-        "Balance()<--NO USAR-ver help",
+        "balances()<--NO USAR-ver help",
         "BalanceGraf()",
         "Filtro()",
         "balances()",
@@ -375,7 +375,7 @@ def ingreso():
     total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
-    balance()
+    balances()
 
 
 def extraccion():
@@ -423,7 +423,7 @@ def extraccion():
     total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
-    balance()
+    balances()
 
 
 def gasto():
@@ -470,7 +470,7 @@ def gasto():
     total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
-    balance()
+    balances()
 
 
 def transferencia():
@@ -587,10 +587,10 @@ def reajuste():
     total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
-    balance()
+    balances()
 
 
-def balance():
+def balances():
     """
     Non-user operation:
     Appends one row to the balance file everytime an account operation that
@@ -681,7 +681,7 @@ def filtro():
 
 # %%
 
-def balances(account: str, month: int, year: int):
+def balances_cta(account: str, month: int, year: int):
     """
     Analysis function:
     Easy way to get the monthly balance of a given account: Incomes, expenses
@@ -728,7 +728,7 @@ def balances_totales(month: int, year: int, verbose=False):
     for cuenta in os.listdir():
         if "CUENTA" in cuenta and "DOL" not in cuenta:
             try:
-                dic_c = balances(cuenta, month, year)
+                dic_c = balances_cta(cuenta, month, year)
             except AttributeError as e:
                 if verbose is True:
                     print("Error en la cuenta: ", cuenta)
