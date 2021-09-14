@@ -48,9 +48,8 @@ def Fecha():
     simplemente genera la hora en formato argento
     """
     fecha_hora = datetime.now()
-    fecha = str(fecha_hora)[:10]
-    hora = str(fecha_hora)[11:19]
-    fecha = datetime.strptime(fecha, "%Y-%m-%d").strftime("%d-%m-%Y")
+    fecha = fecha_hora.strftime("%d-%m-%Y")
+    hora = fecha_hora.strftime("%H:%M:%S")
     return {"Fecha": fecha, "hora": hora}
 
 
