@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 
 from ConversorClass import ConversorMoneda
 
-directorio = os.path.dirname(os.path.abspath(__file__))
+directory = os.path.dirname(os.path.abspath(__file__))
 
-os.chdir(directorio)
+os.chdir(directory)
 pd.set_option("display.max_columns", 11)
 # %%
 """
@@ -44,23 +44,17 @@ TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
 
 
 def Fecha():
-    """
-    simplemente genera la hora en formato argento
-    """
+    """Generates a dictionary with date an time in a latin-format: d-m-y"""
     fecha_hora = datetime.now()
     fecha = fecha_hora.strftime("%d-%m-%Y")
     hora = fecha_hora.strftime("%H:%M:%S")
     return {"Fecha": fecha, "hora": hora}
 
 
-def Precio_dolar(verbose=False):
+def precio_dolar(verbose=False):
     """
-    Creada (aprox) 21-03-2020
-    Scrapea el precio del dolar del banco nacion
-    Ver la forma que si no anda la pagina del banco central, use otra.
-    Modificada 14/11/2020 para manejar algunas excepciones
-    Modificada 10/08/2021 Usa una función aparte bien armada para conseguir el
-    precio del dolar
+    Gets the current dollar price by scrapping from web or inferring it from
+    previuos data from Balances.txt
     """
     # Creo el objeto que maneja la consulta y me devuelve el precio
     dolar = ConversorMoneda(verbose=verbose)
@@ -93,7 +87,7 @@ def info():
     """List of functions, utilities and total balances"""
     funciones = [
         "Fecha()",
-        "Precio_dolar()",
+        "precio_dolar()",
         "info()",
         "crear_usuario()",
         "iniciar_sesion()",
@@ -102,7 +96,7 @@ def info():
         "Lista_cuentas()",
         "Datos_cuenta()",
         "asignador_cuentas()",
-        "Total()",
+        "totales()",
         "Ingreso()",
         "Extraccion()",
         "Gasto()",
@@ -116,7 +110,7 @@ def info():
         ]
     # lista con los nombres de los archivos de cuenta
     Lista = lista_cuentas()
-    DolVal = Precio_dolar()
+    DolVal = precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for elem in Lista:
@@ -143,7 +137,7 @@ def info():
                 .replace("_DOL", "")
                 .replace(".txt", ""))
     # Calculo todos los totales
-    total, total_pesos, total_dolares = Total()
+    total, total_pesos, total_dolares = totales()
     # Printeo toda la información
     str_funciones = "\n".join(funciones)
     print("Funciones:\n", str_funciones)
@@ -160,7 +154,8 @@ def info():
 # %%
 
 
-def crear_usuario():  # creada 10-02-2019
+def crear_usuario():
+    """Creates the user's directory where all accounts will be stored"""
     nombre = input("\nIngrese el nombre de usuario\n") + "USR"
     if os.path.isdir(nombre):  # 10/01/2020 msj al intentar crear usr existente
         print("\nYa existe el usuario\n")
@@ -169,10 +164,11 @@ def crear_usuario():  # creada 10-02-2019
         print("\nSe creo el usuario %s\n" % nombre.strip("USR"))
 
 
-def iniciar_sesion():  # creada 10-02-2019
+def iniciar_sesion():
+    """Changes the current working directory to the user's directory"""
     nombre = input("\nNombre de usuario\n") + "USR"
     if os.path.isdir(nombre):
-        Dir = directorio + "/" + nombre
+        Dir = directory + "/" + nombre
         os.chdir(Dir)
         print("\nInicio de sesion de %s\n" % nombre.strip("USR"))
         info()
@@ -180,12 +176,16 @@ def iniciar_sesion():  # creada 10-02-2019
         print("\nNo existe el usuario\n")
 
 
-def cerrar_sesion():  # creada 10-02-2019
-    os.chdir(directorio)
+def cerrar_sesion():
+    """Changes the current working directory to the base directory"""
+    os.chdir(directory)
     print("\nSe ha cerrado sesión\n")
 
 
 def eliminar_usuario():
+    """
+    Delets the directory of the given user, including all data stored in it
+    """
     nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
     if os.path.isdir(nombre):
         advertencia = "¿Seguro que queres eliminar el usuario?\n\n\
@@ -213,9 +213,7 @@ def eliminar_usuario():
 
 
 def crear_cuenta():
-    """
-    Crea un .txt cuyo nombre será el nombre de la cuenta
-    """
+    """Creates a .txt file which name will be the account name"""
     nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
     tipo_cuenta = input("\nIngresar 0 para cuenta en pesos\n"
                         "Ingresar 1 para cuenta en dolares\n")
@@ -236,6 +234,7 @@ def crear_cuenta():
 
 
 def eliminar_cuenta():
+    """Deletes the .txt file of the given account name"""
     nombre = asignador_cuentas()
     advertencia = "¿Seguro que queres eliminar la cuenta?\n\n\
     todos los datos contenidos en ella se perderán para siempre.\n\n\
@@ -254,14 +253,7 @@ def eliminar_cuenta():
 
 def lista_cuentas():
     """
-    Hace una list de todas las cuentas, en pesos y en dolares
-    función auxiliar creada el 20-03-2020, a las 02:25 primeras horas de la
-    cuarentena obligatoria por el COVID-19
-    """
-    """
-    EVALUAR LA POSIBILIDAD DE USAR glob.glob: (gracias paui 20-03-2020 -13:26)
-        El código se simplifica a una linea así:
-    Lista = glob.glob(r"*CUENTA*.txt")
+    Lists all accounts found inside the given user's directory
     """
     lista = os.listdir()
     Lista = []
@@ -272,10 +264,7 @@ def lista_cuentas():
 
 
 def datos_cuenta():
-    """
-    los datos crudos de la cuenta
-    Modificada 21-03-2020  01:00
-    """
+    """Return a pandas DataFrame with data of a given account"""
     nombre = asignador_cuentas()
     datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
     return datos
@@ -283,10 +272,8 @@ def datos_cuenta():
 
 def asignador_cuentas():
     """
-    20-03-2020  15:03
-    Genera un diccionario con el nombre de las cuentas existentes y un numero
-    para que el usuario elija a qué cuenta ingresar un gasto o un ingreso
-    mediante un input numérico
+    Account selector in a numerical way: Associates a number to a given account
+    so it can be selected by typing the number and not the name
     """
     alfabeto = lista_cuentas()
     Dic = {}
@@ -314,10 +301,11 @@ def asignador_cuentas():
             print("="*50)
 
 
-def Total():
+def totales():
+    """Calculate the total amount of money for all accounts"""
     # lista con los nombres de los archivos de cuenta
     Lista = lista_cuentas()
-    DolVal = Precio_dolar()
+    DolVal = precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
     total_pesos = []
@@ -346,13 +334,17 @@ def Total():
 # %%
 
 
-def Ingreso():
+def ingreso():
     """
-    Ingresa el dinero en la cuenta correcta, en la columna correcta
-    Completa el resto de las columnas con información repetida de ser
-    necesario
-    Modificado: 21-03-2020  01:38
-        Ahora se elije la cuenta en vez de ingresarla manualmente
+    Account operation:
+    Income with input commands:
+        account name,
+        income amount,
+        category,
+        subcategory,
+        description
+    saves the data into the given account and appends one row into the balance
+    file
     """
     nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
@@ -380,19 +372,23 @@ def Ingreso():
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    total, total_pesos, total_dolares = Total()
+    total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
-    Balance()  # agregado 12-08-2019
+    balance()
 
 
-def Extraccion():
+def extraccion():
     """
-    Extrae el dinero en la cuenta correcta, en la columna correcta
-    Completa el resto de las columnas con información repetida de ser
-    necesario
-    Modificado: 21-03-2020  01:39
-        Ahora se elije la cuenta en vez de ingresarla manualmente
+    Account operation:
+    Extraction with input commands:
+        account name,
+        extraction amount,
+        category,
+        subcategory,
+        description
+    saves the data into the given account and appends one row into the balance
+    file
     """
     nombre = asignador_cuentas()
     # se fija si el archivo de la cuenta existe
@@ -424,15 +420,23 @@ def Extraccion():
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    total, total_pesos, total_dolares = Total()
+    total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
-    Balance()  # agregado 12-08-2019
+    balance()
 
 
-def Gasto():
+def gasto():
     """
-    Genera un gasto en la cuenta indicada
+    Account operation:
+    Expenses with input commands:
+        account name,
+        expense amount,
+        category,
+        subcategory,
+        description
+    saves the data into the given account and appends one row into the balance
+    file
     """
     nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
@@ -463,18 +467,20 @@ def Gasto():
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    total, total_pesos, total_dolares = Total()
+    total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
           "\nDinero total %.2f\n" % total)
-    Balance()  # agregado 12-08-2019
+    balance()
 
 
-def Transferencia():
+def transferencia():
     """
-    creada 10-02-2019
-    Funcion de transferencias
-    Modificado: 21-03-2020  01:42
-        Ahora se elijen las cuentas en vez de ingresarlas manualmente
+    Account operation:
+    Makes a tranfer between to accounts of the same type only (currentyl it
+    is possible to make transfers between to accounts of different type but
+    it will lead to data errors). If the input is the same account twice, it
+    returns a message and nothing happens.
+    No balance change are made with this operation.
     """
     # Abro la cuenta de salida
     print("Cuenta salida:")
@@ -532,18 +538,15 @@ def Transferencia():
             micuenta.write(fila_salida)
 
 
-def Reajuste():
+def reajuste():
     """
-    17-12-2019
-    Funcion que modifica el total del dinero en la cuenta y lo guarda como
-    gasto(ingreso) llenando los campos de categoria, subcategoria y
-    descripción de la siguiente manera
-        Categoria: Reajuste
-        Subcategoria: Negativo(Positivo)
-        Descripción: Reajuste Negativo(Positivo) de saldo
-    Modificada 21-03-2020  01:52
-        Ahora se ingresa el numero de la cuenta en vez de manualmente el
-        nombre de la cuenta
+    Account operation:
+    Ajust the account total according to the given input. It is used if for
+    some reason the tracked expenses/incomes are not precise and a correction
+    to the total values is needed in order to update amounts. It automatically
+    decides if it is an income or and expense.
+    Saves the data into the given account and appends one row into the balance
+    file
     """
     nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
@@ -581,25 +584,24 @@ def Reajuste():
     dinero_final = pd.read_csv(nombre,
                                sep="\t",
                                encoding="latin1").values[-1, 2]
-    total, total_pesos, total_dolares = Total()
+    total, total_pesos, total_dolares = totales()
     print("\nDinero en cuenta: $%.2f\n" % dinero_final,
           "\nDinero total %.2f\n" % total)
-    Balance()  # agregado 12-08-2019
+    balance()
 
 
-def Balance():  # creada 12-08-2019
+def balance():
     """
-    Funcion que guarda en cada transaccion el saldo total de las cuentas
-    en función de la fecha.
-        Si no está creado el archivo 'Balance.txt' lo crea y guarda el
-        primer dato.
-        Si ya está creado el archivo 'Balance.txt' appendea los nuevos
-        datos.
-    Esta función está sólo para ser usada por las funciones que modifican
-    los saldos de las cuentas de alguna manera (Gasto(), Ingreso(), etc). No
-    usar por usar porque va a appendear datos al pedo.
+    Non-user operation:
+    Appends one row to the balance file everytime an account operation that
+    modifies the balance is done.
+    If the balance file exists, appends data. If the balance file does not
+    exists, it creates it and appends the data.
+    --------------------------------------------------------------------------
+    Do not use this function manually, it is only intended to be used by other
+    functions.
     """
-    total, total_pesos, total_dolares = Total()
+    total, total_pesos, total_dolares = totales()
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
     if not os.path.isfile("Balance.txt"):
@@ -617,14 +619,12 @@ def Balance():  # creada 12-08-2019
         print("\nO Se ErRoR rE lOcO\n")
 
 
-def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
+def balanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     """
-    30-08-2019
-    Primera aproximación a grafico de balance con fechas y horas.
-    Lo que quiero lograr:
-        Lograr poner tics solo en los meses.
-            Lograr que los puntos se separen
-            segun su valor horario. ->10-09-2020 solucionado
+    Makes a plot with all data from the balance file. It includes:
+        Total amount,
+        Total pesos only,
+        Total dollars only,
     """
     data = pd.read_csv("Balance.txt", sep="\t")
     # Armo un string con la fecha y la hora en el formato del .txt
@@ -659,11 +659,10 @@ def BalanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     plt.show()
 
 
-def Filtro():  # 10/01/2020
+def filtro():
     """
-    Con esta funcion se puede ver puntualmente categorias de gastos/ingresos
-    para poder llevar un control más sencillo y rápido de cuánto se está
-    gastando/ingresando.
+    Analysis function:
+    Easy way to filter data from a given account by category and subcategory
     """
     nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
@@ -682,22 +681,22 @@ def Filtro():  # 10/01/2020
 
 # %%
 
-def balances(cuenta: str, month: int, year: int):
+def balances(account: str, month: int, year: int):
     """
-    Permite ver de forma fácil el balance mensual de la cuenta: Ingresos,
-    Gastos y Balance = Ingresos - Gastos.
+    Analysis function:
+    Easy way to get the monthly balance of a given account: Incomes, expenses
+    and balance: income - expenses
     Inputs:
-        cuenta: str
-        Nombre de la cuenta como archivo o path del archivo cuenta. Solo hace
-        falta el nombre, ej: MercadoPagoCUENTA.txt
+        account: str
+        Acccount name as file or path, ej: MercadoPagoCUENTA.txt
         month: int
-        Numero del mes deseado para ver el balance: Válidos del 1 al 12
+        Month number to check balance: Valids from 1 to 12
         year: int
-        Número del año deseado para ver el balance: Válidos 2019, 2020, 2021
+        Year numberto check balance: Valids 2019, 2020, 2021
     returns: dic
         Ingresos, Gastos y Balances mensuales por cuenta: float
     """
-    df = pd.read_csv(cuenta, sep="\t", index_col=("Fecha"), parse_dates=True,
+    df = pd.read_csv(account, sep="\t", index_col=("Fecha"), parse_dates=True,
                      dayfirst=True, encoding="latin1")
     montly_src = df[(df.index.month == month) & (df.index.year == year)
                     & (df["Categoria"] != "Transferencia")]
@@ -713,16 +712,17 @@ def balances(cuenta: str, month: int, year: int):
 
 def balances_totales(month: int, year: int, verbose=False):
     """
-    Permite ver el balance total entre todas las cuentas para un dado mes y año
-    del usuario: Ingresos totales, Gastos totales y Balance total. Usa la
-    función balances().
+    Analysis function:
+    Easy way to see the total balance of the sum all over the accounts, given
+    a month and a year:  Total incomes, total expenses and total balances.
+    It uses balances()
     Inputs:
         month: int
-        Numero del mes deseado para ver el balance: Válidos del 1 al 12
+        Month number to check balance: Valids from 1 to 12
         year: int
-        Número del año deseado para ver el balance: Válidos 2019, 2020, 2021
+        Year numberto check balance: Valids 2019, 2020, 2021
     returns: dic
-        Ingresos, Gastos y Balances mensuales por usuario: float
+        Ingresos, Gastos y Balances mensuales por user: float
     """
     ingresos_tot = gastos_tot = balances_tot = 0
     for cuenta in os.listdir():
@@ -742,4 +742,6 @@ def balances_totales(month: int, year: int, verbose=False):
             "Balance_tot": round(balances_tot, 2)}
 
 # %%
+
+
 iniciar_sesion()
