@@ -101,7 +101,7 @@ def info():
         "Crear_cuenta()",
         "Lista_cuentas()",
         "Datos_cuenta()",
-        "Asignador_cuentas()",
+        "asignador_cuentas()",
         "Total()",
         "Ingreso()",
         "Extraccion()",
@@ -115,7 +115,7 @@ def info():
         "balances_totales()"
         ]
     # lista con los nombres de los archivos de cuenta
-    Lista = Lista_cuentas()
+    Lista = lista_cuentas()
     DolVal = Precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
@@ -212,7 +212,7 @@ def eliminar_usuario():
 # %%
 
 
-def Crear_cuenta():
+def crear_cuenta():
     """
     Crea un .txt cuyo nombre será el nombre de la cuenta
     """
@@ -235,8 +235,8 @@ def Crear_cuenta():
           % nombre.strip("_DOL.txt").strip("CUENTA"))
 
 
-def Eliminar_cuenta():
-    nombre = Asignador_cuentas()
+def eliminar_cuenta():
+    nombre = asignador_cuentas()
     advertencia = "¿Seguro que queres eliminar la cuenta?\n\n\
     todos los datos contenidos en ella se perderán para siempre.\n\n\
     Ingrese '1', 'si' o 'y' para borrar\n\
@@ -252,7 +252,7 @@ def Eliminar_cuenta():
               % nombre.strip("_DOL.txt").strip("CUENTA"))
 
 
-def Lista_cuentas():
+def lista_cuentas():
     """
     Hace una list de todas las cuentas, en pesos y en dolares
     función auxiliar creada el 20-03-2020, a las 02:25 primeras horas de la
@@ -271,24 +271,24 @@ def Lista_cuentas():
     return Lista
 
 
-def Datos_cuenta():
+def datos_cuenta():
     """
     los datos crudos de la cuenta
     Modificada 21-03-2020  01:00
     """
-    nombre = Asignador_cuentas()
+    nombre = asignador_cuentas()
     datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
     return datos
 
 
-def Asignador_cuentas():
+def asignador_cuentas():
     """
     20-03-2020  15:03
     Genera un diccionario con el nombre de las cuentas existentes y un numero
     para que el usuario elija a qué cuenta ingresar un gasto o un ingreso
     mediante un input numérico
     """
-    alfabeto = Lista_cuentas()
+    alfabeto = lista_cuentas()
     Dic = {}
     Cuentas = ""
     for i, elem in enumerate(alfabeto):
@@ -316,7 +316,7 @@ def Asignador_cuentas():
 
 def Total():
     # lista con los nombres de los archivos de cuenta
-    Lista = Lista_cuentas()
+    Lista = lista_cuentas()
     DolVal = Precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
@@ -354,7 +354,7 @@ def Ingreso():
     Modificado: 21-03-2020  01:38
         Ahora se elije la cuenta en vez de ingresarla manualmente
     """
-    nombre = Asignador_cuentas()
+    nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
@@ -394,7 +394,7 @@ def Extraccion():
     Modificado: 21-03-2020  01:39
         Ahora se elije la cuenta en vez de ingresarla manualmente
     """
-    nombre = Asignador_cuentas()
+    nombre = asignador_cuentas()
     # se fija si el archivo de la cuenta existe
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
@@ -434,7 +434,7 @@ def Gasto():
     """
     Genera un gasto en la cuenta indicada
     """
-    nombre = Asignador_cuentas()
+    nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
@@ -478,7 +478,7 @@ def Transferencia():
     """
     # Abro la cuenta de salida
     print("Cuenta salida:")
-    nombre_salida = Asignador_cuentas()
+    nombre_salida = asignador_cuentas()
     info_salida = pd.read_csv(nombre_salida, sep="\t", encoding="latin1")
     # Si la cuenta de saldia está vacía, o no tiene dinero, se cancela la
     # transferencia
@@ -486,7 +486,7 @@ def Transferencia():
         return print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
     # Abro la cuenta de entrada
     print("cuenta entrada:")
-    nombre_entrada = Asignador_cuentas()
+    nombre_entrada = asignador_cuentas()
     info_entrada = pd.read_csv(nombre_entrada, sep="\t", encoding="latin1")
     try:
         tot_entrada_i = info_entrada["Total"].values[-1]
@@ -545,7 +545,7 @@ def Reajuste():
         Ahora se ingresa el numero de la cuenta en vez de manualmente el
         nombre de la cuenta
     """
-    nombre = Asignador_cuentas()
+    nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
@@ -665,7 +665,7 @@ def Filtro():  # 10/01/2020
     para poder llevar un control más sencillo y rápido de cuánto se está
     gastando/ingresando.
     """
-    nombre = Asignador_cuentas()
+    nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
     Categoria = input("\nIngrese la categoría\n")
