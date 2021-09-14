@@ -89,8 +89,8 @@ def Precio_dolar(verbose=False):
     return float(PrecioDolar.replace(",", "."))
 
 
-def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
-    # Funciones actuales del codigo
+def Info():
+    """List of functions, utilities and total balances"""
     funciones = [
         "Fecha()",
         "Precio_dolar()",
@@ -121,9 +121,9 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     total = []
     for elem in Lista:
         try:
-            total.append(pd.read_csv(elem,
-                                     sep="\t",
-                                     encoding="latin1").values[-1, 2])
+            total_cta = pd.read_csv(elem, sep="\t", encoding="latin1")["Total"]
+            total.append(total_cta.values[-1])
+        # TODO: Ver qué onda este indexError, cuando puede darse
         except IndexError:
             total.append(0)
     # nombre de la cuenta con el saldo total
