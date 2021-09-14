@@ -89,15 +89,15 @@ def Precio_dolar(verbose=False):
     return float(PrecioDolar.replace(",", "."))
 
 
-def Info():
+def info():
     """List of functions, utilities and total balances"""
     funciones = [
         "Fecha()",
         "Precio_dolar()",
-        "Info()",
-        "CrearUsuario()",
-        "IniciarSesion()",
-        "CerrarSesion()",
+        "info()",
+        "crear_usuario()",
+        "iniciar_sesion()",
+        "cerrar_sesion()",
         "Crear_cuenta()",
         "Lista_cuentas()",
         "Datos_cuenta()",
@@ -120,47 +120,47 @@ def Info():
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for elem in Lista:
-        try:
-            total_cta = pd.read_csv(elem, sep="\t", encoding="latin1")["Total"]
+        total_cta = pd.read_csv(elem, sep="\t", encoding="latin1")["Total"]
+        # Si la cuenta tiene datos, appendeo el valor
+        if len(total_cta) != 0:
             total.append(total_cta.values[-1])
-        # TODO: Ver qué onda este indexError, cuando puede darse
-        except IndexError:
-            total.append(0)
-    # nombre de la cuenta con el saldo total
-    informacion = ""
-    for i in range(len(Lista)):
-        if "DOL" in Lista[i]:
-            try:
-                total[i]*DolVal
-            except TypeError:
-                total[i] = 0
-            informacion += "\n" + Lista[i] + ": " + "Saldo total u$s"\
-                + str("%.2f" % total[i]) + " Saldo total $"\
-                + str("%.2f" % (total[i]*DolVal)) + "\n"
+        # Si la cuenta es nueva y no tiene datos, appendeo 0
         else:
-            informacion += "\n" + Lista[i] + ": " + "Saldo total $"\
-                + str("%.2f" % total[i]) + "\n"
-    informacion = informacion.replace("CUENTA", "").replace("_DOL", "")\
-        .replace(".txt", "")
+            total.append(0)
+    # Parrafo con los datos de todas las cuentas
+    info_msg = ""
+    for i, elem in enumerate(Lista):
+        if "DOL" in elem:
+            dolar_tot = total[i]
+            pesos_tot = total[i]*DolVal
+            info_msg += f"\n{elem}: Saldo u$s {dolar_tot:.2f}, "
+            info_msg += f"saldo total ${pesos_tot:.2f}\n"
+        else:
+            info_msg += f"\n{elem}: Saldo total $ {total[i]:.2f}\n"
+    # Limpio los strings que molestan
+    info_msg = (info_msg
+                .replace("CUENTA", "")
+                .replace("_DOL", "")
+                .replace(".txt", ""))
+    # Calculo todos los totales
     total, total_pesos, total_dolares = Total()
+    # Printeo toda la información
     str_funciones = "\n".join(funciones)
     print("Funciones:\n", str_funciones)
-    print("="*50)
-    print("Cuentas existentes:\n", informacion)
-    print("="*50)
+    print("="*79)
+    print("Cuentas existentes:\n", info_msg)
+    print("="*79)
     print("Dolares totales: $%.2f" % total_dolares)
-    print("="*50)
+    print("="*79)
     print("Pesos totales: $%.2f" % total_pesos)
-    print("="*50)
+    print("="*79)
     print("Dinero total en cuentas: $%.2f" % total)
-    print("="*50)
-    # return informacion
-
+    print("="*79)
 
 # %%
 
 
-def CrearUsuario():  # creada 10-02-2019
+def crear_usuario():  # creada 10-02-2019
     nombre = input("\nIngrese el nombre de usuario\n") + "USR"
     if os.path.isdir(nombre):  # 10/01/2020 msj al intentar crear usr existente
         print("\nYa existe el usuario\n")
@@ -169,23 +169,23 @@ def CrearUsuario():  # creada 10-02-2019
         print("\nSe creo el usuario %s\n" % nombre.strip("USR"))
 
 
-def IniciarSesion():  # creada 10-02-2019
+def iniciar_sesion():  # creada 10-02-2019
     nombre = input("\nNombre de usuario\n") + "USR"
     if os.path.isdir(nombre):
         Dir = directorio + "/" + nombre
         os.chdir(Dir)
         print("\nInicio de sesion de %s\n" % nombre.strip("USR"))
-        Info()
+        info()
     else:
         print("\nNo existe el usuario\n")
 
 
-def CerrarSesion():  # creada 10-02-2019
+def cerrar_sesion():  # creada 10-02-2019
     os.chdir(directorio)
     print("\nSe ha cerrado sesión\n")
 
 
-def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
+def eliminar_usuario():
     nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
     if os.path.isdir(nombre):
         advertencia = "¿Seguro que queres eliminar el usuario?\n\n\
@@ -195,8 +195,14 @@ def EliminarUsuario():  # TODO solucion el PermissionError 10/01/2020
         respuesta = input(advertencia)
         posibles_respuestas = ["1", "si", "y"]
         if respuesta in posibles_respuestas:
-            os.rmdir(nombre)
-            print("\nSe eliminó el usuario %s\n" % nombre.strip("USR"))
+            try:
+                os.rmdir(nombre)
+                print("\nSe eliminó el usuario %s\n" % nombre.strip("USR"))
+            except OSError:
+                from shutil import rmtree
+                rmtree(nombre)
+                print("\nSe eliminó el usuario %s y todos los datos de este"
+                      % nombre.strip("USR"))
         else:
             print("\nNo se eliminó el usuario %s\n" % nombre.strip("USR"))
     else:
@@ -736,4 +742,4 @@ def balances_totales(month: int, year: int, verbose=False):
             "Balance_tot": round(balances_tot, 2)}
 
 # %%
-IniciarSesion()
+iniciar_sesion()
