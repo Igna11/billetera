@@ -91,6 +91,30 @@ def Precio_dolar(verbose=False):
 
 
 def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
+    # Funciones actuales del codigo
+    funciones = [
+        "Fecha()",
+        "Precio_dolar()",
+        "Info()",
+        "CrearUsuario()",
+        "IniciarSesion()",
+        "CerrarSesion()",
+        "Crear_cuenta()",
+        "Lista_cuentas()",
+        "Datos_cuenta()",
+        "Asignador_cuentas()",
+        "Total()",
+        "Ingreso()",
+        "Extraccion()",
+        "Gasto()",
+        "Transferencia()",
+        "Reajuste()",
+        "Balance()<--NO USAR-ver help",
+        "BalanceGraf()",
+        "Filtro()",
+        "balances()",
+        "balances_totales()"
+        ]
     # lista con los nombres de los archivos de cuenta
     Lista = Lista_cuentas()
     DolVal = Precio_dolar()
@@ -120,13 +144,7 @@ def Info():  # Creada 15-06-2019  # Modificada 21-03-2020
     informacion = informacion.replace("CUENTA", "").replace("_DOL", "")\
         .replace(".txt", "")
     total, total_pesos, total_dolares = Total()
-    str_funciones = "\nFecha()\nPrecio_dolar()\nInfo()\n"\
-        + "\nCrearUsuario()\nIniciarSesion()\nCerrarSesion()\n"\
-        + "\nCrear_cuenta()\nLista_cuentas()\nDatos_cuenta()"\
-        + "\nAsignador_cuentas()\nTotal()\n"\
-        + "\nIngreso()\nExtraccion()\nGasto()\nTransferencia()\nReajuste()"\
-        + "\nBalance()<---NO USAR-Ver help(Balance)"\
-        + "\nBalanceGraf()\nFiltro()\n"
+    str_funciones = "\n".join(funciones)
     print("Funciones:\n", str_funciones)
     print("="*50)
     print("Cuentas existentes:\n", informacion)
