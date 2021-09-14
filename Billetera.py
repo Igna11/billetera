@@ -722,7 +722,7 @@ def balances_totales(month: int, year: int, verbose=False):
         year: int
         Year numberto check balance: Valids 2019, 2020, 2021
     returns: dic
-        Ingresos, Gastos y Balances mensuales por user: float
+        Ingresos, Gastos y Balances mensuales por usuario: float
     """
     ingresos_tot = gastos_tot = balances_tot = 0
     for cuenta in os.listdir():
