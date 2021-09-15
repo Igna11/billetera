@@ -134,7 +134,9 @@ def info():
         else:
             info_msg += f"\n{elem}: Saldo total $ {total[i]:.2f}\n"
     # Limpio los strings que molestan
-    info_msg = info_msg.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
+    info_msg = (
+        info_msg.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
+    )
     # Calculo todos los totales
     total, total_pesos, total_dolares = totales()
     # Printeo toda la información
@@ -218,7 +220,8 @@ def crear_cuenta():
     """Creates a .txt file which name will be the account name"""
     nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
     tipo_cuenta = input(
-        "\nIngresar 0 para cuenta en pesos\n" "Ingresar 1 para cuenta en dolares\n"
+        "\nIngresar 0 para cuenta en pesos\n"
+        "Ingresar 1 para cuenta en dolares\n"
     )
     if tipo_cuenta == "0":
         nombre += "CUENTA.txt"
@@ -241,7 +244,10 @@ def crear_cuenta():
     fila = "\t".join(columns) + "\n"
     with open(nombre, "x") as micuenta:
         micuenta.write(fila)
-    print("\nSe ha creado la cuenta %s\n" % nombre.strip("_DOL.txt").strip("CUENTA"))
+    print(
+        "\nSe ha creado la cuenta %s\n"
+        % nombre.strip("_DOL.txt").strip("CUENTA")
+    )
 
 
 def eliminar_cuenta():
@@ -255,10 +261,14 @@ def eliminar_cuenta():
     posibles_respuestas = ["1", "si", "y"]
     if respuesta in posibles_respuestas:
         os.remove(nombre)
-        print("\nSe eliminó la cuenta %s\n" % nombre.strip("_DOL.txt").strip("CUENTA"))
+        print(
+            "\nSe eliminó la cuenta %s\n"
+            % nombre.strip("_DOL.txt").strip("CUENTA")
+        )
     else:
         print(
-            "\nNo se eliminó la cuenta %s\n" % nombre.strip("_DOL.txt").strip("CUENTA")
+            "\nNo se eliminó la cuenta %s\n"
+            % nombre.strip("_DOL.txt").strip("CUENTA")
         )
 
 
@@ -293,7 +303,9 @@ def asignador_cuentas():
         # voy armando un diccionario que asigna un numero a cada cuenta
         Dic.update({str(i + 1): elem})
         # defino una variable sin sufijos para printear
-        cuenta_str = elem.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
+        cuenta_str = (
+            elem.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
+        )
         # actualizo el string final que se imprime en consola
         Cuentas += "\n" + str(i + 1) + ": " + cuenta_str + "\n"
     # Meto un input de teclado
@@ -304,7 +316,9 @@ def asignador_cuentas():
             return nombre_cuenta
         except KeyError:
             print("=" * 50)
-            print("\nValor elegido: '%s' erroneo, intente de nuevo." % numero_cta)
+            print(
+                "\nValor elegido: '%s' erroneo, intente de nuevo." % numero_cta
+            )
             print("Presione Ctrol+C para salir\n")
             print("=" * 50)
 
@@ -549,13 +563,19 @@ def transferencia():
     valor = input("\nCantidad de dinero a transferir\n")
     tot_salida_i = info_salida["Total"].values[-1]
     if tot_salida_i < float(valor):
-        print("\nNo hay dinero suficiente en la cuenta %s" % nombre_salida[:-10])
+        print(
+            "\nNo hay dinero suficiente en la cuenta %s" % nombre_salida[:-10]
+        )
     else:
         categoria = "Transferencia"
         subcategoria_salida = "Transferencia de salida"
-        descripcion_salida = "Transferencia a %s" % nombre_entrada.strip("CUENTA.txt")
+        descripcion_salida = "Transferencia a %s" % nombre_entrada.strip(
+            "CUENTA.txt"
+        )
         subcategoria_entrada = "Transferencia de entrada"
-        descripcion_entrada = "Transferencia de %s" % nombre_salida.strip("CUENTA.txt")
+        descripcion_entrada = "Transferencia de %s" % nombre_salida.strip(
+            "CUENTA.txt"
+        )
         tot_salida_f = str(round(tot_salida_i - float(valor), 2))
         tot_entrada_f = str(round(tot_entrada_i + float(valor), 2))
         balance = gasto = extraccion = ingreso = "0.00"
@@ -655,9 +675,14 @@ def reajuste():
     # La appendeo al archivo
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1").values[-1, 2]
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1").values[
+        -1, 2
+    ]
     total, total_pesos, total_dolares = totales()
-    print("\nDinero en cuenta: $%.2f\n" % dinero_final, "\nDinero total %.2f\n" % total)
+    print(
+        "\nDinero en cuenta: $%.2f\n" % dinero_final,
+        "\nDinero total %.2f\n" % total,
+    )
     balances()
 
 
