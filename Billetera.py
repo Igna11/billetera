@@ -60,11 +60,11 @@ def precio_dolar(verbose=False):
     dolar = ConversorMoneda(verbose=verbose)
     try:
         # Trato de conseguir el precio de internet, si no, handleo el error
-        PrecioDolar = dolar.precio()["Dolar U.S.A"]["Compra"]
-    except AttributeError as e:
+        dollar_val = dolar.precio()["Dolar U.S.A"]["Compra"]
+    except AttributeError as error:
         if verbose is True:
             print("Ocurrio el siguiente error durante la consulta:")
-            print(e)
+            print(error)
             print("Seguramente se debe a un error urlopen y no de Attribute")
         print(
             "No se pudo obtener el precio del dolar de internet, se usó la",
@@ -77,12 +77,12 @@ def precio_dolar(verbose=False):
         tot_pesos = bal_datos["Total_pesos"].values[-1]
         tot_dolares = bal_datos["Total_dolares"].values[-1]
         try:
-            PrecioDolar = str(round((tot_dinero - tot_pesos) / tot_dolares, 2))
+            dollar_val = str(round((tot_dinero - tot_pesos) / tot_dolares, 2))
         except ZeroDivisionError:
             print("No hay dolares, asi que no importa cuanto vale")
-            PrecioDolar = "0.00"
+            dollar_val = "0.00"
 
-    return float(PrecioDolar.replace(",", "."))
+    return float(dollar_val.replace(",", "."))
 
 
 def info():
@@ -111,11 +111,11 @@ def info():
         "balances_totales()",
     ]
     # lista con los nombres de los archivos de cuenta
-    Lista = lista_cuentas()
-    DolVal = precio_dolar()
+    acc_list = lista_cuentas()
+    dollar_val = precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
-    for elem in Lista:
+    for elem in acc_list:
         total_cta = pd.read_csv(elem, sep="\t", encoding="latin1")["Total"]
         # Si la cuenta tiene datos, appendeo el valor
         if len(total_cta) != 0:
@@ -125,10 +125,10 @@ def info():
             total.append(0)
     # Parrafo con los datos de todas las cuentas
     info_msg = ""
-    for i, elem in enumerate(Lista):
+    for i, elem in enumerate(acc_list):
         if "DOL" in elem:
             dolar_tot = total[i]
-            pesos_tot = total[i] * DolVal
+            pesos_tot = total[i] * dollar_val
             info_msg += f"\n{elem}: Saldo u$s {dolar_tot:.2f}, "
             info_msg += f"saldo total ${pesos_tot:.2f}\n"
         else:
@@ -138,18 +138,18 @@ def info():
         info_msg.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
     )
     # Calculo todos los totales
-    total, total_pesos, total_dolares = totales()
+    totals_dict = totales()
     # Printeo toda la información
     str_funciones = "\n".join(funciones)
     print("Funciones:\n", str_funciones)
     print("=" * 79)
     print("Cuentas existentes:\n", info_msg)
     print("=" * 79)
-    print("Dolares totales: $%.2f" % total_dolares)
+    print(f"Dolares totales: ${totals_dict['total_dol']:.2f}")
     print("=" * 79)
-    print("Pesos totales: $%.2f" % total_pesos)
+    print(f"Pesos totales: ${totals_dict['total_pesos']:.2f}")
     print("=" * 79)
-    print("Dinero total en cuentas: $%.2f" % total)
+    print(f"Dinero total en cuentas: ${totals_dict['total']:.2f}")
     print("=" * 79)
 
 
@@ -170,8 +170,8 @@ def iniciar_sesion():
     """Changes the current working directory to the user's directory"""
     nombre = input("\nNombre de usuario\n") + "USR"
     if os.path.isdir(nombre):
-        Dir = directory + "/" + nombre
-        os.chdir(Dir)
+        path = directory + "/" + nombre
+        os.chdir(path)
         print("\nInicio de sesion de %s\n" % nombre.strip("USR"))
         info()
     else:
@@ -276,12 +276,12 @@ def lista_cuentas():
     """
     Lists all accounts found inside the given user's directory
     """
-    lista = os.listdir()
-    Lista = []
-    for elem in lista:
+    file_list = os.listdir()
+    acc_list = []
+    for elem in file_list:
         if "CUENTA.txt" in elem or "CUENTA_DOL.txt" in elem:
-            Lista.append(elem)
-    return Lista
+            acc_list.append(elem)
+    return acc_list
 
 
 def datos_cuenta():
@@ -297,11 +297,11 @@ def asignador_cuentas():
     so it can be selected by typing the number and not the name
     """
     alfabeto = lista_cuentas()
-    Dic = {}
+    dic = {}
     Cuentas = ""
     for i, elem in enumerate(alfabeto):
         # voy armando un diccionario que asigna un numero a cada cuenta
-        Dic.update({str(i + 1): elem})
+        dic.update({str(i + 1): elem})
         # defino una variable sin sufijos para printear
         cuenta_str = (
             elem.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
@@ -312,7 +312,7 @@ def asignador_cuentas():
     while True:
         numero_cta = input("\nElija la cuenta\n" + Cuentas + "\n")
         try:
-            nombre_cuenta = Dic[numero_cta]
+            nombre_cuenta = dic[numero_cta]
             return nombre_cuenta
         except KeyError:
             print("=" * 50)
@@ -326,31 +326,32 @@ def asignador_cuentas():
 def totales():
     """Calculate the total amount of money for all accounts"""
     # lista con los nombres de los archivos de cuenta
-    Lista = lista_cuentas()
-    DolVal = precio_dolar()
+    acc_list = lista_cuentas()
+    dollar_val = precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
-    total = []
-    total_pesos = []
-    total_dolares = []
-    for elem in Lista:
-        df = pd.read_csv(elem, sep="\t", encoding="latin1")
+    total = 0
+    total_pesos = 0
+    total_dol = 0
+    for elem in acc_list:
+        df_data = pd.read_csv(elem, sep="\t", encoding="latin1")
         # Si la cuenta no es nueva, entonces busca el total, si no, al no tener
         # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
         try:
-            valor_elem = df["Total"].values[-1]
+            valor_elem = float(df_data["Total"].values[-1])
             if "DOL" in elem:
-                total_dolares.append(valor_elem)
-                total.append(valor_elem * DolVal)
+                total_dol += valor_elem
+                total += valor_elem * dollar_val
             else:
-                total_pesos.append(valor_elem)
-                total.append(valor_elem)
+                total_pesos += valor_elem
+                total += valor_elem
         except IndexError:
             total.append(0)
     # Reciclo las variables reescribiéndolas
-    total = round(sum(total), 2)
-    total_pesos = round(sum(total_pesos), 2)
-    total_dolares = round(sum(total_dolares), 2)
-    return total, total_pesos, total_dolares
+    total = round(total, 2)
+    total_pesos = round(total_pesos, 2)
+    total_dolares = round(total_dol, 2)
+    dic = {"total": total, "total_pesos": total_pesos, "total_dol": total_dol}
+    return dic
 
 
 # %%
@@ -402,11 +403,10 @@ def ingreso():
     # La appendeo al archivo
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    total, total_pesos, total_dolares = totales()
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
-        "\nDinero total %.2f\n" % total,
+        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
 
@@ -461,11 +461,10 @@ def extraccion():
             # La appendeo al archivo
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    total, total_pesos, total_dolares = totales()
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
-        "\nDinero total %.2f\n" % total,
+        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
 
@@ -519,11 +518,10 @@ def gasto():
             # La appendeo al archivo
             with open(nombre, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    total, total_pesos, total_dolares = totales()
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final["Total"].values[-1],
-        "\nDinero total %.2f\n" % total,
+        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
 
@@ -626,19 +624,19 @@ def reajuste():
     """
     nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    datos = contenido_cuenta.values
+    acc_total = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
+    acc_total = acc_total.values[-1]
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
     total = input("\nIngrese el saldo actual\n")
     categoria = "Reajuste"
-    if datos[-1, 2] < float(total):
+    if acc_total < float(total):
         subcategoria = "Positivo"
         descripcion = "Reajuste positivo de saldo"
         extraccion = "0.00"
         gasto = "0.00"
         balance = "0.00"
-        ingreso = str(round(float(total) - datos[-1, 2], 2))
+        ingreso = str(round(float(total) - acc_total, 2))
         columns = [
             fecha,
             hora,
@@ -657,7 +655,7 @@ def reajuste():
         ingreso = "0.00"
         gasto = "0.00"
         balance = "0.00"
-        extraccion = str(round(datos[-1, 2] - float(total), 2))
+        extraccion = str(round(acc_total - float(total), 2))
         columns = [
             fecha,
             hora,
@@ -675,13 +673,10 @@ def reajuste():
     # La appendeo al archivo
     with open(nombre, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1").values[
-        -1, 2
-    ]
-    total, total_pesos, total_dolares = totales()
+    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final,
-        "\nDinero total %.2f\n" % total,
+        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
 
@@ -697,7 +692,7 @@ def balances():
     Do not use this function manually, it is only intended to be used by other
     functions.
     """
-    total, total_pesos, total_dolares = totales()
+    total, total_pesos, total_dolares = list(totales().values())
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
     if not os.path.isfile("Balance.txt"):
@@ -717,7 +712,7 @@ def balances():
         print("\nO Se ErRoR rE lOcO\n")
 
 
-def balanceGraf():  # 10-09-2019 Se agrega el graficador de balance
+def balance_graf():
     """
     Makes a plot with all data from the balance file. It includes:
         Total amount,
@@ -726,13 +721,13 @@ def balanceGraf():  # 10-09-2019 Se agrega el graficador de balance
     """
     data = pd.read_csv("Balance.txt", sep="\t")
     # Armo un string con la fecha y la hora en el formato del .txt
-    T = data["Fecha"] + "-" + data["Hora"]
+    str_time = data["Fecha"] + "-" + data["Hora"]
     # Especifico ese formato acá, para usarlo en la funcion strptime
     formato = "%d-%m-%Y-%H:%M:%S"
     # transformo el string a un objeto datetime usando el formato dado
-    Tiempo = [datetime.strptime(i, formato) for i in T]
+    time = [datetime.strptime(i, formato) for i in str_time]
     plt.plot(
-        Tiempo,
+        time,
         data["Total"],
         "o-",
         alpha=0.5,
@@ -741,7 +736,7 @@ def balanceGraf():  # 10-09-2019 Se agrega el graficador de balance
         label="Total: $%.2f" % data["Total"].values[-1],
     )
     plt.plot(
-        Tiempo,
+        time,
         data["Total_pesos"],
         "o-",
         alpha=0.5,
@@ -750,7 +745,7 @@ def balanceGraf():  # 10-09-2019 Se agrega el graficador de balance
         label="Total de pesos: $%.2f" % data["Total_pesos"].values[-1],
     )
     plt.plot(
-        Tiempo,
+        time,
         data["Total_dolares"],
         "-",
         alpha=0.5,
@@ -771,16 +766,15 @@ def filtro():
     nombre = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    Categoria = input("\nIngrese la categoría\n")
-    datos = datos[datos["Categoria"] == Categoria]
+    categoria = input("\nIngrese la categoría\n")
+    datos = datos[datos["Categoria"] == categoria]
     print(datos)
     respuesta = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
     if respuesta == "si":
-        Subcategoria = input("\nIngrese la subcategoría\n")
-        datos = datos[datos["Subcategoria"] == Subcategoria]
+        subcategoria = input("\nIngrese la subcategoría\n")
+        datos = datos[datos["Subcategoria"] == subcategoria]
         return datos
-    else:
-        return datos
+    return datos
 
 
 # %%
@@ -801,7 +795,7 @@ def balances_cta(account: str, month: int, year: int):
     returns: dic
         Ingresos, Gastos y Balances mensuales por cuenta: float
     """
-    df = pd.read_csv(
+    df_data = pd.read_csv(
         account,
         sep="\t",
         index_col=("Fecha"),
@@ -809,10 +803,10 @@ def balances_cta(account: str, month: int, year: int):
         dayfirst=True,
         encoding="latin1",
     )
-    montly_src = df[
-        (df.index.month == month)
-        & (df.index.year == year)
-        & (df["Categoria"] != "Transferencia")
+    montly_src = df_data[
+        (df_data.index.month == month)
+        & (df_data.index.year == year)
+        & (df_data["Categoria"] != "Transferencia")
     ]
     montly_spend = montly_src["Gasto"].sum()
     montly_spend += montly_src["Extracciones"].sum()
@@ -845,10 +839,10 @@ def balances_totales(month: int, year: int, verbose=False):
         if "CUENTA" in cuenta and "DOL" not in cuenta:
             try:
                 dic_c = balances_cta(cuenta, month, year)
-            except AttributeError as e:
+            except AttributeError as error:
                 if verbose is True:
                     print("Error en la cuenta: ", cuenta)
-                    print(e)
+                    print(error)
             ingresos_tot += dic_c["Ingresos_m"]
             gastos_tot += dic_c["Gasto_m"]
             balances_tot += dic_c["Balance_m"]
