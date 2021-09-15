@@ -12,7 +12,7 @@ from urllib.error import URLError  # agregado 20-05-2021
 from bs4 import BeautifulSoup  # agregado 11-03-2020
 
 
-class ConversorMoneda():
+class ConversorMoneda:
     """
     Scrapea el valor del dolar (y otros disponibles) en el momento de
     hacer la consulta
@@ -44,26 +44,30 @@ class ConversorMoneda():
         La parte en encabezado y cuerpo.
         La formatea correctamente
         """
-        self.header = (self.urlobj_a_texto()
-                       .find("thead")
-                       .get_text()
-                       .strip()
-                       .replace("\n", "\t")
-                       .split("\t")
-                       )
+        self.header = (
+            self.urlobj_a_texto()
+            .find("thead")
+            .get_text()
+            .strip()
+            .replace("\n", "\t")
+            .split("\t")
+        )
 
-        self.body = (self.urlobj_a_texto()
-                     .find("tbody")
-                     .get_text()
-                     .strip()
-                     .replace("\n", "\t")
-                     .replace(",", ".")
-                     .replace("\t\t\t", "\n")
-                     .split("\n")
-                     )
+        self.body = (
+            self.urlobj_a_texto()
+            .find("tbody")
+            .get_text()
+            .strip()
+            .replace("\n", "\t")
+            .replace(",", ".")
+            .replace("\t\t\t", "\n")
+            .split("\n")
+        )
 
     def precio(self):
         self.formateador()
         self.body = [elem.split("\t") for elem in self.body]
-        return {elem[0]: dict(zip(self.header[1:], elem[1:]))
-                for elem in self.body}
+        dic = {
+            elem[0]: dict(zip(self.header[1:], elem[1:])) for elem in self.body
+        }
+        return dic
