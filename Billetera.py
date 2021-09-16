@@ -85,6 +85,20 @@ def precio_dolar(verbose=False):
     return float(dollar_val.replace(",", "."))
 
 
+def extra_char_cleanner(charchain: str):
+    """
+    Streaps all chars from the account string name except of its name
+    returns the name cleaned
+    """
+    charchain = (
+        charchain.replace("CUENTA", "")
+        .replace("_DOL", "")
+        .replace(".txt", "")
+        .replace("USR", "")
+    )
+    return charchain
+
+
 def info():
     """List of functions, utilities and total balances"""
     funciones = [
@@ -116,10 +130,10 @@ def info():
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for elem in acc_list:
-        total_cta = pd.read_csv(elem, sep="\t", encoding="latin1")["Total"]
+        acc_total = pd.read_csv(elem, sep="\t", encoding="latin1")["Total"]
         # Si la cuenta tiene datos, appendeo el valor
-        if len(total_cta) != 0:
-            total.append(total_cta.values[-1])
+        if len(acc_total) != 0:
+            total.append(acc_total.values[-1])
         # Si la cuenta es nueva y no tiene datos, appendeo 0
         else:
             total.append(0)
@@ -134,9 +148,8 @@ def info():
         else:
             info_msg += f"\n{elem}: Saldo total $ {total[i]:.2f}\n"
     # Limpio los strings que molestan
-    info_msg = (
-        info_msg.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
-    )
+    info_msg = extra_char_cleanner(info_msg)
+
     # Calculo todos los totales
     totals_dict = totales()
     # Printeo toda la información
@@ -158,24 +171,26 @@ def info():
 
 def crear_usuario():
     """Creates the user's directory where all accounts will be stored"""
-    nombre = input("\nIngrese el nombre de usuario\n") + "USR"
-    if os.path.isdir(nombre):  # 10/01/2020 msj al intentar crear usr existente
-        print("\nYa existe el usuario\n")
+    path_name = input("\nIngrese el nombre de usuario\n") + "USR"
+    user_name = extra_char_cleanner(path_name)
+    if os.path.isdir(path_name):
+        print(f"\nYa existe el usuario '{user_name}'\n")
     else:
-        os.makedirs(nombre)
-        print("\nSe creo el usuario %s\n" % nombre.strip("USR"))
+        os.makedirs(path_name)
+        print(f"\nSe creo el usuario '{user_name}'\n")
 
 
 def iniciar_sesion():
     """Changes the current working directory to the user's directory"""
-    nombre = input("\nNombre de usuario\n") + "USR"
-    if os.path.isdir(nombre):
-        path = directory + "/" + nombre
+    path_name = input("\nNombre de usuario\n") + "USR"
+    user_name = extra_char_cleanner(path_name)
+    if os.path.isdir(path_name):
+        path = directory + "/" + path_name
         os.chdir(path)
-        print("\nInicio de sesion de %s\n" % nombre.strip("USR"))
+        print(f"\nInicio de sesion de {user_name}\n")
         info()
     else:
-        print("\nNo existe el usuario\n")
+        print(f"\nNo existe el usuario '{user_name}'\n")
 
 
 def cerrar_sesion():
@@ -188,29 +203,30 @@ def eliminar_usuario():
     """
     Delets the directory of the given user, including all data stored in it
     """
-    nombre = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
-    if os.path.isdir(nombre):
-        advertencia = "¿Seguro que queres eliminar el usuario?\n\n\
-        todos los datos contenidos en ella se perderán para siempre.\n\n\
-        Ingrese '1', 'si' o 'y' para borrar\n\
-        Ingrese cualquier otra cosa para cancelar\n"
+    path_name = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
+    user_name = extra_char_cleanner(path_name)
+    if os.path.isdir(path_name):
+        advertencia = (
+            f"¿Seguro que queres eliminar el usuario '{user_name}'?\n\n"
+            "todos los datos contenidos en él se perderán para siempre.\n\n"
+            "Ingrese '1', 'si' o 'y' para borrar\n"
+            "Ingrese cualquier otra cosa para cancelar\n"
+        )
         respuesta = input(advertencia)
         posibles_respuestas = ["1", "si", "y"]
         if respuesta in posibles_respuestas:
             try:
-                os.rmdir(nombre)
-                print("\nSe eliminó el usuario %s\n" % nombre.strip("USR"))
+                os.rmdir(path_name)
+                print(f"\nSe eliminó el usuario {user_name}\n")
             except OSError:
                 from shutil import rmtree
 
-                rmtree(nombre)
-                nombre = nombre.strip("USR")
-                print(f"\nSe eliminó el usuario {nombre} y todos sus datos.")
+                rmtree(path_name)
+                print(f"\nSe eliminó el usr. {user_name} y todos sus datos.")
         else:
-            nombre = nombre.strip("USR")
-            print(f"\nNo se eliminó el usuario {nombre}\n")
+            print(f"\nNo se eliminó el usuario {user_name}\n")
     else:
-        print("\nNo existe el usuario\n")
+        print(f"\nNo existe el usuario {user_name}\n")
 
 
 # %%
@@ -218,7 +234,7 @@ def eliminar_usuario():
 
 def crear_cuenta():
     """Creates a .txt file which name will be the account name"""
-    nombre = input("\nIntrduzca el nombre para la nueva cuenta\n")
+    nombre = input("\nIntroduzca el nombre para la nueva cuenta\n")
     tipo_cuenta = input(
         "\nIngresar 0 para cuenta en pesos\n"
         "Ingresar 1 para cuenta en dolares\n"
@@ -244,10 +260,8 @@ def crear_cuenta():
     fila = "\t".join(columns) + "\n"
     with open(nombre, "x") as micuenta:
         micuenta.write(fila)
-    print(
-        "\nSe ha creado la cuenta %s\n"
-        % nombre.strip("_DOL.txt").strip("CUENTA")
-    )
+    nombre = extra_char_cleanner(nombre)
+    print(f"\nSe ha creado la cuenta {nombre}\n")
 
 
 def eliminar_cuenta():
@@ -261,15 +275,11 @@ def eliminar_cuenta():
     posibles_respuestas = ["1", "si", "y"]
     if respuesta in posibles_respuestas:
         os.remove(nombre)
-        print(
-            "\nSe eliminó la cuenta %s\n"
-            % nombre.strip("_DOL.txt").strip("CUENTA")
-        )
+        nombre = extra_char_cleanner(nombre)
+        print(f"\nSe eliminó la cuenta {nombre}\n")
     else:
-        print(
-            "\nNo se eliminó la cuenta %s\n"
-            % nombre.strip("_DOL.txt").strip("CUENTA")
-        )
+        nombre = extra_char_cleanner(nombre)
+        print(f"\nNo se eliminó la cuenta {nombre}\n")
 
 
 def lista_cuentas():
@@ -303,9 +313,7 @@ def asignador_cuentas():
         # voy armando un diccionario que asigna un numero a cada cuenta
         dic.update({str(i + 1): elem})
         # defino una variable sin sufijos para printear
-        cuenta_str = (
-            elem.replace("CUENTA", "").replace("_DOL", "").replace(".txt", "")
-        )
+        cuenta_str = extra_char_cleanner(elem)
         # actualizo el string final que se imprime en consola
         Cuentas += "\n" + str(i + 1) + ": " + cuenta_str + "\n"
     # Meto un input de teclado
@@ -345,11 +353,11 @@ def totales():
                 total_pesos += valor_elem
                 total += valor_elem
         except IndexError:
-            total.append(0)
+            pass
     # Reciclo las variables reescribiéndolas
     total = round(total, 2)
     total_pesos = round(total_pesos, 2)
-    total_dolares = round(total_dol, 2)
+    total_dol = round(total_dol, 2)
     dic = {"total": total, "total_pesos": total_pesos, "total_dol": total_dol}
     return dic
 
@@ -491,33 +499,32 @@ def gasto():
     extraccion = "0.00"  # esto siempre debería ser 0 al hacer un gasto
     if len(datos) == 0:
         return print("\nNo hay dinero en la cuenta\n")
+    valor = input("\nValor del gasto\n")
+    if datos[-1, 2] < float(valor):
+        print("\nNo hay dinero suficiente en la cuenta\n")
     else:
-        valor = input("\nValor del gasto\n")
-        if datos[-1, 2] < float(valor):
-            print("\nNo hay dinero suficiente en la cuenta\n")
-        else:
-            categoria = input("\nCategoría: \n")
-            subcategoria = input("\nSubcategoría: \n")
-            descripcion = input("\nDescripción: \n")
-            total = str(round(datos[-1, 2] - float(valor), 2))
-            balance = "0"  # TODO: ver si balance es necesario
-            columns = [
-                fecha,
-                hora,
-                total,
-                ingreso,
-                extraccion,
-                valor,
-                categoria,
-                subcategoria,
-                descripcion,
-                balance,
-            ]
-            # Escribo la fila que se va a appendear al archivo
-            fila = "\t".join(columns) + "\n"
-            # La appendeo al archivo
-            with open(nombre, "a") as micuenta:
-                micuenta.write(fila)
+        categoria = input("\nCategoría: \n")
+        subcategoria = input("\nSubcategoría: \n")
+        descripcion = input("\nDescripción: \n")
+        total = str(round(datos[-1, 2] - float(valor), 2))
+        balance = "0"  # TODO: ver si balance es necesario
+        columns = [
+            fecha,
+            hora,
+            total,
+            ingreso,
+            extraccion,
+            valor,
+            categoria,
+            subcategoria,
+            descripcion,
+            balance,
+        ]
+        # Escribo la fila que se va a appendear al archivo
+        fila = "\t".join(columns) + "\n"
+        # La appendeo al archivo
+        with open(nombre, "a") as micuenta:
+            micuenta.write(fila)
     dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
     print(
         "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
@@ -542,7 +549,8 @@ def transferencia():
     # Si la cuenta de saldia está vacía, o no tiene dinero, se cancela la
     # transferencia
     if len(info_salida) == 0 or info_salida["Total"].values[-1] == 0:
-        return print("\nNo hay dinero en la cuenta %s\n" % nombre_salida[:-10])
+        nombre_salida = extra_char_cleanner(nombre_salida)
+        return print(f"\nNo hay dinero en la cuenta {nombre_salida}\n")
     # Abro la cuenta de entrada
     print("cuenta entrada:")
     nombre_entrada = asignador_cuentas()
@@ -561,23 +569,19 @@ def transferencia():
     valor = input("\nCantidad de dinero a transferir\n")
     tot_salida_i = info_salida["Total"].values[-1]
     if tot_salida_i < float(valor):
-        print(
-            "\nNo hay dinero suficiente en la cuenta %s" % nombre_salida[:-10]
-        )
+        nombre_salida = extra_char_cleanner(nombre_salida)
+        print(f"\nNo hay dinero suficiente en la cuenta {nombre_salida}")
     else:
         categoria = "Transferencia"
         subcategoria_salida = "Transferencia de salida"
-        descripcion_salida = "Transferencia a %s" % nombre_entrada.strip(
-            "CUENTA.txt"
-        )
+        nombre_entrada = extra_char_cleanner(nombre_entrada)
+        descripcion_salida = f"Transferencia a {nombre_entrada}"
         subcategoria_entrada = "Transferencia de entrada"
-        descripcion_entrada = "Transferencia de %s" % nombre_salida.strip(
-            "CUENTA.txt"
-        )
+        nombre_salida = extra_char_cleanner(nombre_salida)
+        descripcion_entrada = f"Transferencia de {nombre_salida}"
         tot_salida_f = str(round(tot_salida_i - float(valor), 2))
         tot_entrada_f = str(round(tot_entrada_i + float(valor), 2))
         balance = gasto = extraccion = ingreso = "0.00"
-        # TODO: ver si balance es necesario
         columns_in = [
             fecha,
             hora,
