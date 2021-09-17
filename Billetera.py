@@ -359,6 +359,44 @@ def totales():
     return dic
 
 
+def operation_inputs(operation: str):
+    """
+    Non-user operation:
+    generates de columns that will be append into the account file
+    """
+    date = Fecha()["Fecha"]
+    hour = Fecha()["hora"]
+    income = expense = extraction = total = "0.00"
+    if operation == "income":
+        income = input("\nCantidad de dinero a ingresar\n")
+    elif operation == "expense":
+        expense = input("\nValor del gasto\n")
+    elif operation == "extraction":
+        extraction = input("\nCantidad de dinero a extraer\n")
+    elif operation == "transfer":
+        # transfer = input("\nCantidad de dinero a transferir\n")
+        pass
+    elif operation == "readjust":
+        total = input("\nIngrese el saldo actual\n")
+    category = input("\nCategoría: \n")
+    subcategory = input("\nSubcategoría: \n")
+    description = input("\nDescripción: \n")
+    balance = "0.00"
+    columns_dict = {
+        "date": date,
+        "hour": hour,
+        "total": total,
+        "income": income,
+        "extraction": extraction,
+        "expense": expense,
+        "category": category,
+        "subcategory": subcategory,
+        "description": description,
+        "balance": balance,
+    }
+    return columns_dict
+
+
 # %%
 
 
@@ -376,41 +414,23 @@ def ingreso():
     """
     file_name = asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    datos = contenido_cuenta.values
-    fecha = Fecha()["Fecha"]
-    hora = Fecha()["hora"]
-    ingreso = input("\nCantidad de dinero a ingresar\n")
-    categoria = input("\nCategoría: \n")
-    subcategoria = input("\nSubcategoría: \n")
-    descripcion = input("\nDescripción: \n")
-    extraccion = "0.00"  # esto siempre debería ser 0 al ingresar dinero
-    gasto = "0.00"  # esto siempre debería ser 0 al ingresar dinero
-    if len(datos) == 0:
-        total = ingreso
+    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
+    columns = operation_inputs(operation="income")
+    if len(acc_data) == 0:
+        columns["total"] = new_total = columns["income"]
     else:
-        total = str(round(float(ingreso) + datos[-1, 2], 2))
-    balance = "0"
-    columns = [
-        fecha,
-        hora,
-        total,
-        ingreso,
-        extraccion,
-        gasto,
-        categoria,
-        subcategoria,
-        descripcion,
-        balance,
-    ]
+        last_total = acc_data["Total"].values[-1]
+        new_total = float(columns["income"]) + last_total
+        columns["total"] = f"{new_total:.2f}"
+    # redefine columns from dict to list
+    columns = list(columns.values())
     # Escribo la fila que se va a appendear al archivo
-    fila = "\t".join(columns) + "\n"
+    row = "\t".join(columns) + "\n"
     # La appendeo al archivo
     with open(file_name, "a") as micuenta:
-        micuenta.write(fila)
-    dinero_final = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
+        micuenta.write(row)
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero en cuenta: ${new_total}\n",
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
@@ -429,46 +449,25 @@ def extraccion():
     file
     """
     file_name = asignador_cuentas()
-    # se fija si el archivo de la cuenta existe
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    datos = contenido_cuenta.values
-    fecha = Fecha()["Fecha"]
-    hora = Fecha()["hora"]
-    ingreso = "0.00"  # esto siempre debería ser 0 al extraer dinero
-    gasto = "0.00"  # esto es 0 por definicion de extraccion =/= gasto
-    if len(datos) == 0:
-        print("\nAún no se ha ingresado dinero en la cuenta\n")
-    else:
-        extraccion = input("\nCantidad de dinero a extraer\n")
-        if datos[-1, 2] < float(extraccion):
-            print("\nNo hay dinero suficiente en la cuenta\n")
-        else:
-            categoria = input("\nCategoría: \n")
-            subcategoria = input("\nSubcategoría: \n")
-            descripcion = input("\nDescripción: \n")
-            total = str(round(datos[-1, 2] - float(extraccion), 2))
-            balance = "0"
-            columns = [
-                fecha,
-                hora,
-                total,
-                ingreso,
-                extraccion,
-                gasto,
-                categoria,
-                subcategoria,
-                descripcion,
-                balance,
-            ]
-            # Escribo la fila que se va a appendear al archivo
-            fila = "\t".join(columns) + "\n"
-            # La appendeo al archivo
-            with open(file_name, "a") as micuenta:
-                micuenta.write(fila)
-    dinero_final = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
+    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
+    if len(acc_data) == 0:
+        return print("\nAún no se ha ingresado dinero en la cuenta\n")
+    last_total = acc_data["Total"].values[-1]
+    columns = operation_inputs("extraction")
+    if last_total < float(columns["extraction"]):
+        return print("\nNo hay dinero suficiente en la cuenta\n")
+    new_total = last_total - float(columns["extraction"])
+    columns["total"] = f"{new_total:.2f}"
+    # redefine columns from dict to list
+    columns = list(columns.values())
+    # Escribo la fila que se va a appendear al archivo
+    row = "\t".join(columns) + "\n"
+    # La appendeo al archivo
+    with open(file_name, "a") as micuenta:
+        micuenta.write(row)
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero en cuenta: ${new_total:.2f}\n"
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
@@ -488,43 +487,24 @@ def gasto():
     """
     file_name = asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    datos = contenido_cuenta.values
-    fecha = Fecha()["Fecha"]
-    hora = Fecha()["hora"]
-    ingreso = "0.00"  # esto siempre debería ser 0 al hacer un gasto
-    extraccion = "0.00"  # esto siempre debería ser 0 al hacer un gasto
-    if len(datos) == 0:
+    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
+    if len(acc_data) == 0:
         return print("\nNo hay dinero en la cuenta\n")
-    valor = input("\nValor del gasto\n")
-    if datos[-1, 2] < float(valor):
-        print("\nNo hay dinero suficiente en la cuenta\n")
-    else:
-        categoria = input("\nCategoría: \n")
-        subcategoria = input("\nSubcategoría: \n")
-        descripcion = input("\nDescripción: \n")
-        total = str(round(datos[-1, 2] - float(valor), 2))
-        balance = "0"
-        columns = [
-            fecha,
-            hora,
-            total,
-            ingreso,
-            extraccion,
-            valor,
-            categoria,
-            subcategoria,
-            descripcion,
-            balance,
-        ]
-        # Escribo la fila que se va a appendear al archivo
-        fila = "\t".join(columns) + "\n"
-        # La appendeo al archivo
-        with open(file_name, "a") as micuenta:
-            micuenta.write(fila)
-    dinero_final = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
+    last_total = acc_data["Total"].values[-1]
+    columns = operation_inputs("expense")
+    if last_total < float(columns["expense"]):
+        return print("\nNo hay dinero suficiente en la cuenta\n")
+    new_total = last_total - float(columns["expense"])
+    columns["total"] = f"{new_total:.2f}"
+    # redefine columns from dict to list
+    columns = list(columns.values())
+    # Escribo la fila que se va a appendear al archivo
+    row = "\t".join(columns) + "\n"
+    # La appendeo al archivo
+    with open(file_name, "a") as micuenta:
+        micuenta.write(row)
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        "\nDinero en cuenta: ${new_total:.2f}\n",
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
