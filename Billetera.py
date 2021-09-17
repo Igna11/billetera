@@ -45,10 +45,10 @@ TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
 
 def Fecha():
     """Generates a dictionary with date an time in a latin-format: d-m-y"""
-    fecha_hora = datetime.now()
-    fecha = fecha_hora.strftime("%d-%m-%Y")
-    hora = fecha_hora.strftime("%H:%M:%S")
-    return {"Fecha": fecha, "hora": hora}
+    time = datetime.now()
+    date = time.strftime("%d-%m-%Y")
+    hour = time.strftime("%H:%M:%S")
+    return {"Fecha": date, "hora": hour}
 
 
 def precio_dolar(verbose=False):
@@ -57,10 +57,10 @@ def precio_dolar(verbose=False):
     previuos data from Balances.txt
     """
     # Creo el objeto que maneja la consulta y me devuelve el precio
-    dolar = ConversorMoneda(verbose=verbose)
+    exchange = ConversorMoneda(verbose=verbose)
     try:
         # Trato de conseguir el precio de internet, si no, handleo el error
-        dollar_val = dolar.precio()["Dolar U.S.A"]["Compra"]
+        dollar_val = exchange.precio()["Dolar U.S.A"]["Compra"]
     except AttributeError as error:
         if verbose is True:
             print("Ocurrio el siguiente error durante la consulta:")
@@ -101,7 +101,7 @@ def extra_char_cleanner(charchain: str):
 
 def info():
     """List of functions, utilities and total balances"""
-    funciones = [
+    functions = [
         "Fecha()",
         "precio_dolar()",
         "info()",
@@ -153,8 +153,8 @@ def info():
     # Calculo todos los totales
     totals_dict = totales()
     # Printeo toda la información
-    str_funciones = "\n".join(funciones)
-    print("Funciones:\n", str_funciones)
+    str_functions = "\n".join(functions)
+    print("Funciones:\n", str_functions)
     print("=" * 79)
     print("Cuentas existentes:\n", info_msg)
     print("=" * 79)
@@ -171,21 +171,21 @@ def info():
 
 def crear_usuario():
     """Creates the user's directory where all accounts will be stored"""
-    path_name = input("\nIngrese el nombre de usuario\n") + "USR"
-    user_name = extra_char_cleanner(path_name)
-    if os.path.isdir(path_name):
+    folder_name = input("\nIngrese el nombre de usuario\n") + "USR"
+    user_name = extra_char_cleanner(folder_name)
+    if os.path.isdir(folder_name):
         print(f"\nYa existe el usuario '{user_name}'\n")
     else:
-        os.makedirs(path_name)
+        os.makedirs(folder_name)
         print(f"\nSe creo el usuario '{user_name}'\n")
 
 
 def iniciar_sesion():
     """Changes the current working directory to the user's directory"""
-    path_name = input("\nNombre de usuario\n") + "USR"
-    user_name = extra_char_cleanner(path_name)
-    if os.path.isdir(path_name):
-        path = directory + "/" + path_name
+    folder_name = input("\nNombre de usuario\n") + "USR"
+    user_name = extra_char_cleanner(folder_name)
+    if os.path.isdir(folder_name):
+        path = directory + "/" + folder_name
         os.chdir(path)
         print(f"\nInicio de sesion de {user_name}\n")
         info()
@@ -203,9 +203,9 @@ def eliminar_usuario():
     """
     Delets the directory of the given user, including all data stored in it
     """
-    path_name = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
-    user_name = extra_char_cleanner(path_name)
-    if os.path.isdir(path_name):
+    folder_name = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
+    user_name = extra_char_cleanner(folder_name)
+    if os.path.isdir(folder_name):
         advertencia = (
             f"¿Seguro que queres eliminar el usuario '{user_name}'?\n\n"
             "todos los datos contenidos en él se perderán para siempre.\n\n"
@@ -216,12 +216,12 @@ def eliminar_usuario():
         posibles_respuestas = ["1", "si", "y"]
         if respuesta in posibles_respuestas:
             try:
-                os.rmdir(path_name)
+                os.rmdir(folder_name)
                 print(f"\nSe eliminó el usuario {user_name}\n")
             except OSError:
                 from shutil import rmtree
 
-                rmtree(path_name)
+                rmtree(folder_name)
                 print(f"\nSe eliminó el usr. {user_name} y todos sus datos.")
         else:
             print(f"\nNo se eliminó el usuario {user_name}\n")
@@ -234,17 +234,17 @@ def eliminar_usuario():
 
 def crear_cuenta():
     """Creates a .txt file which name will be the account name"""
-    nombre = input("\nIntroduzca el nombre para la nueva cuenta\n")
-    tipo_cuenta = input(
+    file_name = input("\nIntroduzca el nombre para la nueva cuenta\n")
+    acc_type = input(
         "\nIngresar 0 para cuenta en pesos\n"
         "Ingresar 1 para cuenta en dolares\n"
     )
-    if tipo_cuenta == "0":
-        nombre += "CUENTA.txt"
-    elif tipo_cuenta == "1":
-        nombre += "CUENTA_DOL.txt"
+    if acc_type == "0":
+        file_name += "CUENTA.txt"
+    elif acc_type == "1":
+        file_name += "CUENTA_DOL.txt"
     else:
-        print("\n %s inválido\n" % tipo_cuenta)
+        print(f"\n '{acc_type}' inválido\n")
     columns = [
         "Fecha",
         "hora",
@@ -257,48 +257,46 @@ def crear_cuenta():
         "Descripcion",
         "Balance",
     ]
-    fila = "\t".join(columns) + "\n"
-    with open(nombre, "x") as micuenta:
-        micuenta.write(fila)
-    nombre = extra_char_cleanner(nombre)
-    print(f"\nSe ha creado la cuenta {nombre}\n")
+    row = "\t".join(columns) + "\n"
+    with open(file_name, "x") as micuenta:
+        micuenta.write(row)
+    acc_name = extra_char_cleanner(file_name)
+    print(f"\nSe ha creado la cuenta {acc_name}\n")
 
 
 def eliminar_cuenta():
     """Deletes the .txt file of the given account name"""
-    nombre = asignador_cuentas()
-    advertencia = "¿Seguro que queres eliminar la cuenta?\n\n\
+    file_name = asignador_cuentas()
+    warning = "¿Seguro que queres eliminar la cuenta?\n\n\
     todos los datos contenidos en ella se perderán para siempre.\n\n\
     Ingrese '1', 'si' o 'y' para borrar\n\
     Ingrese cualquier otra cosa para cancelar\n"
-    respuesta = input(advertencia)
-    posibles_respuestas = ["1", "si", "y"]
-    if respuesta in posibles_respuestas:
-        os.remove(nombre)
-        nombre = extra_char_cleanner(nombre)
-        print(f"\nSe eliminó la cuenta {nombre}\n")
+    user_answer = input(warning)
+    possible_answers = ["1", "si", "y"]
+    if user_answer in possible_answers:
+        os.remove(file_name)
+        acc_name = extra_char_cleanner(file_name)
+        print(f"\nSe eliminó la cuenta {acc_name}\n")
     else:
-        nombre = extra_char_cleanner(nombre)
-        print(f"\nNo se eliminó la cuenta {nombre}\n")
+        acc_name = extra_char_cleanner(file_name)
+        print(f"\nNo se eliminó la cuenta {acc_name}\n")
 
 
 def lista_cuentas():
-    """
-    Lists all accounts found inside the given user's directory
-    """
+    """Lists all accounts found inside the given user's directory"""
     file_list = os.listdir()
     acc_list = []
-    for elem in file_list:
-        if "CUENTA.txt" in elem or "CUENTA_DOL.txt" in elem:
-            acc_list.append(elem)
+    for file in file_list:
+        if "CUENTA.txt" in file or "CUENTA_DOL.txt" in file:
+            acc_list.append(file)
     return acc_list
 
 
 def datos_cuenta():
     """Return a pandas DataFrame with data of a given account"""
-    nombre = asignador_cuentas()
-    datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
-    return datos
+    file_name = asignador_cuentas()
+    data = pd.read_csv(file_name, sep="\t", encoding="latin1")
+    return data
 
 
 def asignador_cuentas():
@@ -306,29 +304,28 @@ def asignador_cuentas():
     Account selector in a numerical way: Associates a number to a given account
     so it can be selected by typing the number and not the name
     """
-    alfabeto = lista_cuentas()
-    dic = {}
-    Cuentas = ""
-    for i, elem in enumerate(alfabeto):
-        # voy armando un diccionario que asigna un numero a cada cuenta
-        dic.update({str(i + 1): elem})
+    acc_list = lista_cuentas()
+    acc_range = range(1, len(acc_list) + 1)
+    dic = dict(zip(acc_range, acc_list))
+    account_index = ""
+    for i, acc in enumerate(acc_list):
         # defino una variable sin sufijos para printear
-        cuenta_str = extra_char_cleanner(elem)
+        acc_str = extra_char_cleanner(acc)
         # actualizo el string final que se imprime en consola
-        Cuentas += "\n" + str(i + 1) + ": " + cuenta_str + "\n"
+        account_index += "\n" + str(i + 1) + ": " + acc_str + "\n"
     # Meto un input de teclado
     while True:
-        numero_cta = input("\nElija la cuenta\n" + Cuentas + "\n")
+        acc_number = int(input("\nElija la cuenta\n" + account_index + "\n"))
         try:
-            nombre_cuenta = dic[numero_cta]
-            return nombre_cuenta
+            acc_name = dic[acc_number]
+            return acc_name
         except KeyError:
-            print("=" * 50)
+            print("=" * 79)
             print(
-                "\nValor elegido: '%s' erroneo, intente de nuevo." % numero_cta
+                f"\nValor elegido: '{acc_number}' erroneo, intente de nuevo."
             )
             print("Presione Ctrol+C para salir\n")
-            print("=" * 50)
+            print("=" * 79)
 
 
 def totales():
@@ -340,13 +337,13 @@ def totales():
     total = 0
     total_pesos = 0
     total_dol = 0
-    for elem in acc_list:
-        df_data = pd.read_csv(elem, sep="\t", encoding="latin1")
+    for acc in acc_list:
+        df_data = pd.read_csv(acc, sep="\t", encoding="latin1")
         # Si la cuenta no es nueva, entonces busca el total, si no, al no tener
         # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
         try:
             valor_elem = float(df_data["Total"].values[-1])
-            if "DOL" in elem:
+            if "DOL" in acc:
                 total_dol += valor_elem
                 total += valor_elem * dollar_val
             else:
@@ -377,9 +374,9 @@ def ingreso():
     saves the data into the given account and appends one row into the balance
     file
     """
-    nombre = asignador_cuentas()
+    file_name = asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
+    contenido_cuenta = pd.read_csv(file_name, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
@@ -393,7 +390,7 @@ def ingreso():
         total = ingreso
     else:
         total = str(round(float(ingreso) + datos[-1, 2], 2))
-    balance = "0"  # TODO: ver si balance es necesario
+    balance = "0"
     columns = [
         fecha,
         hora,
@@ -409,9 +406,9 @@ def ingreso():
     # Escribo la fila que se va a appendear al archivo
     fila = "\t".join(columns) + "\n"
     # La appendeo al archivo
-    with open(nombre, "a") as micuenta:
+    with open(file_name, "a") as micuenta:
         micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
+    dinero_final = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
     print(
         "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
         f"\nDinero total {totales()['total']:.2f}\n",
@@ -431,10 +428,10 @@ def extraccion():
     saves the data into the given account and appends one row into the balance
     file
     """
-    nombre = asignador_cuentas()
+    file_name = asignador_cuentas()
     # se fija si el archivo de la cuenta existe
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
+    contenido_cuenta = pd.read_csv(file_name, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
@@ -451,7 +448,7 @@ def extraccion():
             subcategoria = input("\nSubcategoría: \n")
             descripcion = input("\nDescripción: \n")
             total = str(round(datos[-1, 2] - float(extraccion), 2))
-            balance = "0"  # TODO: ver si balance es necesario
+            balance = "0"
             columns = [
                 fecha,
                 hora,
@@ -467,9 +464,9 @@ def extraccion():
             # Escribo la fila que se va a appendear al archivo
             fila = "\t".join(columns) + "\n"
             # La appendeo al archivo
-            with open(nombre, "a") as micuenta:
+            with open(file_name, "a") as micuenta:
                 micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
+    dinero_final = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
     print(
         "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
         f"\nDinero total {totales()['total']:.2f}\n",
@@ -489,9 +486,9 @@ def gasto():
     saves the data into the given account and appends one row into the balance
     file
     """
-    nombre = asignador_cuentas()
+    file_name = asignador_cuentas()
     # Abre y lee los datos de la cuenta
-    contenido_cuenta = pd.read_csv(nombre, sep="\t", encoding="latin1")
+    contenido_cuenta = pd.read_csv(file_name, sep="\t", encoding="latin1")
     datos = contenido_cuenta.values
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
@@ -507,7 +504,7 @@ def gasto():
         subcategoria = input("\nSubcategoría: \n")
         descripcion = input("\nDescripción: \n")
         total = str(round(datos[-1, 2] - float(valor), 2))
-        balance = "0"  # TODO: ver si balance es necesario
+        balance = "0"
         columns = [
             fecha,
             hora,
@@ -523,9 +520,9 @@ def gasto():
         # Escribo la fila que se va a appendear al archivo
         fila = "\t".join(columns) + "\n"
         # La appendeo al archivo
-        with open(nombre, "a") as micuenta:
+        with open(file_name, "a") as micuenta:
             micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
+    dinero_final = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
     print(
         "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
         f"\nDinero total {totales()['total']:.2f}\n",
@@ -544,41 +541,41 @@ def transferencia():
     """
     # Abro la cuenta de salida
     print("Cuenta salida:")
-    nombre_salida = asignador_cuentas()
-    info_salida = pd.read_csv(nombre_salida, sep="\t", encoding="latin1")
+    file_name_out = asignador_cuentas()
+    info_out = pd.read_csv(file_name_out, sep="\t", encoding="latin1")
     # Si la cuenta de saldia está vacía, o no tiene dinero, se cancela la
     # transferencia
-    if len(info_salida) == 0 or info_salida["Total"].values[-1] == 0:
-        nombre_salida = extra_char_cleanner(nombre_salida)
-        return print(f"\nNo hay dinero en la cuenta {nombre_salida}\n")
+    if len(info_out) == 0 or info_out["Total"].values[-1] == 0:
+        acc_name_out = extra_char_cleanner(file_name_out)
+        return print(f"\nNo hay dinero en la cuenta {acc_name_out}\n")
     # Abro la cuenta de entrada
     print("cuenta entrada:")
-    nombre_entrada = asignador_cuentas()
-    info_entrada = pd.read_csv(nombre_entrada, sep="\t", encoding="latin1")
+    file_name_in = asignador_cuentas()
+    info_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
     try:
-        tot_entrada_i = info_entrada["Total"].values[-1]
+        tot_entrada_i = info_in["Total"].values[-1]
     except IndexError:
         tot_entrada_i = 0.0
     # No permito transferencias a una misma cuenta.
-    if nombre_entrada == nombre_salida:
+    if file_name_in == file_name_out:
         return print("\nNo tiene sentido transferir a una misma cuenta!!\n")
     # Fecha y hora
     fecha = Fecha()["Fecha"]
     hora = Fecha()["hora"]
     # Valor a transferir
     valor = input("\nCantidad de dinero a transferir\n")
-    tot_salida_i = info_salida["Total"].values[-1]
+    tot_salida_i = info_out["Total"].values[-1]
     if tot_salida_i < float(valor):
-        nombre_salida = extra_char_cleanner(nombre_salida)
-        print(f"\nNo hay dinero suficiente en la cuenta {nombre_salida}")
+        acc_name_out = extra_char_cleanner(file_name_out)
+        print(f"\nNo hay dinero suficiente en la cuenta {acc_name_out}")
     else:
         categoria = "Transferencia"
         subcategoria_salida = "Transferencia de salida"
-        nombre_entrada = extra_char_cleanner(nombre_entrada)
-        descripcion_salida = f"Transferencia a {nombre_entrada}"
+        acc_name_in = extra_char_cleanner(file_name_in)
+        descripcion_salida = f"Transferencia a {acc_name_in}"
         subcategoria_entrada = "Transferencia de entrada"
-        nombre_salida = extra_char_cleanner(nombre_salida)
-        descripcion_entrada = f"Transferencia de {nombre_salida}"
+        acc_name_out = extra_char_cleanner(file_name_out)
+        descripcion_entrada = f"Transferencia de {acc_name_out}"
         tot_salida_f = str(round(tot_salida_i - float(valor), 2))
         tot_entrada_f = str(round(tot_entrada_i + float(valor), 2))
         balance = gasto = extraccion = ingreso = "0.00"
@@ -610,9 +607,9 @@ def transferencia():
         fila_entrada = "\t".join(columns_in) + "\n"
         fila_salida = "\t".join(columns_out) + "\n"
         # Las appendeo a los archivos
-        with open(nombre_entrada, "a") as micuenta:
+        with open(file_name_in, "a") as micuenta:
             micuenta.write(fila_entrada)
-        with open(nombre_salida, "a") as micuenta:
+        with open(file_name_out, "a") as micuenta:
             micuenta.write(fila_salida)
 
 
