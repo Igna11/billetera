@@ -99,7 +99,7 @@ def extra_char_cleanner(charchain: str):
     return charchain
 
 
-def info():
+def info(verbose=True):
     """List of functions, utilities and total balances"""
     functions = [
         "Fecha()",
@@ -154,7 +154,8 @@ def info():
     totals_dict = totales()
     # Printeo toda la información
     str_functions = "\n".join(functions)
-    print("Funciones:\n", str_functions)
+    if verbose:
+        print("Funciones:\n", str_functions)
     print("=" * 79)
     print("Cuentas existentes:\n", info_msg)
     print("=" * 79)
@@ -359,29 +360,42 @@ def totales():
     return dic
 
 
-def operation_inputs(operation: str):
+def input_selector():
+    """ 
+    Non-user operation:
+    Intended to be only by operation_selector
+    """
+    category = input("\nCategoría: \n")
+    subcategory = input("\nSubcategoría: \n")
+    description = input("\nDescripción: \n")
+    return category, subcategory, description
+
+
+def operation_seletor(operation: str) -> dict:
     """
     Non-user operation:
     generates de columns that will be append into the account file
     """
     date = Fecha()["Fecha"]
     hour = Fecha()["hora"]
-    income = expense = extraction = total = "0.00"
+    income = expense = extraction = total = balance = "0.00"
     if operation == "income":
         income = input("\nCantidad de dinero a ingresar\n")
+        category, subcategory, description = input_selector()
     elif operation == "expense":
         expense = input("\nValor del gasto\n")
+        category, subcategory, description = input_selector()
     elif operation == "extraction":
         extraction = input("\nCantidad de dinero a extraer\n")
+        category, subcategory, description = input_selector()
     elif operation == "transfer":
-        # transfer = input("\nCantidad de dinero a transferir\n")
-        pass
+        income = extraction = input("\nCantidad de dinero a transferir\n")
+        expense = "0.00"
+        category = "Transferencia"
+        subcategory = ""
+        description = ""
     elif operation == "readjust":
         total = input("\nIngrese el saldo actual\n")
-    category = input("\nCategoría: \n")
-    subcategory = input("\nSubcategoría: \n")
-    description = input("\nDescripción: \n")
-    balance = "0.00"
     columns_dict = {
         "date": date,
         "hour": hour,
@@ -415,7 +429,9 @@ def ingreso():
     file_name = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    columns = operation_inputs(operation="income")
+    columns = operation_seletor(operation="income")
+    if float(columns["income"]) == 0:
+        return print("\nNo se está ingresando dinero.\n")
     if len(acc_data) == 0:
         columns["total"] = new_total = columns["income"]
     else:
@@ -454,7 +470,7 @@ def extraccion():
     if len(acc_data) == 0:
         return print("\nAún no se ha ingresado dinero en la cuenta\n")
     last_total = acc_data["Total"].values[-1]
-    columns = operation_inputs("extraction")
+    columns = operation_seletor("extraction")
     if last_total < float(columns["extraction"]):
         return print("\nNo hay dinero suficiente en la cuenta\n")
     new_total = last_total - float(columns["extraction"])
@@ -491,7 +507,7 @@ def gasto():
     if len(acc_data) == 0:
         return print("\nNo hay dinero en la cuenta\n")
     last_total = acc_data["Total"].values[-1]
-    columns = operation_inputs("expense")
+    columns = operation_seletor("expense")
     if last_total < float(columns["expense"]):
         return print("\nNo hay dinero suficiente en la cuenta\n")
     new_total = last_total - float(columns["expense"])
@@ -504,7 +520,7 @@ def gasto():
     with open(file_name, "a") as micuenta:
         micuenta.write(row)
     print(
-        "\nDinero en cuenta: ${new_total:.2f}\n",
+        f"\nDinero en cuenta: ${new_total:.2f}\n",
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
@@ -519,78 +535,69 @@ def transferencia():
     returns a message and nothing happens.
     No balance change are made with this operation.
     """
-    # Abro la cuenta de salida
+    # Select the outgoing account, open its data, save its name and its total
     print("Cuenta salida:")
     file_name_out = asignador_cuentas()
-    info_out = pd.read_csv(file_name_out, sep="\t", encoding="latin1")
-    # Si la cuenta de saldia está vacía, o no tiene dinero, se cancela la
-    # transferencia
-    if len(info_out) == 0 or info_out["Total"].values[-1] == 0:
-        acc_name_out = extra_char_cleanner(file_name_out)
-        return print(f"\nNo hay dinero en la cuenta {acc_name_out}\n")
-    # Abro la cuenta de entrada
+    acc_name_out = extra_char_cleanner(file_name_out)
+    acc_data_out = pd.read_csv(file_name_out, sep="\t", encoding="latin1")
+    # check if the acc is empty or with 0 total
+    if len(acc_data_out) == 0:
+        return print(f"\nNo hay datos en la cuenta {acc_name_out}\n")
+    last_total_out = acc_data_out["Total"].values[-1]
+    if last_total_out == 0:
+        return print(f"\nFondos insuficientes en la cuenta {acc_name_out}\n")
+
+    # Select de incoming account, open its data, save its name and its total
     print("cuenta entrada:")
     file_name_in = asignador_cuentas()
-    info_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
+    acc_name_in = extra_char_cleanner(file_name_in)
+    acc_data_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
     try:
-        tot_entrada_i = info_in["Total"].values[-1]
+        last_total_in = acc_data_in["Total"].values[-1]
     except IndexError:
-        tot_entrada_i = 0.0
-    # No permito transferencias a una misma cuenta.
+        last_total_in = 0.0
+
+    # Transfers with the same account are not allowed
     if file_name_in == file_name_out:
         return print("\nNo tiene sentido transferir a una misma cuenta!!\n")
-    # Fecha y hora
-    fecha = Fecha()["Fecha"]
-    hora = Fecha()["hora"]
-    # Valor a transferir
-    valor = input("\nCantidad de dinero a transferir\n")
-    tot_salida_i = info_out["Total"].values[-1]
-    if tot_salida_i < float(valor):
-        acc_name_out = extra_char_cleanner(file_name_out)
-        print(f"\nNo hay dinero suficiente en la cuenta {acc_name_out}")
-    else:
-        categoria = "Transferencia"
-        subcategoria_salida = "Transferencia de salida"
-        acc_name_in = extra_char_cleanner(file_name_in)
-        descripcion_salida = f"Transferencia a {acc_name_in}"
-        subcategoria_entrada = "Transferencia de entrada"
-        acc_name_out = extra_char_cleanner(file_name_out)
-        descripcion_entrada = f"Transferencia de {acc_name_out}"
-        tot_salida_f = str(round(tot_salida_i - float(valor), 2))
-        tot_entrada_f = str(round(tot_entrada_i + float(valor), 2))
-        balance = gasto = extraccion = ingreso = "0.00"
-        columns_in = [
-            fecha,
-            hora,
-            tot_entrada_f,
-            valor,
-            extraccion,
-            gasto,
-            categoria,
-            subcategoria_entrada,
-            descripcion_entrada,
-            balance,
-        ]
-        columns_out = [
-            fecha,
-            hora,
-            tot_salida_f,
-            ingreso,
-            valor,
-            gasto,
-            categoria,
-            subcategoria_salida,
-            descripcion_salida,
-            balance,
-        ]
-        # Escribo las filas que se van a appendear al archivo
-        fila_entrada = "\t".join(columns_in) + "\n"
-        fila_salida = "\t".join(columns_out) + "\n"
-        # Las appendeo a los archivos
-        with open(file_name_in, "a") as micuenta:
-            micuenta.write(fila_entrada)
-        with open(file_name_out, "a") as micuenta:
-            micuenta.write(fila_salida)
+
+    # Format all de columns correctly
+    columns_in = operation_seletor(operation="transfer")
+    columns_out = columns_in.copy()
+    columns_in["extraction"] = "0.00"
+    columns_in["subcategory"] = "Transferencia de entrada"
+    columns_in["description"] = f"Transferencia de {acc_name_out}"
+    columns_out["income"] = "0.00"
+    columns_out["subcategory"] = "Transferencia de salida"
+    columns_out["description"] = f"Transferencia a {acc_name_in}"
+
+    # Insuficient if the amount to transfer is grater than the last_total_out
+    if last_total_out < float(columns_in["income"]):
+        return print(f"\nFondos insuficiente en la cuenta {acc_name_out}")
+
+    # New total and columns total
+    new_total_in = float(columns_in["income"]) + last_total_in
+    columns_in["total"] = f"{new_total_in:.2f}"
+    new_total_out = last_total_out - float(columns_out["extraction"])
+    columns_out["total"] = f"{new_total_out:.2f}"
+
+    # Dict columns to list columns
+    columns_in = list(columns_in.values())
+    columns_out = list(columns_out.values())
+
+    # List columns to char string to be written
+    row_in = "\t".join(columns_in) + "\n"
+    row_out = "\t".join(columns_out) + "\n"
+
+    # Append the new data
+    with open(file_name_in, "a") as myaccount:
+        myaccount.write(row_in)
+    with open(file_name_out, "a") as myaccount:
+        myaccount.write(row_out)
+    print(
+        f"\nDinero en {acc_name_in}: ${new_total_in:.2f}\n",
+        f"\nDinero en {acc_name_out}: ${new_total_out:.2f}\n",
+    )
 
 
 def reajuste():
