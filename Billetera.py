@@ -43,7 +43,7 @@ TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
 """
 
 
-def Fecha():
+def date_gen():
     """Generates a dictionary with date an time in a latin-format: d-m-y"""
     time = datetime.now()
     date = time.strftime("%d-%m-%Y")
@@ -102,7 +102,7 @@ def extra_char_cleanner(charchain: str):
 def info(verbose=True):
     """List of functions, utilities and total balances"""
     functions = [
-        "Fecha()",
+        "date_gen()",
         "precio_dolar()",
         "info()",
         "crear_usuario()",
@@ -361,7 +361,7 @@ def totales():
 
 
 def input_selector():
-    """ 
+    """
     Non-user operation:
     Intended to be only by operation_selector
     """
@@ -376,8 +376,8 @@ def operation_seletor(operation: str) -> dict:
     Non-user operation:
     generates de columns that will be append into the account file
     """
-    date = Fecha()["Fecha"]
-    hour = Fecha()["hora"]
+    date = date_gen()["Fecha"]
+    hour = date_gen()["hora"]
     income = expense = extraction = total = balance = "0.00"
     if operation == "income":
         income = input("\nCantidad de dinero a ingresar\n")
@@ -392,10 +392,11 @@ def operation_seletor(operation: str) -> dict:
         income = extraction = input("\nCantidad de dinero a transferir\n")
         expense = "0.00"
         category = "Transferencia"
-        subcategory = ""
-        description = ""
-    elif operation == "readjust":
+        subcategory = description = ""
+    elif operation == "readjustment":
         total = input("\nIngrese el saldo actual\n")
+        category = "Reajuste"
+        subcategory = description = ""
     columns_dict = {
         "date": date,
         "hour": hour,
@@ -446,7 +447,7 @@ def ingreso():
     with open(file_name, "a") as micuenta:
         micuenta.write(row)
     print(
-        f"\nDinero en cuenta: ${new_total}\n",
+        f"\nDinero en cuenta: ${new_total:.2f}\n",
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
@@ -610,60 +611,42 @@ def reajuste():
     Saves the data into the given account and appends one row into the balance
     file
     """
-    nombre = asignador_cuentas()
-    # Abre y lee los datos de la cuenta
-    acc_total = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
-    acc_total = acc_total.values[-1]
-    fecha = Fecha()["Fecha"]
-    hora = Fecha()["hora"]
-    total = input("\nIngrese el saldo actual\n")
-    categoria = "Reajuste"
-    if acc_total < float(total):
-        subcategoria = "Positivo"
-        descripcion = "Reajuste positivo de saldo"
-        extraccion = "0.00"
-        gasto = "0.00"
-        balance = "0.00"
-        ingreso = str(round(float(total) - acc_total, 2))
-        columns = [
-            fecha,
-            hora,
-            total,
-            ingreso,
-            extraccion,
-            gasto,
-            categoria,
-            subcategoria,
-            descripcion,
-            balance,
-        ]
-    else:
-        subcategoria = "Negativo"
-        descripcion = "Reajuste negativo de saldo"
-        ingreso = "0.00"
-        gasto = "0.00"
-        balance = "0.00"
-        extraccion = str(round(acc_total - float(total), 2))
-        columns = [
-            fecha,
-            hora,
-            total,
-            ingreso,
-            extraccion,
-            gasto,
-            categoria,
-            subcategoria,
-            descripcion,
-            balance,
-        ]
+    file_name = asignador_cuentas()
+    acc_name = extra_char_cleanner(file_name)
+    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
+    # If empty account, then do nothing
+    if len(acc_data) == 0:
+        return print(f"\nNo hay datos en la cuenta {acc_name}\n")
+    last_total = acc_data.values[-1]
+    columns = operation_seletor(operation="readjustment")
+    new_total = float(columns["total"])
+    # Negative values not allowed
+    if new_total < 0:
+        return print("\nNo se puede reajustar a valores negativos!\n")
+    # No readjustment
+    if last_total == new_total:
+        return print("\nNo hay nada que reajustar.\n")
+    # Positive readjustment
+    if last_total < new_total:
+        columns["subcategory"] = "Positivo"
+        columns["description"] = "Reajuste positivo de saldo"
+        income = new_total - last_total
+        columns["income"] = f"{income:.2f}"
+    # Negative readjustment
+    elif last_total > new_total:
+        columns["subcategory"] = "Negativo"
+        columns["description"] = "Reajuste negativo de saldo"
+        extraction = last_total - new_total
+        columns["extraction"] = f"{extraction:.2f}"
+    # Redefine columns from dict to list
+    columns = list(columns.values())
     # Escribo la fila que se va a appendear al archivo
-    fila = "\t".join(columns) + "\n"
+    row = "\t".join(columns) + "\n"
     # La appendeo al archivo
-    with open(nombre, "a") as micuenta:
-        micuenta.write(fila)
-    dinero_final = pd.read_csv(nombre, sep="\t", encoding="latin1")["Total"]
+    with open(file_name, "a") as myaccount:
+        myaccount.write(row)
     print(
-        "\nDinero en cuenta: $%.2f\n" % dinero_final.values[-1],
+        f"\nDinero en cuenta: ${new_total:.2f}",
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
@@ -681,23 +664,19 @@ def balances():
     functions.
     """
     total, total_pesos, total_dolares = list(totales().values())
-    fecha = Fecha()["Fecha"]
-    hora = Fecha()["hora"]
+    fecha = date_gen()["Fecha"]
+    hora = date_gen()["hora"]
     if not os.path.isfile("Balance.txt"):
         with open("Balance.txt", "x") as balance:
             balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
             balance.write(
-                "%s\t%s\t%s\t%s\t%s\n"
-                % (hora, fecha, total, total_pesos, total_dolares)
+                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
             )
     elif os.path.isfile("Balance.txt"):
         with open("Balance.txt", "a") as balance:
             balance.write(
-                "%s\t%s\t%s\t%s\t%s\n"
-                % (hora, fecha, total, total_pesos, total_dolares)
+                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
             )
-    else:
-        print("\nO Se ErRoR rE lOcO\n")
 
 
 def balance_graf():
