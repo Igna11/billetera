@@ -44,7 +44,10 @@ TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
 
 
 def date_gen():
-    """Generates a dictionary with date an time in a latin-format: d-m-y"""
+    """
+    Non-user function:
+    Generates a dictionary with date an time in a latin-format: d-m-y
+    """
     time = datetime.now()
     date = time.strftime("%d-%m-%Y")
     hour = time.strftime("%H:%M:%S")
@@ -87,6 +90,7 @@ def precio_dolar(verbose=False):
 
 def extra_char_cleanner(charchain: str):
     """
+    Non-user function:
     Streaps all chars from the account string name except of its name
     returns the name cleaned
     """
@@ -284,7 +288,9 @@ def eliminar_cuenta():
 
 
 def lista_cuentas():
-    """Lists all accounts found inside the given user's directory"""
+    """
+    Non-user function:
+    Lists all accounts found inside the given user's directory"""
     file_list = os.listdir()
     acc_list = []
     for file in file_list:
@@ -294,7 +300,10 @@ def lista_cuentas():
 
 
 def datos_cuenta():
-    """Return a pandas DataFrame with data of a given account"""
+    """
+    Analysis function:
+    Return a pandas DataFrame with data of a given account
+    """
     file_name = asignador_cuentas()
     data = pd.read_csv(file_name, sep="\t", encoding="latin1")
     return data
@@ -302,6 +311,7 @@ def datos_cuenta():
 
 def asignador_cuentas():
     """
+    Non-user function:
     Account selector in a numerical way: Associates a number to a given account
     so it can be selected by typing the number and not the name
     """
@@ -362,7 +372,7 @@ def totales():
 
 def input_selector():
     """
-    Non-user operation:
+    Non-user function:
     Intended to be only by operation_selector
     """
     category = input("\nCategoría: \n")
@@ -373,7 +383,7 @@ def input_selector():
 
 def operation_seletor(operation: str) -> dict:
     """
-    Non-user operation:
+    Non-user function:
     generates de columns that will be append into the account file
     """
     date = date_gen()["Fecha"]
@@ -654,7 +664,7 @@ def reajuste():
 
 def balances():
     """
-    Non-user operation:
+    Non-user function:
     Appends one row to the balance file everytime an account operation that
     modifies the balance is done.
     If the balance file exists, appends data. If the balance file does not
