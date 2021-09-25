@@ -91,7 +91,7 @@ def precio_dolar(verbose=False):
 def extra_char_cleanner(charchain: str):
     """
     Non-user function:
-    Streaps all chars from the account string name except of its name
+    Strips all chars from the account string name except of its name
     returns the name cleaned
     """
     charchain = (
@@ -108,24 +108,27 @@ def info(verbose=True):
     functions = [
         "date_gen()",
         "precio_dolar()",
+        "extra_char_cleaner()"
         "info()",
         "crear_usuario()",
         "iniciar_sesion()",
         "cerrar_sesion()",
-        "Crear_cuenta()",
-        "Lista_cuentas()",
-        "Datos_cuenta()",
+        "crear_cuenta()",
+        "lista_cuentas()",
+        "datos_cuenta()",
         "asignador_cuentas()",
         "totales()",
-        "Ingreso()",
-        "Extraccion()",
-        "Gasto()",
-        "Transferencia()",
-        "Reajuste()",
+        "input_selector()",
+        "operation_seletor()",
+        "ingreso()",
+        "extraccion()",
+        "gasto()",
+        "transferencia()",
+        "reajuste()",
         "balances()<--NO USAR-ver help",
-        "BalanceGraf()",
-        "Filtro()",
-        "balances()",
+        "balance_graf()",
+        "filtro()",
+        "balances_cta()",
         "balances_totales()",
     ]
     # lista con los nombres de los archivos de cuenta
@@ -786,7 +789,7 @@ def balances_cta(account: str, month: int, year: int):
         & (df_data["Categoria"] != "Transferencia")
     ]
     montly_spend = montly_src["Gasto"].sum()
-    montly_spend += montly_src["Extracciones"].sum()
+    montly_spend += montly_src["Extracciones"].astype("float32").sum()
     montly_earn = montly_src["Ingresos"].sum()
     balance = montly_earn - montly_spend
 
