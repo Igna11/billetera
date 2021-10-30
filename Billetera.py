@@ -836,5 +836,8 @@ def balances_totales(month: int, year: int, verbose=False):
 
 # %%
 
+if __name__ == "__main__":    
+    iniciar_sesion()
 
-iniciar_sesion()
+# %%
+
