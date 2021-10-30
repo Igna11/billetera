@@ -108,7 +108,7 @@ def info(verbose=True):
     functions = [
         "date_gen()",
         "precio_dolar()",
-        "extra_char_cleaner()"
+        "extra_char_cleaner()",
         "info()",
         "crear_usuario()",
         "iniciar_sesion()",
@@ -836,8 +836,5 @@ def balances_totales(month: int, year: int, verbose=False):
 
 # %%
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     iniciar_sesion()
-
-# %%
-
