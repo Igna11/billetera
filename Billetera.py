@@ -836,6 +836,26 @@ def balances_totales(month: int, year: int, verbose=False):
 
 # %%
 def category_spendings(cat: str, subcat="", desc=""):
+    """
+    Analysis function:
+    Easy way to filter all entries with the same category and subcategory from
+    all accounts. 
+        For future implementations: A filter that checks in the description of
+        the entry for a match word or phrase.
+    Parameters
+    ----------
+    cat : str
+        Category
+    subcat : TYPE, optional
+        Subcategory. The default is "".
+    desc : TYPE, optional
+        NOT IMPLEMENTED.
+
+    Returns
+    -------
+    Pandas DataFrame Object.
+        the DataFrame of the filtered information
+    """
     df_final = pd.DataFrame()
     for account in lista_cuentas():
         if "DOL" not in account:
@@ -865,6 +885,28 @@ def category_spendings(cat: str, subcat="", desc=""):
 def monthly_categorical_spendings(
     month: int, year: int, cat: str, subcat="", desc=""
 ):
+    """
+    Analysis function:
+        Easy way to get the total expenses for a given category and/or subcat.
+        for all accounts in a given month.
+    Parameters
+    ----------
+    month : int
+        Month
+    year : int
+        Year
+    cat : str
+        Categry
+    subcat : TYPE, optional
+        Subcategory. The default is "".
+    desc : TYPE, optional
+        NOT IMPLEMENTED.
+
+    Returns
+    -------
+    float
+        The total expenses of that category.
+    """
     df = category_spendings(cat=cat, subcat=subcat, desc=desc)
     total = df[(df.index.month == month) & (df.index.year == year)].Gasto.sum()
     return round(total, 2)
