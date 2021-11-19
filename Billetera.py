@@ -835,6 +835,41 @@ def balances_totales(month: int, year: int, verbose=False):
 
 
 # %%
+def category_spendings(cat: str, subcat="", desc=""):
+    df_final = pd.DataFrame()
+    for account in lista_cuentas():
+        if "DOL" not in account:
+            df_data = pd.read_csv(
+                account,
+                sep="\t",
+                index_col=("Fecha"),
+                parse_dates=True,
+                dayfirst=True,
+                encoding="latin1",
+            )
+            df_data["Account"] = extra_char_cleanner(account)
 
+            if not subcat:
+                df_ = df_data[df_data["Categoria"] == cat]
+            elif subcat:
+                df_ = df_data[
+                    (df_data["Categoria"] == cat)
+                    & (df_data["Subcategoria"] == subcat)
+                ]
+
+            if len(df_):
+                df_final = pd.concat([df_final, df_])
+    return df_final.sort_index()
+
+
+def monthly_categorical_spendings(
+    month: int, year: int, cat: str, subcat="", desc=""
+):
+    df = category_spendings(cat=cat, subcat=subcat, desc=desc)
+    total = df[(df.index.month == month) & (df.index.year == year)].Gasto.sum()
+    return round(total, 2)
+
+
+# %%
 if __name__ == "__main__":
     iniciar_sesion()
