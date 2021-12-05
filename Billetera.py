@@ -790,7 +790,7 @@ def balances_cta(account: str, month: int, year: int):
     ]
     montly_spend = montly_src["Gasto"].sum()
     montly_spend += montly_src["Extracciones"].astype("float32").sum()
-    montly_earn = montly_src["Ingresos"].sum()
+    montly_earn = montly_src["Ingresos"].astype("float32").sum()
     balance = montly_earn - montly_spend
 
     return {
