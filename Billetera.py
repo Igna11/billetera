@@ -103,7 +103,7 @@ def extra_char_cleanner(charchain: str):
     return charchain
 
 
-def info(verbose=True):
+def info(verbose=False):
     """List of functions, utilities and total balances"""
     functions = [
         "date_gen()",
@@ -196,7 +196,7 @@ def iniciar_sesion():
         path = directory + "/" + folder_name
         os.chdir(path)
         print(f"\nInicio de sesion de {user_name}\n")
-        info()
+        info(verbose=True)
     else:
         print(f"\nNo existe el usuario '{user_name}'\n")
 
