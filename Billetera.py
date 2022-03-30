@@ -788,19 +788,19 @@ def balances_cta(account: str, month: int, year: int):
         dayfirst=True,
         encoding="latin1",
     )
-    montly_src = df_data[
+    monthly_src = df_data[
         (df_data.index.month == month)
         & (df_data.index.year == year)
         & (df_data["Categoria"] != "Transferencia")
     ]
-    montly_spend = montly_src["Gasto"].sum()
-    montly_spend += montly_src["Extracciones"].astype("float32").sum()
-    montly_earn = montly_src["Ingresos"].astype("float32").sum()
-    balance = montly_earn - montly_spend
+    monthly_spend = monthly_src["Gasto"].sum()
+    monthly_spend += monthly_src["Extracciones"].astype("float32").sum()
+    monthly_earn = monthly_src["Ingresos"].astype("float32").sum()
+    balance = monthly_earn - monthly_spend
 
     return {
-        "Ingresos_m": round(montly_earn, 2),
-        "Gasto_m": round(montly_spend, 2),
+        "Ingresos_m": round(monthly_earn, 2),
+        "Gasto_m": round(monthly_spend, 2),
         "Balance_m": round(balance, 2),
     }
 
