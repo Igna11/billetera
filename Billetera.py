@@ -40,6 +40,11 @@ TODO    Separar todo este script en módulos.
 
 TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
         (de pesos a dolares o dolares a pesos)
+
+TODO    Implementación de presupuestos: Una función con la cuál setear el
+        presupuesto máximo que se quiere gastar por y/o por categoria y
+        subcategoria por mes. Y que con cada gasto en esa dada categoria avise
+        cuánto queda de presupuesto
 """
 
 
@@ -119,7 +124,7 @@ def info(verbose=False):
         "asignador_cuentas()",
         "totales()",
         "input_selector()",
-        "operation_seletor()",
+        "operation_selector()",
         "ingreso()",
         "extraccion()",
         "gasto()",
@@ -384,7 +389,7 @@ def input_selector():
     return category, subcategory, description
 
 
-def operation_seletor(operation: str) -> dict:
+def operation_selector(operation: str) -> dict:
     """
     Non-user function:
     generates de columns that will be append into the account file
@@ -443,7 +448,7 @@ def ingreso():
     file_name = asignador_cuentas()
     # Abre y lee los datos de la cuenta
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    columns = operation_seletor(operation="income")
+    columns = operation_selector(operation="income")
     if float(columns["income"]) == 0:
         return print("\nNo se está ingresando dinero.\n")
     if len(acc_data) == 0:
@@ -484,7 +489,7 @@ def extraccion():
     if len(acc_data) == 0:
         return print("\nAún no se ha ingresado dinero en la cuenta\n")
     last_total = acc_data["Total"].values[-1]
-    columns = operation_seletor("extraction")
+    columns = operation_selector("extraction")
     if last_total < float(columns["extraction"]):
         return print("\nNo hay dinero suficiente en la cuenta\n")
     new_total = last_total - float(columns["extraction"])
@@ -521,7 +526,7 @@ def gasto():
     if len(acc_data) == 0:
         return print("\nNo hay dinero en la cuenta\n")
     last_total = acc_data["Total"].values[-1]
-    columns = operation_seletor("expense")
+    columns = operation_selector("expense")
     if last_total < float(columns["expense"]):
         return print("\nNo hay dinero suficiente en la cuenta\n")
     new_total = last_total - float(columns["expense"])
@@ -576,7 +581,7 @@ def transferencia():
         return print("\nNo tiene sentido transferir a una misma cuenta!!\n")
 
     # Format all de columns correctly
-    columns_in = operation_seletor(operation="transfer")
+    columns_in = operation_selector(operation="transfer")
     columns_out = columns_in.copy()
     columns_in["extraction"] = "0.00"
     columns_in["subcategory"] = "Transferencia de entrada"
@@ -631,7 +636,7 @@ def reajuste():
     if len(acc_data) == 0:
         return print(f"\nNo hay datos en la cuenta {acc_name}\n")
     last_total = acc_data.values[-1]
-    columns = operation_seletor(operation="readjustment")
+    columns = operation_selector(operation="readjustment")
     new_total = float(columns["total"])
     # Negative values not allowed
     if new_total < 0:
