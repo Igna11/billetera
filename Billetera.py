@@ -378,7 +378,7 @@ def totales():
     return dic
 
 
-def input_selector():
+def input_selector() -> tuple:
     """
     Non-user function:
     Intended to be only by operation_selector
@@ -737,7 +737,7 @@ def balance_graf():
         fillstyle="none",
         label="Total de dolares: u$s%.2f" % data["Total_dolares"].values[-1],
     )
-    plt.grid()
+    plt.grid(which="both", alpha=0.5)
     plt.legend()
     plt.xticks(rotation=25)
     plt.show()
