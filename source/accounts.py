@@ -9,7 +9,14 @@ ingresos
 extracciones
 transferencias
 """
+
+import os
+
 import pandas as pd
+
+from source.misc import extra_char_cleaner
+from source.misc import date_gen
+from source.info import lista_cuentas
 
 
 def crear_cuenta():
@@ -40,7 +47,7 @@ def crear_cuenta():
     row = "\t".join(columns) + "\n"
     with open(file_name, "x") as micuenta:
         micuenta.write(row)
-    acc_name = extra_char_cleanner(file_name)
+    acc_name = extra_char_cleaner(file_name)
     print(f"\nSe ha creado la cuenta {acc_name}\n")
 
 
@@ -55,33 +62,12 @@ def eliminar_cuenta():
     possible_answers = ["1", "si", "y"]
     if user_answer in possible_answers:
         os.remove(file_name)
-        acc_name = extra_char_cleanner(file_name)
+        acc_name = extra_char_cleaner(file_name)
         print(f"\nSe eliminó la cuenta {acc_name}\n")
     else:
-        acc_name = extra_char_cleanner(file_name)
+        acc_name = extra_char_cleaner(file_name)
         print(f"\nNo se eliminó la cuenta {acc_name}\n")
 
-
-def lista_cuentas():
-    """
-    Non-user function:
-    Lists all accounts found inside the given user's directory"""
-    file_list = os.listdir()
-    acc_list = []
-    for file in file_list:
-        if "CUENTA.txt" in file or "CUENTA_DOL.txt" in file:
-            acc_list.append(file)
-    return acc_list
-
-
-def datos_cuenta():
-    """
-    Analysis function:
-    Return a pandas DataFrame with data of a given account
-    """
-    file_name = asignador_cuentas()
-    data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    return data
 
 
 def asignador_cuentas():
@@ -96,7 +82,7 @@ def asignador_cuentas():
     account_index = ""
     for i, acc in enumerate(acc_list):
         # defino una variable sin sufijos para printear
-        acc_str = extra_char_cleanner(acc)
+        acc_str = extra_char_cleaner(acc)
         # actualizo el string final que se imprime en consola
         account_index += "\n" + str(i + 1) + ": " + acc_str + "\n"
     # Meto un input de teclado
@@ -112,37 +98,6 @@ def asignador_cuentas():
             )
             print("Presione Ctrol+C para salir\n")
             print("=" * 79)
-
-
-def totales():
-    """Calculate the total amount of money for all accounts"""
-    # lista con los nombres de los archivos de cuenta
-    acc_list = lista_cuentas()
-    dollar_val = precio_dolar()
-    # lista con el saldo total de dinero de cada cuenta
-    total = 0
-    total_pesos = 0
-    total_dol = 0
-    for acc in acc_list:
-        df_data = pd.read_csv(acc, sep="\t", encoding="latin1")
-        # Si la cuenta no es nueva, entonces busca el total, si no, al no tener
-        # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
-        try:
-            valor_elem = float(df_data["Total"].values[-1])
-            if "DOL" in acc:
-                total_dol += valor_elem
-                total += valor_elem * dollar_val
-            else:
-                total_pesos += valor_elem
-                total += valor_elem
-        except IndexError:
-            pass
-    # Reciclo las variables reescribiéndolas
-    total = round(total, 2)
-    total_pesos = round(total_pesos, 2)
-    total_dol = round(total_dol, 2)
-    dic = {"total": total, "total_pesos": total_pesos, "total_dol": total_dol}
-    return dic
 
 
 def input_selector() -> tuple:

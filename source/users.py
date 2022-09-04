@@ -7,14 +7,21 @@ Módulo para condensar las funciones relacionadas con cuentas
 """
 import os
 
-import pandas as pd
+from source.info import info
 
-from source.misc import extra_char_cleanner
+BASE_PATH = os.path.dirname(os.path.dirname(__file__))
+DATA_PATH = os.path.join(BASE_PATH, "data")
+os.chdir(DATA_PATH)
+
+import pandas as pd
+pd.set_option("display.max_columns", 11)
+
+from source.misc import extra_char_cleaner
 
 def crear_usuario():
     """Creates the user's directory where all accounts will be stored"""
     folder_name = input("\nIngrese el nombre de usuario\n") + "USR"
-    user_name = extra_char_cleanner(folder_name)
+    user_name = extra_char_cleaner(folder_name)
     if os.path.isdir(folder_name):
         print(f"\nYa existe el usuario '{user_name}'\n")
     else:
@@ -25,19 +32,20 @@ def crear_usuario():
 def iniciar_sesion():
     """Changes the current working directory to the user's directory"""
     folder_name = input("\nNombre de usuario\n") + "USR"
-    user_name = extra_char_cleanner(folder_name)
+    user_name = extra_char_cleaner(folder_name)
     if os.path.isdir(folder_name):
-        path = directory + "/" + folder_name
+        path = os.path.join(DATA_PATH, folder_name)
         os.chdir(path)
         print(f"\nInicio de sesion de {user_name}\n")
         info(verbose=True)
     else:
+        print("dentro del else de iniciar sesion ", os.getcwd())
         print(f"\nNo existe el usuario '{user_name}'\n")
 
 
 def cerrar_sesion():
     """Changes the current working directory to the base directory"""
-    os.chdir(directory)
+    os.chdir(DATA_PATH)
     print("\nSe ha cerrado sesión\n")
 
 
@@ -46,7 +54,7 @@ def eliminar_usuario():
     Delets the directory of the given user, including all data stored in it
     """
     folder_name = input("\nIngrese el nombre de usuario a borrar\n") + "USR"
-    user_name = extra_char_cleanner(folder_name)
+    user_name = extra_char_cleaner(folder_name)
     if os.path.isdir(folder_name):
         advertencia = (
             f"¿Seguro que queres eliminar el usuario '{user_name}'?\n\n"

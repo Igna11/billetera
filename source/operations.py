@@ -5,7 +5,17 @@ Created on Sat Sep  3 20:03:06 2022
 
 @author: igna
 """
+import os
 
+import pandas as pd
+
+from source.misc import date_gen
+from source.misc import extra_char_cleaner
+
+from source.info import totales
+
+from source.accounts import asignador_cuentas
+from source.accounts import operation_selector
 
 def ingreso():
     """
@@ -131,7 +141,7 @@ def transferencia():
     # Select the outgoing account, open its data, save its name and its total
     print("Cuenta salida:")
     file_name_out = asignador_cuentas()
-    acc_name_out = extra_char_cleanner(file_name_out)
+    acc_name_out = extra_char_cleaner(file_name_out)
     acc_data_out = pd.read_csv(file_name_out, sep="\t", encoding="latin1")
     # check if the acc is empty or with 0 total
     if len(acc_data_out) == 0:
@@ -143,7 +153,7 @@ def transferencia():
     # Select de incoming account, open its data, save its name and its total
     print("cuenta entrada:")
     file_name_in = asignador_cuentas()
-    acc_name_in = extra_char_cleanner(file_name_in)
+    acc_name_in = extra_char_cleaner(file_name_in)
     acc_data_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
     try:
         last_total_in = acc_data_in["Total"].values[-1]
@@ -204,7 +214,7 @@ def reajuste():
     file
     """
     file_name = asignador_cuentas()
-    acc_name = extra_char_cleanner(file_name)
+    acc_name = extra_char_cleaner(file_name)
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
     # If empty account, then do nothing
     if len(acc_data) == 0:
