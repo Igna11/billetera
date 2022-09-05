@@ -4,7 +4,66 @@
 Created on Sat Sep  3 20:04:41 2022
 
 @author: igna
+
+Modulo para funciones que realizan analisis de los datos
+
+datos_cuenta()
+balances()
+balances_cta()
+balances_totales()
+balance_graf()
+filtro()
+category_spendings()
+monthlycategorical_spendings
 """
+import os
+from datetime import datetime
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from source.misc import date_gen
+from source.misc import lista_cuentas
+from source.misc import asignador_cuentas
+from source.misc import extra_char_cleaner
+from source.info import totales
+
+
+def datos_cuenta():
+    """
+    Analysis function:
+    Return a pandas DataFrame with data of a given account
+    """
+    file_name = asignador_cuentas()
+    data = pd.read_csv(file_name, sep="\t", encoding="latin1")
+    return data
+
+
+def balances():
+    """
+    Non-user function:
+    Appends one row to the balance file everytime an account operation that
+    modifies the balance is done.
+    If the balance file exists, appends data. If the balance file does not
+    exists, it creates it and appends the data.
+    --------------------------------------------------------------------------
+    Do not use this function manually, it is only intended to be used by other
+    functions.
+    """
+    total, total_pesos, total_dolares = list(totales().values())
+    fecha = date_gen()["Fecha"]
+    hora = date_gen()["hora"]
+    if not os.path.isfile("Balance.txt"):
+        with open("Balance.txt", "x") as balance:
+            balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
+            balance.write(
+                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
+            )
+    elif os.path.isfile("Balance.txt"):
+        with open("Balance.txt", "a") as balance:
+            balance.write(
+                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
+            )
 
 
 def balances_cta(account: str, month: int, year: int):
@@ -150,7 +209,7 @@ def category_spendings(cat: str, subcat="", desc=""):
     """
     Analysis function:
     Easy way to filter all entries with the same category and subcategory from
-    all accounts. 
+    all accounts.
         For future implementations: A filter that checks in the description of
         the entry for a match word or phrase.
     Parameters
@@ -178,7 +237,7 @@ def category_spendings(cat: str, subcat="", desc=""):
                 dayfirst=True,
                 encoding="latin1",
             )
-            df_data["Account"] = extra_char_cleanner(account)
+            df_data["Account"] = extra_char_cleaner(account)
 
             if not subcat:
                 df_ = df_data[df_data["Categoria"] == cat]

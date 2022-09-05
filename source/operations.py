@@ -4,19 +4,44 @@
 Created on Sat Sep  3 20:03:06 2022
 
 @author: igna
+Modulo con funciones que realizan operaciones en cuentas
+
+account_checker() <- decorator
+ingreso()
+extraccion()
+gasto()
+transferencia()
+reajuste()
 """
 import os
+from tabnanny import check
 
 import pandas as pd
 
-from source.misc import date_gen
-from source.misc import extra_char_cleaner
+from source.misc import extra_char_cleaner, lista_cuentas
+from source.misc import asignador_cuentas
+from source.misc import operation_selector
 
-from source.info import totales
+from source.analysis import balances
+from source.analysis import totales
 
-from source.accounts import asignador_cuentas
-from source.accounts import operation_selector
 
+def account_checker(func):
+    """
+    Decorator function: Checks if there is existing accounts and if not it
+    bypasses the function.
+    """
+
+    def decorator():
+        if len(lista_cuentas()) != 0:
+            func()
+        else:
+            print("No existen cuentas.")
+
+    return decorator
+
+
+@account_checker
 def ingreso():
     """
     Account operation:
@@ -55,6 +80,7 @@ def ingreso():
     balances()
 
 
+@account_checker
 def extraccion():
     """
     Account operation:
@@ -92,6 +118,7 @@ def extraccion():
     balances()
 
 
+@account_checker
 def gasto():
     """
     Account operation:
@@ -129,6 +156,7 @@ def gasto():
     balances()
 
 
+@account_checker
 def transferencia():
     """
     Account operation:
@@ -203,6 +231,7 @@ def transferencia():
     )
 
 
+@account_checker
 def reajuste():
     """
     Account operation:
@@ -252,30 +281,3 @@ def reajuste():
         f"\nDinero total {totales()['total']:.2f}\n",
     )
     balances()
-
-
-def balances():
-    """
-    Non-user function:
-    Appends one row to the balance file everytime an account operation that
-    modifies the balance is done.
-    If the balance file exists, appends data. If the balance file does not
-    exists, it creates it and appends the data.
-    --------------------------------------------------------------------------
-    Do not use this function manually, it is only intended to be used by other
-    functions.
-    """
-    total, total_pesos, total_dolares = list(totales().values())
-    fecha = date_gen()["Fecha"]
-    hora = date_gen()["hora"]
-    if not os.path.isfile("Balance.txt"):
-        with open("Balance.txt", "x") as balance:
-            balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
-            balance.write(
-                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
-            )
-    elif os.path.isfile("Balance.txt"):
-        with open("Balance.txt", "a") as balance:
-            balance.write(
-                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
-            )

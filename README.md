@@ -5,6 +5,7 @@ Estructura
 BilleteraAPP
     |__ main.py
     |__ source
+        |__ info.py
         |__ accounts.py
         |__ users.py
         |__ operations.py

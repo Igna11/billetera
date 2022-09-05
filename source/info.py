@@ -6,65 +6,12 @@ Created on Sun Sep  4 11:24:19 2022
 @author: igna
 """
 
-import os
-
 import pandas as pd
 
+from source.misc import lista_cuentas
 from source.misc import extra_char_cleaner
-from source.ConversorClass import ConversorMoneda
 
-
-def lista_cuentas():
-    """
-    Non-user function:
-    Lists all accounts found inside the given user's directory"""
-    file_list = os.listdir()
-    acc_list = []
-    for file in file_list:
-        if "CUENTA.txt" in file or "CUENTA_DOL.txt" in file:
-            acc_list.append(file)
-    return acc_list
-
-
-def datos_cuenta():
-    """
-    Analysis function:
-    Return a pandas DataFrame with data of a given account
-    """
-    file_name = asignador_cuentas()
-    data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    return data
-
-
-def totales():
-    """Calculate the total amount of money for all accounts"""
-    # lista con los nombres de los archivos de cuenta
-    acc_list = lista_cuentas()
-    dollar_val = precio_dolar()
-    # lista con el saldo total de dinero de cada cuenta
-    total = 0
-    total_pesos = 0
-    total_dol = 0
-    for acc in acc_list:
-        df_data = pd.read_csv(acc, sep="\t", encoding="latin1")
-        # Si la cuenta no es nueva, entonces busca el total, si no, al no tener
-        # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
-        try:
-            valor_elem = float(df_data["Total"].values[-1])
-            if "DOL" in acc:
-                total_dol += valor_elem
-                total += valor_elem * dollar_val
-            else:
-                total_pesos += valor_elem
-                total += valor_elem
-        except IndexError:
-            pass
-    # Reciclo las variables reescribiéndolas
-    total = round(total, 2)
-    total_pesos = round(total_pesos, 2)
-    total_dol = round(total_dol, 2)
-    dic = {"total": total, "total_pesos": total_pesos, "total_dol": total_dol}
-    return dic
+from source.currency import ConversorMoneda
 
 
 def precio_dolar(verbose=False):
@@ -99,6 +46,40 @@ def precio_dolar(verbose=False):
             dollar_val = "0.00"
 
     return float(dollar_val.replace(",", "."))
+
+
+def totales():
+    """
+    Non-user function:
+    Calculate the total amount of money for all accounts
+    """
+    # lista con los nombres de los archivos de cuenta
+    acc_list = lista_cuentas()
+    dollar_val = precio_dolar()
+    # lista con el saldo total de dinero de cada cuenta
+    total = 0
+    total_pesos = 0
+    total_dol = 0
+    for acc in acc_list:
+        df_data = pd.read_csv(acc, sep="\t", encoding="latin1")
+        # Si la cuenta no es nueva, entonces busca el total, si no, al no tener
+        # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
+        try:
+            valor_elem = float(df_data["Total"].values[-1])
+            if "DOL" in acc:
+                total_dol += valor_elem
+                total += valor_elem * dollar_val
+            else:
+                total_pesos += valor_elem
+                total += valor_elem
+        except IndexError:
+            pass
+    # Reciclo las variables reescribiéndolas
+    total = round(total, 2)
+    total_pesos = round(total_pesos, 2)
+    total_dol = round(total_dol, 2)
+    dic = {"total": total, "total_pesos": total_pesos, "total_dol": total_dol}
+    return dic
 
 
 def info(verbose=False):

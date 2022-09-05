@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-
-Created on Thu Jun 13 01:20:15 2019
-Refactored on Sat Sep  3 19:17:37 2022
+Created on Thu Jun 13 01:20:15 2019 -> Billetera.py
+Refactored on Sat Sep  3 19:17:37 2022 -> main.py
 
 @author: igna
 Billetera V2.0
@@ -22,8 +21,6 @@ TODO    Graficos:
 
 TODO    Interfaz Gráfica y ejectuable:
         nada, eso, a futuro (lejano)
-
-TODO    Que no se pueda crear usuario estando logueado en algún usuario
 
 TODO    Separar todo este script en módulos. -> EN PROCESO 03/09/2022
 
@@ -49,6 +46,13 @@ from source.accounts import eliminar_cuenta
 from source.operations import gasto
 from source.operations import ingreso
 from source.operations import transferencia
+from source.operations import reajuste
+
+from source.analysis import balances_cta
+from source.analysis import balance_graf
+from source.analysis import datos_cuenta
+from source.analysis import balances_totales
+from source.analysis import category_spendings
 
 if __name__ == "__main__":
 
