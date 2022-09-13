@@ -14,7 +14,6 @@ transferencia()
 reajuste()
 """
 import os
-from tabnanny import check
 
 import pandas as pd
 
@@ -181,6 +180,17 @@ def transferencia():
     # Select de incoming account, open its data, save its name and its total
     print("cuenta entrada:")
     file_name_in = asignador_cuentas()
+    # Check the same type of account
+    if (
+        "_DOL" in file_name_out
+        and "_DOL" not in file_name_in
+        or "_DOl" not in file_name_out
+        and "_DOL" in file_name_in
+    ):
+        return print(
+            "Solo se pueden realizar transferencias entre el mismo tipo de cuentas:",
+            " Pesos-Pesos o Dolar-Dolar",
+        )
     acc_name_in = extra_char_cleaner(file_name_in)
     acc_data_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
     try:

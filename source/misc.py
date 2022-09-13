@@ -36,6 +36,18 @@ def extra_char_cleaner(charchain: str):
     return charchain
 
 
+def users_list():
+    """
+    Non-user function:
+    Lists all users found inside the main directory
+    """
+    file_list = os.listdir()
+    user_list = []
+    for dirfile in file_list:
+        if "USR" in dirfile:
+            user_list.append(dirfile)
+    return user_list
+
 def lista_cuentas():
     """
     Non-user function:

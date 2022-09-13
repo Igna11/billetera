@@ -22,18 +22,19 @@ TODO    Graficos:
 TODO    Interfaz Gráfica y ejectuable:
         nada, eso, a futuro (lejano)
 
-TODO    Separar todo este script en módulos. -> EN PROCESO 03/09/2022
-
-TODO    Que no se puedan hace transferencias de cuentas de distintos tipos
-        (de pesos a dolares o dolares a pesos)
-
 TODO    Implementación de presupuestos: Una función con la cuál setear el
         presupuesto máximo que se quiere gastar por y/o por categoria y
         subcategoria por mes. Y que con cada gasto en esa dada categoria avise
         cuánto queda de presupuesto
 
+TODO    Modulo de inicio de sesión con contraseña.
+
+TODO    Encriptación de datos con sesión cerrada.
+
 """
 from source.info import info
+
+from source.misc import users_list
 
 from source.users import iniciar_sesion
 from source.users import cerrar_sesion
@@ -48,6 +49,7 @@ from source.operations import ingreso
 from source.operations import transferencia
 from source.operations import reajuste
 
+from source.analysis import filtro
 from source.analysis import balances_cta
 from source.analysis import balance_graf
 from source.analysis import datos_cuenta
@@ -56,4 +58,9 @@ from source.analysis import category_spendings
 
 if __name__ == "__main__":
 
-    iniciar_sesion()
+    if len(users_list()) == 0:
+        print("Bienvenide!\nNo hay ningún usuario creado todavía.",
+        "Para crear un usuario ejecute 'crear_usuario()' y siga las instrucciones.",
+        "Para iniciar sesión con el usuario ejecute 'iniciar_sesion()'")
+    else:
+        iniciar_sesion()
