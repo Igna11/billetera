@@ -10,8 +10,9 @@ import os
 from hashlib import sha256
 from pwinput import pwinput
 
-if "passwd_list.key" not in os.listdir():
-    with open("passwd_list.key", "w") as passwd_file:
+
+if "passwd_list.key" not in os.listdir("data"):
+    with open("data/passwd_list.key", "w") as passwd_file:
         passwd_file.write("user\tpasswd\n")
         print("passwd_list.key created.")
 
@@ -40,25 +41,30 @@ def check_user(user: str) -> bool:
         return True
 
 
-def create_user() -> None:
+def create_user(user_name: str) -> bool:
     """
     Creates a password and saves it encrypted in the password_list.key file.
+    Returns False if conditions don't match and True if they do
     """
-    user = input("Introduce UserName:\n")
     # Checking users existance
-    flag = check_user(user)
+    flag = check_user(user_name)
     if flag:
-        print("User already exists.")
-        return
+        print(f"User {user_name} already exists.")
+        return False
     # Password input and encode to utf-8
-    passwd = pwinput(prompt="Password: ").encode("utf-8")
-    # Encryptation of the password using sha256 algorithm
-    encrypted_passwd = sha256(passwd).hexdigest()
-    # Saving the password in a plain text file
-    with open("passwd_list.key", "a") as file:
-        text = f"{user}\t{encrypted_passwd}\n"
-        file.write(text)
-
+    passwd = pwinput(prompt="Ingrese una password: ").encode("utf-8")
+    passwd_check = pwinput(prompt="Ingrese la password otra vez: ").encode("utf-8")
+    if passwd != passwd_check:
+        print("Las contraseñas no coinciden, vuelva a intentarlo.")
+        return False
+    else:
+        # Encryptation of the password using sha256 algorithm
+        encrypted_passwd = sha256(passwd).hexdigest()
+        # Saving the password in a plain text file
+        with open("passwd_list.key", "a") as file:
+            text = f"{user_name}\t{encrypted_passwd}\n"
+            file.write(text)
+        return True
 
 def passwd_validation(user: str, passwd: bytes) -> bool:
     """
@@ -90,8 +96,3 @@ def login() -> None:
         print("Login successfuly")
     else:
         print("wrong password, try again using login() function")
-
-
-if __name__ == "__main__":
-
-    login()

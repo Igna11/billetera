@@ -14,9 +14,12 @@ cerrar_sesion()
 import os
 
 import pandas as pd
+from pwinput import pwinput
 
 from source.info import info
 from source.misc import extra_char_cleaner
+from login.login import create_user
+from login.login import passwd_validation
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
@@ -34,11 +37,13 @@ def crear_usuario():
     elif os.getcwd() == DATA_PATH:
         folder_name = input("\nIngrese el nombre de usuario\n") + "USR"
         user_name = extra_char_cleaner(folder_name)
-        if os.path.isdir(folder_name):
-            print(f"\nYa existe el usuario '{user_name}'\n")
-        else:
-            os.makedirs(folder_name)
-            print(f"\nSe creo el usuario '{user_name}'\n")
+        status = create_user(user_name)
+        if status:
+            if os.path.isdir(folder_name):
+                print(f"\nYa existe el usuario '{user_name}'\n")
+            else:
+                os.makedirs(folder_name)
+                print(f"\nSe creo el usuario '{user_name}'\n")
 
 
 def eliminar_usuario():
@@ -87,9 +92,13 @@ def iniciar_sesion():
         user_name = extra_char_cleaner(folder_name)
         if os.path.isdir(folder_name):
             path = os.path.join(DATA_PATH, folder_name)
-            os.chdir(path)
-            print(f"\nInicio de sesion de {user_name}\n")
-            info(verbose=True)
+            passwd = pwinput("Enter password: ").encode("utf-8")
+            if passwd_validation(user_name, passwd):
+                os.chdir(path)
+                print(f"\nInicio de sesion de {user_name}\n")
+                info(verbose=True)
+            else:
+                print("Contraseña incorrecta")
         else:
             print(f"\nNo existe el usuario '{user_name}'\n")
 

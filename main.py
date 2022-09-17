@@ -27,7 +27,8 @@ TODO    Implementación de presupuestos: Una función con la cuál setear el
         subcategoria por mes. Y que con cada gasto en esa dada categoria avise
         cuánto queda de presupuesto
 
-TODO    Modulo de inicio de sesión con contraseña.
+TODO    Modulo de inicio de sesión con contraseña. -> en proceso
+                Implementar base de datos para guardar contraseñas
 
 TODO    Encriptación de datos con sesión cerrada.
 
