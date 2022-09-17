@@ -80,6 +80,7 @@ def asignador_cuentas():
         acc_number = int(input("\nElija la cuenta\n" + account_index + "\n"))
         try:
             acc_name = dic[acc_number]
+            print(extra_char_cleaner(acc_name))
             return acc_name
         except KeyError:
             print("=" * 79)
