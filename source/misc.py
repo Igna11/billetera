@@ -48,6 +48,7 @@ def users_list():
             user_list.append(dirfile)
     return user_list
 
+
 def lista_cuentas():
     """
     Non-user function:

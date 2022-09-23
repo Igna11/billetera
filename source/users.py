@@ -18,8 +18,8 @@ from pwinput import pwinput
 
 from source.info import info
 from source.misc import extra_char_cleaner
-from login.login import create_user
-from login.login import passwd_validation
+from login.login import create_user_indb
+from login.login import passwd_validation_indb
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
@@ -37,7 +37,7 @@ def crear_usuario():
     elif os.getcwd() == DATA_PATH:
         folder_name = input("\nIngrese el nombre de usuario\n") + "USR"
         user_name = extra_char_cleaner(folder_name)
-        status = create_user(user_name)
+        status = create_user_indb(user_name)
         if status:
             if os.path.isdir(folder_name):
                 print(f"\nYa existe el usuario '{user_name}'\n")
@@ -58,27 +58,31 @@ def eliminar_usuario():
         )
         user_name = extra_char_cleaner(folder_name)
         if os.path.isdir(folder_name):
-            advertencia = (
-                f"¿Seguro que queres eliminar el usuario '{user_name}'?\n\n"
-                "todos los datos contenidos en él se perderán para siempre.\n\n"
-                "Ingrese '1', 'si' o 'y' para borrar\n"
-                "Ingrese cualquier otra cosa para cancelar\n"
-            )
-            respuesta = input(advertencia)
-            posibles_respuestas = ["1", "si", "y"]
-            if respuesta in posibles_respuestas:
-                try:
-                    os.rmdir(folder_name)
-                    print(f"\nSe eliminó el usuario {user_name}\n")
-                except OSError:
-                    from shutil import rmtree
+            passwd = pwinput("Enter password: ").encode("utf-8")
+            if passwd_validation_indb(user_name, passwd):
+                advertencia = (
+                    f"¿Seguro que queres eliminar el usuario '{user_name}'?\n\n"
+                    "todos los datos contenidos en él se perderán para siempre.\n\n"
+                    "Ingrese '1', 'si' o 'y' para borrar\n"
+                    "Ingrese cualquier otra cosa para cancelar\n"
+                )
+                respuesta = input(advertencia)
+                posibles_respuestas = ["1", "si", "y"]
+                if respuesta in posibles_respuestas:
+                    try:
+                        os.rmdir(folder_name)
+                        print(f"\nSe eliminó el usuario {user_name}\n")
+                    except OSError:
+                        from shutil import rmtree
 
-                    rmtree(folder_name)
-                    print(
-                        f"\nSe eliminó el usr. {user_name} y todos sus datos."
-                    )
+                        rmtree(folder_name)
+                        print(
+                            f"\nSe eliminó el usr. {user_name} y todos sus datos."
+                        )
+                else:
+                    print(f"\nNo se eliminó el usuario {user_name}\n")
             else:
-                print(f"\nNo se eliminó el usuario {user_name}\n")
+                print("\nPassword incorrecta\n")
         else:
             print(f"\nNo existe el usuario {user_name}\n")
 
@@ -93,7 +97,7 @@ def iniciar_sesion():
         if os.path.isdir(folder_name):
             path = os.path.join(DATA_PATH, folder_name)
             passwd = pwinput("Enter password: ").encode("utf-8")
-            if passwd_validation(user_name, passwd):
+            if passwd_validation_indb(user_name, passwd):
                 os.chdir(path)
                 print(f"\nInicio de sesion de {user_name}\n")
                 info(verbose=True)
