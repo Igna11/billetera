@@ -33,7 +33,7 @@ def execute_query(connection: sql.connect, query: str, verbose=False) -> None:
         print(f"The error '{e}' occurred")
 
 
-def execute_read_query(connection:sql.connect, query: str) -> None:
+def execute_read_query(connection: sql.connect, query: str) -> None:
     cursor = connection.cursor()
     result = None
     try:

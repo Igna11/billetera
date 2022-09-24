@@ -95,4 +95,3 @@ def passwd_validation_indb(user: str, passwd: bytes) -> bool:
     # stored one, if they match, a True flag is returned
     if query_result == hash_pass:
         return True
-
