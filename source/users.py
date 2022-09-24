@@ -19,6 +19,7 @@ from pwinput import pwinput
 from source.info import info
 from source.misc import extra_char_cleaner
 from login.login import create_user_indb
+from login.login import delete_user_indb
 from login.login import passwd_validation_indb
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -79,6 +80,8 @@ def eliminar_usuario():
                         print(
                             f"\nSe eliminó el usr. {user_name} y todos sus datos."
                         )
+                    finally:
+                        delete_user_indb(user_name)
                 else:
                     print(f"\nNo se eliminó el usuario {user_name}\n")
             else:

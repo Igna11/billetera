@@ -10,89 +10,89 @@ import os
 from hashlib import sha256
 from pwinput import pwinput
 
+from login.sqlpasswd import create_connection
+from login.sqlpasswd import execute_query
+from login.sqlpasswd import execute_read_query
+from login.sqlpasswd import add_new_user_query
 
-if "passwd_list.key" not in os.listdir("data"):
-    with open("data/passwd_list.key", "w") as passwd_file:
-        passwd_file.write("user\tpasswd\n")
-        print("passwd_list.key created.")
+BASE_PATH = os.path.dirname(os.path.dirname(__file__))
+DATA_PATH = os.path.join(BASE_PATH, "data")
+
+DATA_BASE = os.path.join(DATA_PATH, "passwords.sqlite")
+
+connection = create_connection(DATA_BASE)
+
+create_users_table = """
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  passwd TEXT NOT NULL
+);
+"""
+
+execute_query(connection, create_users_table)
 
 
-def key_file_manipulator() -> dict:
-    """Orders the data in the passwd_list.key in a simple way to manipulate."""
-    # Open the file a check if the user is in the list
-    with open("passwd_list.key", "r") as file:
-        data = file.read()
-    # Manipulates the data order it in a simple way
-    data_list = data.split("\n")
-    data_list.pop()
-    dic = {
-        "users": [elem.split("\t")[0] for elem in data_list],
-        "passwd": [elem.split("\t")[1] for elem in data_list],
-    }
-    return dic
-
-
-def check_user(user: str) -> bool:
+def check_user_indb(user: str) -> bool:
     """
-    Checks if the given user already exists in the passwd_list.key file
+    Checks if the given user already exists in the sql table.
     """
-    dic = key_file_manipulator()
-    if user in dic["users"]:
+    query = f"""
+    SELECT name FROM users WHERE name = '{user};'
+    """
+    query_result = execute_read_query(connection, query)
+    if len(query_result) == 1:
         return True
 
 
-def create_user(user_name: str) -> bool:
+def create_user_indb(user: str) -> bool:
     """
-    Creates a password and saves it encrypted in the password_list.key file.
+    Creates a password and saves it encrypted in sql table.
     Returns False if conditions don't match and True if they do
     """
     # Checking users existance
-    flag = check_user(user_name)
+    flag = check_user_indb(user)
     if flag:
-        print(f"User {user_name} already exists.")
+        print(f"User {user} already exists.")
         return False
     # Password input and encode to utf-8
     passwd = pwinput(prompt="Ingrese una password: ").encode("utf-8")
-    passwd_check = pwinput(prompt="Ingrese la password otra vez: ").encode("utf-8")
+    passwd_check = pwinput(prompt="Ingrese la password otra vez: ").encode(
+        "utf-8"
+    )
     if passwd != passwd_check:
         print("Las contraseñas no coinciden, vuelva a intentarlo.")
         return False
     else:
         # Encryptation of the password using sha256 algorithm
         encrypted_passwd = sha256(passwd).hexdigest()
-        # Saving the password in a plain text file
-        with open("passwd_list.key", "a") as file:
-            text = f"{user_name}\t{encrypted_passwd}\n"
-            file.write(text)
+        # Saving the password in the sqlite table
+        query = add_new_user_query(user, encrypted_passwd)
+        execute_query(connection, query, verbose=True)
         return True
 
-def passwd_validation(user: str, passwd: bytes) -> bool:
+
+def delete_user_indb(user: str) -> None:
     """
-    Checks if the given passwd is correct comparing its hash with the one saved
-    in the passwd_list.key file
+    Deletes the row in the sql table that stores that user
     """
-    dic = key_file_manipulator()
+    query = f"DELETE FROM users WHERE name = '{user}';"
+    execute_query(connection, query)
+
+
+def passwd_validation_indb(user: str, passwd: bytes) -> bool:
+    """
+    Checks if the given passwd is correct
+    """
+    query = f"""
+    SELECT passwd FROM users WHERE name = '{user}';
+    """
+    query_result = execute_read_query(connection, query)[0][0]
     # Password to validate is hashed in order to be compared with the
     # one in passwd_list.key file.
     hash_pass = sha256(passwd).hexdigest()
-    # Numerical index of the given user is retrieved to be used when
-    # calling the adecuated hashed password in the file
-    user_idx = dic["users"].index(user)
     # The password hashed and given as input is compared with the hashed
     # stored one, if they match, a True flag is returned
-    if dic["passwd"][user_idx] == hash_pass:
+    if query_result == hash_pass:
         return True
 
-
-def login() -> None:
-    """dummy login function"""
-    user = input("Enter user name: ")
-    if not check_user(user):
-        print("User does not exists")
-        return
-    password = pwinput("Enter password: ").encode("utf-8")
-
-    if passwd_validation(user, password):
-        print("Login successfuly")
-    else:
-        print("wrong password, try again using login() function")
