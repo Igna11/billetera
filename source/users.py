@@ -11,6 +11,7 @@ eliminar_usuario()
 iniciar_sesion()
 cerrar_sesion()
 """
+from hashlib import new
 import os
 
 import pandas as pd
@@ -20,7 +21,9 @@ from source.info import info
 from source.misc import extra_char_cleaner
 from login.login import create_user_indb
 from login.login import delete_user_indb
+from login.login import change_pass_indb
 from login.login import passwd_validation_indb
+
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
@@ -38,13 +41,49 @@ def crear_usuario():
     elif os.getcwd() == DATA_PATH:
         folder_name = input("\nIngrese el nombre de usuario\n") + "USR"
         user_name = extra_char_cleaner(folder_name)
-        status = create_user_indb(user_name)
-        if status:
-            if os.path.isdir(folder_name):
-                print(f"\nYa existe el usuario '{user_name}'\n")
-            else:
+        if os.path.isdir(folder_name):
+            print(f"\nYa existe el usuario '{user_name}'\n")
+        else:
+            creation_status = create_user_indb(user_name)
+            if creation_status:
                 os.makedirs(folder_name)
                 print(f"\nSe creo el usuario '{user_name}'\n")
+            else:
+                print("\nFalló la creación del usuario en la base de datos\n")
+
+
+def cambiar_contraseña():
+    """Changes the password of a given user"""
+    if os.getcwd() != DATA_PATH:
+        print(
+            "No se puede cambiar la contraseña si el usuario esta logueado",
+            "Asegúrese de haber deslogueado y vuelva a intentar.",
+        )
+    elif os.getcwd() == DATA_PATH:
+        folder_name = input("\nIngrese el nombre de usuario\n") + "USR"
+        user_name = extra_char_cleaner(folder_name)
+        if os.path.isdir(folder_name):
+            old_passwd = pwinput("\nIngrese la contraseña actual: ").encode(
+                "utf-8"
+            )
+            if passwd_validation_indb(user_name, old_passwd):
+                new_passwd = pwinput("\nIngrese la nueva contraseña: ").encode(
+                    "utf-8"
+                )
+                check_new_passwd = pwinput(
+                    "\nIngrese nuevamente la nueva contraseña: "
+                ).encode("utf-8")
+                if new_passwd == check_new_passwd:
+                    change_pass_indb(user_name, new_passwd)
+                    print("\nLa contraseña fue cambiada con exito\n")
+                else:
+                    print(
+                        "\nLas contraseñas no coinciden! Vuelva a intentar.\n"
+                    )
+            else:
+                print("\nPassword incorrecta, vuelva a intentarlo\n")
+        else:
+            print(f"\nNo existe el usuario {user_name}\n")
 
 
 def eliminar_usuario():

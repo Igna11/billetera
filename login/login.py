@@ -8,6 +8,7 @@ Created on Mon Jul 25 22:17:33 2022
 
 import os
 from hashlib import sha256
+from re import U
 from pwinput import pwinput
 
 from login.sqlpasswd import create_connection
@@ -37,9 +38,7 @@ def check_user_indb(user: str) -> bool:
     """
     Checks if the given user already exists in the sql table.
     """
-    query = f"""
-    SELECT name FROM users WHERE name = '{user};'
-    """
+    query = f"SELECT name FROM users WHERE name = '{user};'"
     query_result = execute_read_query(connection, query)
     if len(query_result) == 1:
         return True
@@ -80,13 +79,20 @@ def delete_user_indb(user: str) -> None:
     execute_query(connection, query)
 
 
+def change_pass_indb(user: str, new_passwd: bytes) -> None:
+    """
+    Changes the password hash of a given user
+    """
+    hash = sha256(new_passwd).hexdigest()
+    query = f"UPDATE users SET passwd = '{hash}' WHERE name = '{user}';"
+    execute_query(connection, query)
+
+
 def passwd_validation_indb(user: str, passwd: bytes) -> bool:
     """
     Checks if the given passwd is correct
     """
-    query = f"""
-    SELECT passwd FROM users WHERE name = '{user}';
-    """
+    query = f"SELECT passwd FROM users WHERE name = '{user}';"
     query_result = execute_read_query(connection, query)[0][0]
     # Password to validate is hashed in order to be compared with the
     # one in passwd_list.key file.

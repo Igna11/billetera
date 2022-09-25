@@ -29,7 +29,7 @@ TODO    Implementación de presupuestos: Una función con la cual setear el
 
 TODO    Modulo de inicio de sesión con contraseña. -> done
                 Implementar base de datos para guardar contraseñas -> done
-                Implementar cambio de contraseña
+                Implementar cambio de contraseña -> done
 
 TODO    Encriptación de datos con sesión cerrada.
 
@@ -44,6 +44,7 @@ from source.users import iniciar_sesion
 from source.users import cerrar_sesion
 from source.users import crear_usuario
 from source.users import eliminar_usuario
+from source.users import cambiar_contraseña
 
 from source.accounts import crear_cuenta
 from source.accounts import eliminar_cuenta
