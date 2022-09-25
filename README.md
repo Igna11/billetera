@@ -1,7 +1,8 @@
-Billetera App
+# Billetera App
 
-Estructura
+### Estructura
 
+```
 BilleteraAPP
     |__ main.py
     |__ source
@@ -14,10 +15,13 @@ BilleteraAPP
         |__ login
     |__ data
         |__ userUSR
+        |__ passwords.sql
     |__ login
         |__ login.py
+        |__ sqlpasswd.py
     |__ tests
         |__ tests.py
     |__ requirements.txt
     |__ .gitignore
     |__ __pycache__
+```
