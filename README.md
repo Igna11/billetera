@@ -11,8 +11,8 @@ BilleteraAPP
         |__ users.py
         |__ operations.py
         |__ analysis.py
-        |__ currency
-        |__ login
+        |__ currency.py
+        |__ login.py
     |__ data
         |__ userUSR
         |__ passwords.sql
