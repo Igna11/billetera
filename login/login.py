@@ -8,7 +8,6 @@ Created on Mon Jul 25 22:17:33 2022
 
 import os
 from hashlib import sha256
-from re import U
 from pwinput import pwinput
 
 from login.sqlpasswd import create_connection

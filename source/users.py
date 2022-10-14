@@ -11,7 +11,6 @@ eliminar_usuario()
 iniciar_sesion()
 cerrar_sesion()
 """
-from hashlib import new
 import os
 
 import pandas as pd
@@ -114,7 +113,6 @@ def eliminar_usuario():
                         print(f"\nSe eliminó el usuario {user_name}\n")
                     except OSError:
                         from shutil import rmtree
-
                         rmtree(folder_name)
                         print(
                             f"\nSe eliminó el usr. {user_name} y todos sus datos."

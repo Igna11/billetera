@@ -31,6 +31,7 @@ def crear_cuenta():
         file_name += "CUENTA_DOL.txt"
     else:
         print(f"\n '{acc_type}' inválido\n")
+        return
     columns = [
         "Fecha",
         "hora",
