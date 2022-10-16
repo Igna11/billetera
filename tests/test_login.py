@@ -14,8 +14,8 @@ DATA_BASE = os.path.join(BASE_DIR, "data", "passwords.sqlite")
 
 sys.path.append(BASE_DIR)
 
-from login.login2 import UsersDB
-from login.login2 import UsersDirs
+from login.login import UsersDB
+from login.login import UsersDirs
 from login.sqlpasswd import create_connection
 from login.sqlpasswd import execute_read_query
 

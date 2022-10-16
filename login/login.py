@@ -95,7 +95,7 @@ class UsersDB:
             self.passwdvalidation = True
 
 
-class UsersDirs:    
+class UsersDirs:
     def __init__(self, user):
         self.user = user
         self.dirname = user + "USR"
@@ -107,19 +107,20 @@ class UsersDirs:
     def create_user_dir(self) -> None:
         """creates the directory for the user's accounts"""
         os.makedirs(self.absdirname)
-    
+
     def delete_user_dir(self) -> None:
         """Deletes the directory and all its content"""
         try:
             os.rmdir(self.absdirname)
         except OSError:
             from shutil import rmtree
+
             rmtree(self.absdirname)
-    
+
     def login(self) -> None:
         """Changes the current working directory to the one of the user"""
         os.chdir(self.absdirname)
-    
+
     def logout(self) -> None:
         """Chages the current working directory to tha data directory"""
         os.chdir(DATA_PATH)

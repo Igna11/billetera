@@ -114,7 +114,9 @@ def cambiar_contraseña() -> None:
         user_dir = UsersDirs(username)
         user_db = UsersDB(username)
         if os.path.isdir(user_dir.absdirname):
-            old_password = pwinput("\nIngrese la contraseña actual: ").encode("utf-8")
+            old_password = pwinput("\nIngrese la contraseña actual: ").encode(
+                "utf-8"
+            )
             user_db.passwd_validation_indb(passwd=old_password)
             if user_db.passwdvalidation:
                 new_password = pwinput(
@@ -159,6 +161,7 @@ def iniciar_sesion(verbose=True) -> None:
         print("\nYa hay una sesión iniciada.\n")
     else:
         print(f"\nUbicación inválida: {os.getcwd()}\n")
+
 
 def cerrar_sesion():
     """Changes the current working directory to the base directory"""
