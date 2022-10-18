@@ -22,7 +22,7 @@ DATA_BASE = os.path.join(DATA_PATH, "passwords.sqlite")
 
 connection = create_connection(DATA_BASE)
 
-create_users_table = """
+CREATE_USER_TABLE = """
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -30,10 +30,14 @@ CREATE TABLE IF NOT EXISTS users (
 );
 """
 
-execute_query(connection, create_users_table)
+execute_query(connection, CREATE_USER_TABLE)
 
 
 class UsersDB:
+    """
+    All necessary operation in database to create users and store passwords,
+    modify passwords and delete users and passwords.
+    """
     def __init__(self, user):
         self.user = user
         self.user_exists = False
@@ -55,9 +59,7 @@ class UsersDB:
         Adds the user and hashed passwd to the sql table.
         Returns False if conditions don't match and True if they do
         """
-        # Encryptation of the password using sha256 algorithm
         encrypted_passwd = sha256(passwd).hexdigest()
-        # Saving the user and password in the sqlite table
         query = add_new_user_query(self.user, encrypted_passwd)
         execute_query(connection, query, verbose=True)
         self.creation_status = True
@@ -86,30 +88,31 @@ class UsersDB:
         """
         query = f"SELECT passwd FROM users WHERE name = '{self.user}';"
         query_result = execute_read_query(connection, query)[0][0]
-        # Password to validate is hashed in order to be compared with the
-        # one in passwd_list.key file.
         hash_pass = sha256(passwd).hexdigest()
-        # The password hashed and given as input is compared with the hashed
-        # stored one, if they match, a True flag is returned
         if query_result == hash_pass:
             self.passwdvalidation = True
 
 
 class UsersDirs:
+    """
+    All necessary methods to create the needed directories to store the users's
+    account information.
+    """
     def __init__(self, user):
         self.user = user
         self.dirname = user + "USR"
         self.absdirname = DATA_PATH + "/" + self.dirname
 
     def get_user_cwd(self) -> None:
+        """Gets the current working directory."""
         return os.getcwd()
 
     def create_user_dir(self) -> None:
-        """creates the directory for the user's accounts"""
+        """Creates the directory for the user's accounts."""
         os.makedirs(self.absdirname)
 
     def delete_user_dir(self) -> None:
-        """Deletes the directory and all its content"""
+        """Deletes the directory and all its content."""
         try:
             os.rmdir(self.absdirname)
         except OSError:
@@ -118,9 +121,9 @@ class UsersDirs:
             rmtree(self.absdirname)
 
     def login(self) -> None:
-        """Changes the current working directory to the one of the user"""
+        """Changes the current working directory to the one of the user."""
         os.chdir(self.absdirname)
 
     def logout(self) -> None:
-        """Chages the current working directory to tha data directory"""
+        """Chages the current working directory to tha data directory."""
         os.chdir(DATA_PATH)
