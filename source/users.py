@@ -19,7 +19,7 @@ import os
 import pandas as pd
 from pwinput import pwinput
 
-from source.info import info
+from source import info
 from login import login
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
@@ -152,7 +152,7 @@ def iniciar_sesion(verbose=True) -> None:
             if user_db.passwdvalidation:
                 os.chdir(user_dir.absdirname)
                 print(f"\nInicio de sesion de {username}\n")
-                info(verbose=verbose)
+                info.info(verbose=verbose)
             else:
                 print("Contraseña incorrecta")
         else:

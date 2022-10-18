@@ -11,6 +11,7 @@ from sqlite3 import Error
 
 
 def create_connection(path: str, verbose=False) -> sql.connect:
+    """Creates the connection to the data base"""
     connection = None
     try:
         connection = sql.connect(path)
@@ -43,12 +44,12 @@ def execute_read_query(connection: sql.connect, query: str) -> None:
         print(f"The error '{e}' occurred")
 
 
-def add_new_user_query(user: str, hash: str) -> str:
+def add_new_user_query(user: str, pwhash: str) -> str:
     query = f"""
     INSERT INTO 
       users (name, passwd)
     VALUES
-      ('{user}', '{hash}')
+      ('{user}', '{pwhash}')
     """
     return query
 

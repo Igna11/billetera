@@ -73,9 +73,9 @@ class UsersDB:
         """
         Changes the password hash of a given user
         """
-        hash = sha256(new_passwd).hexdigest()
+        pwhash = sha256(new_passwd).hexdigest()
         query = (
-            f"UPDATE users SET passwd = '{hash}' WHERE name = '{self.user}';"
+            f"UPDATE users SET passwd = '{pwhash}' WHERE name = '{self.user}';"
         )
         sql.execute_query(connection, query)
 
