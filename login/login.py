@@ -11,16 +11,13 @@ refactor: Sun Oct 16 16:00:00
 import os
 from hashlib import sha256
 
-from login.sqlpasswd import create_connection
-from login.sqlpasswd import execute_query
-from login.sqlpasswd import execute_read_query
-from login.sqlpasswd import add_new_user_query
+from login import sqlpasswd as sql
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
 DATA_BASE = os.path.join(DATA_PATH, "passwords.sqlite")
 
-connection = create_connection(DATA_BASE)
+connection = sql.create_connection(DATA_BASE)
 
 CREATE_USER_TABLE = """
 CREATE TABLE IF NOT EXISTS users (
@@ -30,7 +27,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 """
 
-execute_query(connection, CREATE_USER_TABLE)
+sql.execute_query(connection, CREATE_USER_TABLE)
 
 
 class UsersDB:
@@ -49,7 +46,7 @@ class UsersDB:
         Checks if the given user already exists in the sql table.
         """
         query = f"SELECT name FROM users WHERE name = '{self.user}';"
-        query_result = execute_read_query(connection, query)
+        query_result = sql.execute_read_query(connection, query)
         print(query_result)
         if len(query_result) == 1:
             self.user_exists = True
@@ -60,8 +57,8 @@ class UsersDB:
         Returns False if conditions don't match and True if they do
         """
         encrypted_passwd = sha256(passwd).hexdigest()
-        query = add_new_user_query(self.user, encrypted_passwd)
-        execute_query(connection, query, verbose=True)
+        query = sql.add_new_user_query(self.user, encrypted_passwd)
+        sql.execute_query(connection, query, verbose=True)
         self.creation_status = True
 
     def delete_user_indb(self) -> None:
@@ -69,7 +66,7 @@ class UsersDB:
         Deletes the row in the sql table that stores that user
         """
         query = f"DELETE FROM users WHERE name = '{self.user}';"
-        execute_query(connection, query)
+        sql.execute_query(connection, query)
         self.user_exists = False
 
     def change_pass_indb(self, new_passwd: bytes) -> None:
@@ -80,14 +77,14 @@ class UsersDB:
         query = (
             f"UPDATE users SET passwd = '{hash}' WHERE name = '{self.user}';"
         )
-        execute_query(connection, query)
+        sql.execute_query(connection, query)
 
     def passwd_validation_indb(self, passwd: bytes) -> bool:
         """
         Checks if the given passwd is correct
         """
         query = f"SELECT passwd FROM users WHERE name = '{self.user}';"
-        query_result = execute_read_query(connection, query)[0][0]
+        query_result = sql.execute_read_query(connection, query)[0][0]
         hash_pass = sha256(passwd).hexdigest()
         if query_result == hash_pass:
             self.passwdvalidation = True
