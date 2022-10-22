@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Sept 03 19:21:22 2022
+Users module
+
+Module dedicated to create and delete users and for login in and login out.
 
 @author: igna
-Módulo para condensar las funciones relacionadas con cuentas
-
-crear_usuario()
-eliminar_usuario()
-cambiar_contraseña()
-iniciar_sesion()
-cerrar_sesion()
-
-refactor: Sun Oct 16 16:00:00
+Created on Sat Sept 03 19:21:22 2022
+Refactored on Sun Oct 16 16:00:00 2022
 """
 import os
 
