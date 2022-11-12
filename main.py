@@ -37,6 +37,7 @@ TODO    Tests automaticos
 
 """
 from source.info import info
+from source.info import precio_dolar
 
 from source.misc import users_list
 
