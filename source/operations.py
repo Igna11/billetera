@@ -13,16 +13,12 @@ gasto()
 transferencia()
 reajuste()
 """
-import os
 
 import pandas as pd
 
-from source.misc import extra_char_cleaner, lista_cuentas
-from source.misc import asignador_cuentas
-from source.misc import operation_selector
-
-from source.analysis import balances
-from source.analysis import totales
+from source import misc
+from source import info
+from source import analysis
 
 
 def account_checker(func):
@@ -32,7 +28,7 @@ def account_checker(func):
     """
 
     def decorator():
-        if len(lista_cuentas()) != 0:
+        if len(misc.lista_cuentas()) != 0:
             func()
         else:
             print("No existen cuentas.")
@@ -53,10 +49,10 @@ def ingreso():
     saves the data into the given account and appends one row into the balance
     file
     """
-    file_name = asignador_cuentas()
+    file_name = misc.asignador_cuentas()
     # Abre y lee los datos de la cuenta
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    columns = operation_selector(operation="income")
+    columns = misc.operation_selector(operation="income")
     if float(columns["income"]) == 0:
         return print("\nNo se está ingresando dinero.\n")
     if len(acc_data) == 0:
@@ -74,9 +70,9 @@ def ingreso():
         micuenta.write(row)
     print(
         f"\nDinero en cuenta: ${new_total:.2f}\n",
-        f"\nDinero total {totales()['total']:.2f}\n",
+        f"\nDinero total {info.totales()['total']:.2f}\n",
     )
-    balances()
+    analysis.balances()
 
 
 @account_checker
@@ -92,13 +88,13 @@ def extraccion():
     saves the data into the given account and appends one row into the balance
     file
     """
-    file_name = asignador_cuentas()
+    file_name = misc.asignador_cuentas()
     # Abre y lee los datos de la cuenta
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
     if len(acc_data) == 0:
         return print("\nAún no se ha ingresado dinero en la cuenta\n")
     last_total = acc_data["Total"].values[-1]
-    columns = operation_selector("extraction")
+    columns = misc.operation_selector("extraction")
     if last_total < float(columns["extraction"]):
         return print("\nNo hay dinero suficiente en la cuenta\n")
     new_total = last_total - float(columns["extraction"])
@@ -112,9 +108,9 @@ def extraccion():
         micuenta.write(row)
     print(
         f"\nDinero en cuenta: ${new_total:.2f}\n"
-        f"\nDinero total {totales()['total']:.2f}\n",
+        f"\nDinero total {info.totales()['total']:.2f}\n",
     )
-    balances()
+    analysis.balances()
 
 
 @account_checker
@@ -130,13 +126,13 @@ def gasto():
     saves the data into the given account and appends one row into the balance
     file
     """
-    file_name = asignador_cuentas()
+    file_name = misc.asignador_cuentas()
     # Abre y lee los datos de la cuenta
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
     if len(acc_data) == 0:
         return print("\nNo hay dinero en la cuenta\n")
     last_total = acc_data["Total"].values[-1]
-    columns = operation_selector("expense")
+    columns = misc.operation_selector("expense")
     if last_total < float(columns["expense"]):
         return print("\nNo hay dinero suficiente en la cuenta\n")
     new_total = last_total - float(columns["expense"])
@@ -150,9 +146,9 @@ def gasto():
         micuenta.write(row)
     print(
         f"\nDinero en cuenta: ${new_total:.2f}\n",
-        f"\nDinero total {totales()['total']:.2f}\n",
+        f"\nDinero total {info.totales()['total']:.2f}\n",
     )
-    balances()
+    analysis.balances()
 
 
 @account_checker
@@ -167,8 +163,8 @@ def transferencia():
     """
     # Select the outgoing account, open its data, save its name and its total
     print("Cuenta salida:")
-    file_name_out = asignador_cuentas()
-    acc_name_out = extra_char_cleaner(file_name_out)
+    file_name_out = misc.asignador_cuentas()
+    acc_name_out = misc.extra_char_cleaner(file_name_out)
     acc_data_out = pd.read_csv(file_name_out, sep="\t", encoding="latin1")
     # check if the acc is empty or with 0 total
     if len(acc_data_out) == 0:
@@ -179,7 +175,7 @@ def transferencia():
 
     # Select de incoming account, open its data, save its name and its total
     print("cuenta entrada:")
-    file_name_in = asignador_cuentas()
+    file_name_in = misc.asignador_cuentas()
     # Check the same type of account
     if (
         "_DOL" in file_name_out
@@ -191,7 +187,7 @@ def transferencia():
             "Solo se pueden realizar transferencias entre el mismo tipo de cuentas:",
             " Pesos-Pesos o Dolar-Dolar",
         )
-    acc_name_in = extra_char_cleaner(file_name_in)
+    acc_name_in = misc.extra_char_cleaner(file_name_in)
     acc_data_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
     try:
         last_total_in = acc_data_in["Total"].values[-1]
@@ -203,7 +199,7 @@ def transferencia():
         return print("\nNo tiene sentido transferir a una misma cuenta!!\n")
 
     # Format all de columns correctly
-    columns_in = operation_selector(operation="transfer")
+    columns_in = misc.operation_selector(operation="transfer")
     columns_out = columns_in.copy()
     columns_in["extraction"] = "0.00"
     columns_in["subcategory"] = "Transferencia de entrada"
@@ -252,14 +248,14 @@ def reajuste():
     Saves the data into the given account and appends one row into the balance
     file
     """
-    file_name = asignador_cuentas()
-    acc_name = extra_char_cleaner(file_name)
+    file_name = misc.asignador_cuentas()
+    acc_name = misc.extra_char_cleaner(file_name)
     acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
     # If empty account, then do nothing
     if len(acc_data) == 0:
         return print(f"\nNo hay datos en la cuenta {acc_name}\n")
     last_total = acc_data.values[-1]
-    columns = operation_selector(operation="readjustment")
+    columns = misc.operation_selector(operation="readjustment")
     new_total = float(columns["total"])
     # Negative values not allowed
     if new_total < 0:
@@ -288,6 +284,6 @@ def reajuste():
         myaccount.write(row)
     print(
         f"\nDinero en cuenta: ${new_total:.2f}",
-        f"\nDinero total {totales()['total']:.2f}\n",
+        f"\nDinero total {info.totales()['total']:.2f}\n",
     )
-    balances()
+    analysis.balances()
