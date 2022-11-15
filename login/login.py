@@ -35,6 +35,7 @@ class UsersDB:
     All necessary operation in database to create users and store passwords,
     modify passwords and delete users and passwords.
     """
+
     def __init__(self, user):
         self.user = user
         self.user_exists = False
@@ -95,6 +96,7 @@ class UsersDirs:
     All necessary methods to create the needed directories to store the users's
     account information.
     """
+
     def __init__(self, user):
         self.user = user
         self.dirname = user + "USR"
