@@ -28,8 +28,9 @@ def extra_char_cleaner(charchain: str):
     returns the name cleaned
     """
     charchain = (
-        charchain.replace("CUENTA", "")
-        .replace("_DOL", "")
+        charchain.replace("_ACC", "")
+        .replace("_ARS", "")
+        .replace("_USD", "")
         .replace(".txt", "")
         .replace("USR", "")
     )
@@ -56,7 +57,7 @@ def lista_cuentas():
     file_list = os.listdir()
     acc_list = []
     for file in file_list:
-        if "CUENTA.txt" in file or "CUENTA_DOL.txt" in file:
+        if "_ACC_" in file:
             acc_list.append(file)
     return acc_list
 
