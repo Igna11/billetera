@@ -66,7 +66,7 @@ def totales():
         # dinero adentro, va a tirar IndexError. En ese caso el valor_elem = 0
         try:
             valor_elem = float(df_data["Total"].values[-1])
-            if "DOL" in acc:
+            if "USD" in acc:
                 total_dol += valor_elem
                 total += valor_elem * dollar_val
             else:
