@@ -14,42 +14,40 @@ DATA_BASE = os.path.join(BASE_DIR, "data", "passwords.sqlite")
 
 sys.path.append(BASE_DIR)
 
-from login.login import UsersDB
-from login.login import UsersDirs
-from login.sqlpasswd import create_connection
-from login.sqlpasswd import execute_read_query
+from login import login
+from login import sqlpasswd as sql
 
 
 class TestUserDB(unittest.TestCase):
     """Test for the functions inside the class UsersDB"""
 
     def test_user_name(self):
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         self.assertTrue(user.user == "Test_User")
 
     def test_user_not_exists(self):
         """User should not exist yet"""
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         self.assertTrue(user.user_exists == False)
 
     def test_user_not_creationstatus(self):
         """User should not be created yet"""
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         self.assertTrue(user.creation_status == False)
 
     def test_user_not_passwdvalidation(self):
         """There should not be a passwd yet"""
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         self.assertTrue(user.passwdvalidation == False)
 
     def test_user_not_getuserfromdb(self):
         """Test_User should not be in the DB yet"""
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         self.assertTrue(user.get_user_from_db() == None)
 
     def test_user_addedtodb(self):
         """Adds Test_User to the data base and change the creation status to True"""
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         password = b"test_password"
         # The user is added to the db
         user.add_user_to_db(passwd=password)
@@ -61,7 +59,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_deletedondb(self):
         """Delete Test_User from the data base"""
-        user = UsersDB("Test_User")
+        user = login.UsersDB("Test_User")
         # Checks that the user is in the DB
         user.get_user_from_db()
         self.assertTrue(user.user_exists == True)
@@ -75,21 +73,21 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_changepass(self):
         """Test the change of password"""
-        user = UsersDB("Test_User_changepwd")
+        user = login.UsersDB("Test_User_changepwd")
         first_password = b"test_password"
         user.add_user_to_db(passwd=first_password)
-        connection = create_connection(DATA_BASE)
+        connection = sql.create_connection(DATA_BASE)
         query = f"SELECT passwd FROM users WHERE name = '{user.user}';"
-        first_hash = execute_read_query(connection, query)
+        first_hash = sql.execute_read_query(connection, query)
         second_password = b"test_password_2"
         user.change_pass_indb(new_passwd=second_password)
-        second_hash = execute_read_query(connection, query)
+        second_hash = sql.execute_read_query(connection, query)
         user.delete_user_indb()
         self.assertTrue(first_hash != second_hash)
 
     def test_user_passwdvalidation(self):
         """Test the validation of the passwd"""
-        user = UsersDB("Test_User_pwdvalidation")
+        user = login.UsersDB("Test_User_pwdvalidation")
         password = b"test_password"
         user.add_user_to_db(passwd=password)
         # Check that validation don't match
@@ -105,16 +103,16 @@ class TestUserDirs(unittest.TestCase):
     """Test for the functions inside the class UsersDirs"""
 
     def test_user_name(self):
-        user = UsersDirs("Test_User")
+        user = login.UsersDirs("Test_User")
         self.assertTrue(user.user == "Test_User")
 
     def test_user_dirname(self):
-        user = UsersDirs("Test_User")
+        user = login.UsersDirs("Test_User")
         self.assertTrue(user.dirname == "Test_UserUSR")
 
     def test_user_createdir(self):
         """Test the creation of the directory for the user"""
-        user = UsersDirs("Test_User")
+        user = login.UsersDirs("Test_User")
         user.create_user_dir()
         # Checks that the path is an absolute path
         self.assertTrue(os.path.isabs(user.absdirname))
@@ -123,7 +121,7 @@ class TestUserDirs(unittest.TestCase):
 
     def test_user_deletedir(self):
         """Test the deletion of the directory for the user"""
-        user = UsersDirs("Test_User")
+        user = login.UsersDirs("Test_User")
         # Checks that the directory still exists
         self.assertTrue(os.path.isdir(user.absdirname))
         # Once deleted, check that the directory doesn't exist anymore
@@ -132,7 +130,7 @@ class TestUserDirs(unittest.TestCase):
 
     def test_user_login(self):
         """Test that when login the directory is the correct one"""
-        user = UsersDirs("Test_User")
+        user = login.UsersDirs("Test_User")
         user.create_user_dir()
         unloged = user.get_user_cwd()
         user.login()
@@ -144,7 +142,7 @@ class TestUserDirs(unittest.TestCase):
 
     def test_user_logout(self):
         """Test the when loginout the directory is not the one of the user"""
-        user = UsersDirs("Test_User")
+        user = login.UsersDirs("Test_User")
         loged = user.get_user_cwd()
         user.logout()
         unloged = user.get_user_cwd()
