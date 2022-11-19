@@ -76,7 +76,7 @@ def asignador_cuentas():
         # defino una variable sin sufijos para printear
         acc_str = extra_char_cleaner(acc)
         # actualizo el string final que se imprime en consola
-        account_index += "\n" + str(i + 1) + ": " + acc_str + "\n"
+        account_index += str(i + 1) + ": " + acc_str + "\n"
     # Meto un input de teclado
     while True:
         acc_number = int(input("\nElija la cuenta\n" + account_index + "\n"))
