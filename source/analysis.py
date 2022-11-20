@@ -228,7 +228,7 @@ def category_spendings(cat: str, subcat="", desc=""):
     """
     df_final = pd.DataFrame()
     for account in lista_cuentas():
-        if "DOL" not in account:
+        if "USD" not in account:
             df_data = pd.read_csv(
                 account,
                 sep="\t",
