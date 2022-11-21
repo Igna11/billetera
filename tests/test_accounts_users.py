@@ -6,15 +6,12 @@ Created on Mon Oct 03 20:00:05 2022
 @author: igna
 """
 import os
-import sys
 import unittest
 from unittest.mock import patch
+from source import accounts as acc
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USER_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
-sys.path.append(BASE_DIR)
-
-from source import accounts as acc
 
 inputs_pesos = ["CuentaTest", "ARS"]
 inputs_dolar = ["CuentaTest", "USD"]
@@ -25,7 +22,7 @@ class TestCreateAccounts(unittest.TestCase):
 
     @patch("builtins.input", lambda _: inputs_pesos.pop(0))
     def test_crear_cuenta_pesos(self):
-        """Tests that the account file (ARS) is created """
+        """Tests that the account file (ARS) is created"""
         os.chdir(USER_DIR)
         acc.crear_cuenta()
         self.assertTrue(os.path.isfile("CuentaTest_ACC_ARS.txt"))

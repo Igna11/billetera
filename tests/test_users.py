@@ -6,14 +6,12 @@ Created on Wed Mar 30 22:42:17 2022
 @author: igna
 """
 import os
-import sys
 import unittest
+from source.users import cerrar_sesion
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USER_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
-sys.path.append(BASE_DIR)
-
-from source.users import cerrar_sesion
 
 
 class TestUser(unittest.TestCase):
