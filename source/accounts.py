@@ -12,7 +12,7 @@ eliminar_cuenta()
 TODO no poder crear cuentas, ni borrar cuentas si no hay sesión iniciada
 """
 
-from source.account_core import Accounts
+from source.account_core import AccountsCreator
 
 
 def crear_cuenta():
@@ -21,7 +21,7 @@ def crear_cuenta():
     currency_acc = input(
         "\nIngresar el tipo de moneda, por ejemplo: ARS, USD, etc\n"
     ).upper()
-    account = Accounts(acc_name=name_acc, acc_currency=currency_acc)
+    account = AccountsCreator(acc_name=name_acc, acc_currency=currency_acc)
     account.add_account()
     print(f"\nSe ha creado la cuenta '{name_acc}'\n")
 
@@ -32,7 +32,7 @@ def eliminar_cuenta():
     currency_acc = input(
         "\nIntroduzca el tipo de moneda usada en la cuenta (ARS, USD, etc)\n"
     ).upper()
-    account = Accounts(acc_name=name_acc, acc_currency=currency_acc)
+    account = AccountsCreator(acc_name=name_acc, acc_currency=currency_acc)
     if account.exists:
         warning = "¿Seguro que queres eliminar la cuenta?\n\n\
         todos los datos contenidos en ella se perderán para siempre.\n\n\
