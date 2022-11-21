@@ -12,7 +12,13 @@ import re
 
 
 class Accounts:
-    """Esto es un docstring para pylint"""
+    """
+    Superclass of AccountsCreator.
+    Instantiates an Account Object. This object has information of the object,
+    like name, currency, filename, column headers of the file, if the account
+    exists or not, the amount of rows in the file and the get_last_line method
+    to retrieve as attributes the values of the las line of the file.    
+    """
 
     def __init__(self, acc_name: str, acc_currency: str) -> None:
         self.acc_name = acc_name
@@ -34,18 +40,21 @@ class Accounts:
         ]
 
     def __str__(self):
-        """docstring"""
+        """Information about the account."""
         return f"""
         \rName: {self.acc_name}
         \rCurrency: {self.acc_currency}
         \rFile Name: {self.acc_file_name}"""
 
     def __repr__(self):
-        """docstring"""
+        """returns the instantiation form of the object."""
         return f"Accounts({self.acc_name}, {self.acc_currency})"
 
     def get_last_line(self) -> dict:
-        """docstring"""
+        """
+        Opens the account and set all values from the last line as attributes
+        with their corresponding column name.
+        """
         with open(self.acc_file_name, "r") as account:
             account_lines = account.read().splitlines()
         self.acc_data_len = len(account_lines)
@@ -56,21 +65,25 @@ class Accounts:
 
 
 class AccountsCreator(Accounts):
-    """docstring - hereda de Accounts"""
+    """
+    Subclass of Accounts.
+    Inherits the necessary attributes of superclass Accounts to be usede as
+    template to create or delete account files.
+    """
 
     def add_account(self) -> None:
-        """Otro docstring"""
+        """Creates the account file where all data will be stored as .txt file"""
         header = "\t".join(self.acc_column_headers) + "\n"
         with open(self.acc_file_name, "x") as account:
             account.write(header)
 
     def remove_account(self) -> None:
-        """Otro docstring"""
+        """Deletes the account file. The information CAN NOT be recovered"""
         os.remove(self.acc_file_name)
 
 
 class AccountParser:
-    """docstring"""
+    """Work in progress"""
 
     def __init__(self):
         """docstring pendiente"""
