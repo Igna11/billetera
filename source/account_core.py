@@ -17,7 +17,7 @@ class Accounts:
     Instantiates an Account Object. This object has information of the object,
     like name, currency, filename, column headers of the file, if the account
     exists or not, the amount of rows in the file and the get_last_line method
-    to retrieve as attributes the values of the las line of the file.    
+    to retrieve as attributes the values of the las line of the file.
     """
 
     def __init__(self, acc_name: str, acc_currency: str) -> None:
@@ -87,7 +87,7 @@ class AccountParser:
 
     def __init__(self):
         """docstring pendiente"""
-        self.PATTERN = r"([a-zA-Z0-9_]*)(_ACC_)([A-Z]*)"
+        self.pattern = r"([a-zA-Z0-9_]*)(_ACC_)([A-Z]*)"
         self.acc_list = [acc for acc in os.listdir() if "_ACC_" in acc]
         self.acc_dict = {}
 
@@ -96,7 +96,7 @@ class AccountParser:
         Account selector in a numerical way: Associates a number to a given account
         so it can be selected by typing the number and not the name
         """
-        acc_indexator = enumerate(self.acc_list)
+        acc_indexator = enumerate(self.acc_list, 1)
         self.acc_dict = dict(acc_indexator)
         return self.acc_dict
 
@@ -104,7 +104,7 @@ class AccountParser:
         """docstring pendiente"""
         acc_index_dict = self.acc_indexer()
         for key, val in acc_index_dict.items():
-            re_matches = re.match(self.PATTERN, val).groups()
+            re_matches = re.match(self.pattern, val).groups()
             acc_name = re_matches[0]
             acc_currency = re_matches[2]
             acc_index_dict[key] = {
