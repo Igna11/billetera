@@ -126,13 +126,13 @@ def info(verbose=False):
     # Parrafo con los datos de todas las cuentas
     info_msg = ""
     for i, elem in enumerate(acc_list):
-        if "DOL" in elem:
+        if "_USD" in elem:
             dolar_tot = total[i]
             pesos_tot = total[i] * dollar_val
             info_msg += f"\n{elem}: Saldo u$s {dolar_tot:.2f}, "
-            info_msg += f"saldo total ${pesos_tot:.2f}\n"
+            info_msg += f"saldo total ${pesos_tot:.2f}"
         else:
-            info_msg += f"\n{elem}: Saldo total $ {total[i]:.2f}\n"
+            info_msg += f"\n{elem}: Saldo total $ {total[i]:.2f}"
     # Limpio los strings que molestan
     info_msg = extra_char_cleaner(info_msg)
 

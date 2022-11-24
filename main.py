@@ -32,9 +32,6 @@ TODO    Modulo de inicio de sesión con contraseña. -> done
                 Implementar cambio de contraseña -> done
 
 TODO    Encriptación de datos con sesión cerrada.
-
-TODO    Tests automaticos
-
 """
 from source.info import info
 from source.info import precio_dolar
@@ -50,10 +47,11 @@ from source.users import cambiar_contraseña
 from source.accounts import crear_cuenta
 from source.accounts import eliminar_cuenta
 
-from source.operations import gasto
-from source.operations import ingreso
-from source.operations import transferencia
-from source.operations import reajuste
+from source.operations import income
+from source.operations import expense
+from source.operations import extraction
+from source.operations import transfer
+from source.operations import readjustment
 
 from source.analysis import filtro
 from source.analysis import balances_cta
@@ -71,4 +69,9 @@ if __name__ == "__main__":
             "Para iniciar sesión con el usuario ejecute 'iniciar_sesion()'",
         )
     else:
+        ingreso = income
+        gasto = expense
+        extraccion = extraction
+        transferencia = transfer
+        reajuste = readjustment
         iniciar_sesion()

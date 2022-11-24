@@ -6,284 +6,304 @@ Created on Sat Sep  3 20:03:06 2022
 @author: igna
 Modulo con funciones que realizan operaciones en cuentas
 
-account_checker() <- decorator
-ingreso()
-extraccion()
-gasto()
-transferencia()
-reajuste()
+income()
+expense()
+extraction()
+transfer()
+readjustment()
 """
 
-import pandas as pd
-
-from source import misc
 from source import info
 from source import analysis
+from source import account_core as account
+from source import operations_core as operation
 
 
-def account_checker(func):
-    """
-    Decorator function: Checks if there is existing accounts and if not it
-    bypasses the function.
-    """
-
-    def decorator():
-        if len(misc.lista_cuentas()) != 0:
-            func()
-        else:
-            print("No existen cuentas.")
-
-    return decorator
-
-
-@account_checker
-def ingreso():
-    """
-    Account operation:
-    Income with input commands:
-        account name,
-        income amount,
-        category,
-        subcategory,
-        description
-    saves the data into the given account and appends one row into the balance
-    file
-    """
-    file_name = misc.asignador_cuentas()
-    # Abre y lee los datos de la cuenta
-    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    columns = misc.operation_selector(operation="income")
-    if float(columns["income"]) == 0:
-        return print("\nNo se está ingresando dinero.\n")
-    if len(acc_data) == 0:
-        columns["total"] = new_total = columns["income"]
-    else:
-        last_total = acc_data["Total"].values[-1]
-        new_total = float(columns["income"]) + last_total
-        columns["total"] = f"{new_total:.2f}"
-    # redefine columns from dict to list
-    columns = list(columns.values())
-    # Escribo la fila que se va a appendear al archivo
-    row = "\t".join(columns) + "\n"
-    # La appendeo al archivo
-    with open(file_name, "a") as micuenta:
-        micuenta.write(row)
-    print(
-        f"\nDinero en cuenta: ${new_total:.2f}\n",
-        f"\nDinero total {info.totales()['total']:.2f}\n",
-    )
-    analysis.balances()
+def account_selector() -> None:
+    """Helping function to select the account when perfoming opreations"""
+    accounts_info = account.AccountParser()
+    acc_properties = accounts_info.get_acc_properties()
+    for key, value in acc_properties.items():
+        print(f"{key}: {value['acc_name']}({value['currency']})")
+    while True:
+        acc_number = int(input("\nElija la cuenta\n"))
+        try:
+            account_dict = acc_properties[acc_number]
+            return account_dict
+        except KeyError:
+            print("=" * 79)
+            print(
+                f"\nValor elegido: '{acc_number}' erroneo, intente de nuevo."
+            )
+            print("Presione Ctrol+C para salir\n")
+            print("=" * 79)
 
 
-@account_checker
-def extraccion():
-    """
-    Account operation:
-    Extraction with input commands:
-        account name,
-        extraction amount,
-        category,
-        subcategory,
-        description
-    saves the data into the given account and appends one row into the balance
-    file
-    """
-    file_name = misc.asignador_cuentas()
-    # Abre y lee los datos de la cuenta
-    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    if len(acc_data) == 0:
-        return print("\nAún no se ha ingresado dinero en la cuenta\n")
-    last_total = acc_data["Total"].values[-1]
-    columns = misc.operation_selector("extraction")
-    if last_total < float(columns["extraction"]):
-        return print("\nNo hay dinero suficiente en la cuenta\n")
-    new_total = last_total - float(columns["extraction"])
-    columns["total"] = f"{new_total:.2f}"
-    # redefine columns from dict to list
-    columns = list(columns.values())
-    # Escribo la fila que se va a appendear al archivo
-    row = "\t".join(columns) + "\n"
-    # La appendeo al archivo
-    with open(file_name, "a") as micuenta:
-        micuenta.write(row)
-    print(
-        f"\nDinero en cuenta: ${new_total:.2f}\n"
-        f"\nDinero total {info.totales()['total']:.2f}\n",
-    )
-    analysis.balances()
-
-
-@account_checker
-def gasto():
-    """
-    Account operation:
-    Expenses with input commands:
-        account name,
-        expense amount,
-        category,
-        subcategory,
-        description
-    saves the data into the given account and appends one row into the balance
-    file
-    """
-    file_name = misc.asignador_cuentas()
-    # Abre y lee los datos de la cuenta
-    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")
-    if len(acc_data) == 0:
-        return print("\nNo hay dinero en la cuenta\n")
-    last_total = acc_data["Total"].values[-1]
-    columns = misc.operation_selector("expense")
-    if last_total < float(columns["expense"]):
-        return print("\nNo hay dinero suficiente en la cuenta\n")
-    new_total = last_total - float(columns["expense"])
-    columns["total"] = f"{new_total:.2f}"
-    # redefine columns from dict to list
-    columns = list(columns.values())
-    # Escribo la fila que se va a appendear al archivo
-    row = "\t".join(columns) + "\n"
-    # La appendeo al archivo
-    with open(file_name, "a") as micuenta:
-        micuenta.write(row)
-    print(
-        f"\nDinero en cuenta: ${new_total:.2f}\n",
-        f"\nDinero total {info.totales()['total']:.2f}\n",
-    )
-    analysis.balances()
-
-
-@account_checker
-def transferencia():
-    """
-    Account operation:
-    Makes a tranfer between to accounts of the same type only (currentyl it
-    is possible to make transfers between to accounts of different type but
-    it will lead to data errors). If the input is the same account twice, it
-    returns a message and nothing happens.
-    No balance change are made with this operation.
-    """
-    # Select the outgoing account, open its data, save its name and its total
-    print("Cuenta salida:")
-    file_name_out = misc.asignador_cuentas()
-    acc_name_out = misc.extra_char_cleaner(file_name_out)
-    acc_data_out = pd.read_csv(file_name_out, sep="\t", encoding="latin1")
-    # check if the acc is empty or with 0 total
-    if len(acc_data_out) == 0:
-        return print(f"\nNo hay datos en la cuenta {acc_name_out}\n")
-    last_total_out = acc_data_out["Total"].values[-1]
-    if last_total_out == 0:
-        return print(f"\nFondos insuficientes en la cuenta {acc_name_out}\n")
-
-    # Select de incoming account, open its data, save its name and its total
-    print("cuenta entrada:")
-    file_name_in = misc.asignador_cuentas()
-    # Check the same type of account
-    if (
-        "_DOL" in file_name_out
-        and "_DOL" not in file_name_in
-        or "_DOl" not in file_name_out
-        and "_DOL" in file_name_in
-    ):
-        return print(
-            "Solo se pueden realizar transferencias entre el mismo tipo de cuentas:",
-            " Pesos-Pesos o Dolar-Dolar",
+def income(
+    value=None,
+    acc_name=None,
+    acc_currency=None,
+    category=None,
+    subcategory=None,
+    description=None,
+    test_mode=False,
+) -> str:
+    """Saves into the account file the income information."""
+    if acc_name is None or acc_currency is None:
+        account_dict = account_selector()
+        acc_name = account_dict["acc_name"]
+        acc_currency = account_dict["currency"]
+    if value is None:
+        value = float(input("\nCantidad de dinero a ingresar\n"))
+    new_income = operation.Operations(acc_name, acc_currency, value)
+    new_income.income_operation()
+    if category is None:
+        category = input("\nCategoría: \n")
+    if subcategory is None:
+        subcategory = input("\nSubcategoría: \n")
+    if description is None:
+        description = input("\nDescripción: \n")
+    columns_dict = {
+        "date": new_income.opdate,
+        "hour": new_income.optime,
+        "total": new_income.new_total,
+        "income": new_income.new_income,
+        "extraction": new_income.new_extraction,
+        "expense": new_income.new_expense,
+        "category": category,
+        "subcategory": subcategory,
+        "description": description,
+        "balance": new_income.new_balance,
+    }
+    columns = list(columns_dict.values())
+    new_row = "\t".join(columns) + "\n"
+    if not test_mode:
+        with open(new_income.acc_file_name, "a") as acc:
+            acc.write(new_row)
+        print(
+            f"\nDinero en cuenta: ${float(new_income.new_total):.2f}\n"
+            f"\nDinero total {info.totales()['total']:.2f}\n",
         )
-    acc_name_in = misc.extra_char_cleaner(file_name_in)
-    acc_data_in = pd.read_csv(file_name_in, sep="\t", encoding="latin1")
-    try:
-        last_total_in = acc_data_in["Total"].values[-1]
-    except IndexError:
-        last_total_in = 0.0
+        analysis.balances()
+        return
+    if test_mode:
+        return new_row
 
-    # Transfers with the same account are not allowed
-    if file_name_in == file_name_out:
-        return print("\nNo tiene sentido transferir a una misma cuenta!!\n")
 
-    # Format all de columns correctly
-    columns_in = misc.operation_selector(operation="transfer")
-    columns_out = columns_in.copy()
-    columns_in["extraction"] = "0.00"
-    columns_in["subcategory"] = "Transferencia de entrada"
-    columns_in["description"] = f"Transferencia de {acc_name_out}"
-    columns_out["income"] = "0.00"
-    columns_out["subcategory"] = "Transferencia de salida"
-    columns_out["description"] = f"Transferencia a {acc_name_in}"
+def expense(
+    value=None,
+    acc_name=None,
+    acc_currency=None,
+    category=None,
+    subcategory=None,
+    description=None,
+    test_mode=False,
+) -> None:
+    """Saves into the account file the expense information."""
+    if acc_name is None or acc_currency is None:
+        account_dict = account_selector()
+        acc_name = account_dict["acc_name"]
+        acc_currency = account_dict["currency"]
+    if value is None:
+        value = float(input("\nValor del gasto:\n"))
+    new_expense = operation.Operations(acc_name, acc_currency, value)
+    new_expense.expense_operation()
+    if category is None:
+        category = input("\nCategoría: \n")
+    if subcategory is None:
+        subcategory = input("\nSubcategoría: \n")
+    if description is None:
+        description = input("\nDescripción: \n")
+    columns_dict = {
+        "date": new_expense.opdate,
+        "hour": new_expense.optime,
+        "total": new_expense.new_total,
+        "income": new_expense.new_income,
+        "extraction": new_expense.new_extraction,
+        "expense": new_expense.new_expense,
+        "category": category,
+        "subcategory": subcategory,
+        "description": description,
+        "balance": new_expense.new_balance,
+    }
+    columns = list(columns_dict.values())
+    new_row = "\t".join(columns) + "\n"
+    if not test_mode:
+        with open(new_expense.acc_file_name, "a") as acc:
+            acc.write(new_row)
+        print(
+            f"\nDinero en cuenta: ${float(new_expense.new_total):.2f}\n"
+            f"\nDinero total {info.totales()['total']:.2f}\n",
+        )
+        analysis.balances()
+        return
+    if test_mode:
+        return new_row
 
-    # Insuficient if the amount to transfer is grater than the last_total_out
-    if last_total_out < float(columns_in["income"]):
-        return print(f"\nFondos insuficiente en la cuenta {acc_name_out}")
 
-    # New total and columns total
-    new_total_in = float(columns_in["income"]) + last_total_in
-    columns_in["total"] = f"{new_total_in:.2f}"
-    new_total_out = last_total_out - float(columns_out["extraction"])
-    columns_out["total"] = f"{new_total_out:.2f}"
+def extraction(
+    value=None,
+    acc_name=None,
+    acc_currency=None,
+    category=None,
+    subcategory=None,
+    description=None,
+    test_mode=False,
+) -> None:
+    """Saves into the account file the extraction information."""
+    if acc_name is None or acc_currency is None:
+        account_dict = account_selector()
+        acc_name = account_dict["acc_name"]
+        acc_currency = account_dict["currency"]
+    if value is None:
+        value = float(input("\nCantidad de dinero a extraer\n"))
+    new_extraction = operation.Operations(acc_name, acc_currency, value)
+    new_extraction.expense_operation()
+    if category is None:
+        category = input("\nCategoría: \n")
+    if subcategory is None:
+        subcategory = input("\nSubcategoría: \n")
+    if description is None:
+        description = input("\nDescripción: \n")
+    columns_dict = {
+        "date": new_extraction.opdate,
+        "hour": new_extraction.optime,
+        "total": new_extraction.new_total,
+        "income": new_extraction.new_income,
+        "extraction": new_extraction.new_extraction,
+        "expense": new_extraction.new_expense,
+        "category": category,
+        "subcategory": subcategory,
+        "description": description,
+        "balance": new_extraction.new_balance,
+    }
+    columns = list(columns_dict.values())
+    new_row = "\t".join(columns) + "\n"
+    if not test_mode:
+        with open(new_extraction.acc_file_name, "a") as acc:
+            acc.write(new_row)
+        print(
+            f"\nDinero en cuenta: ${float(new_extraction.new_total):.2f}\n"
+            f"\nDinero total {info.totales()['total']:.2f}\n",
+        )
+        analysis.balances()
+        return
+    if test_mode:
+        return new_row
 
-    # Dict columns to list columns
-    columns_in = list(columns_in.values())
-    columns_out = list(columns_out.values())
 
-    # List columns to char string to be written
-    row_in = "\t".join(columns_in) + "\n"
-    row_out = "\t".join(columns_out) + "\n"
-
-    # Append the new data
-    with open(file_name_in, "a") as myaccount:
-        myaccount.write(row_in)
-    with open(file_name_out, "a") as myaccount:
-        myaccount.write(row_out)
-    print(
-        f"\nDinero en {acc_name_in}: ${new_total_in:.2f}\n",
-        f"\nDinero en {acc_name_out}: ${new_total_out:.2f}\n",
+def transfer(
+    value=None,
+    origin_acc=None,
+    origin_currency=None,
+    dest_acc=None,
+    dest_currency=None,
+    test_mode=False,
+) -> None:
+    """Saves into the account file the extraction information."""
+    if origin_acc is None or origin_currency is None:
+        origin_account = account_selector()
+        origin_acc = origin_account["acc_name"]
+        origin_currency = origin_account["currency"]
+    if dest_acc is None or dest_currency is None:
+        dest_account = account_selector()
+        dest_acc = dest_account["acc_name"]
+        dest_currency = dest_account["currency"]
+    if value is None:
+        value = float(input("\nCantidad de dinero a transferir\n"))
+    new_transfer = operation.Operations(origin_acc, origin_currency, value)
+    dest_new_transfer = new_transfer.transfer_operation(
+        dest_acc, dest_currency
     )
+    category = "Transferencia"
+    origin_subcategory = "Tranferencia de salida"
+    dest_subcategory = "Transferencia de entrada"
+    origin_description = f"Transferencia a {dest_acc}"
+    dest_description = f"Transferencia de {origin_acc}"
+    origin_columns_dict = {
+        "date": new_transfer.opdate,
+        "hour": new_transfer.optime,
+        "total": new_transfer.new_total,
+        "income": new_transfer.new_income,
+        "extraction": new_transfer.new_extraction,
+        "expense": new_transfer.new_expense,
+        "category": category,
+        "subcategory": origin_subcategory,
+        "description": origin_description,
+        "balance": new_transfer.new_balance,
+    }
+    dest_columns_dict = {
+        "date": new_transfer.opdate,
+        "hour": new_transfer.optime,
+        "total": dest_new_transfer.Total,
+        "income": dest_new_transfer.income,
+        "extraction": "0.00",
+        "expense": "0.00",
+        "category": category,
+        "subcategory": dest_subcategory,
+        "description": dest_description,
+        "balance": new_transfer.new_balance,
+    }
+    origin_columns = list(origin_columns_dict.values())
+    origin_new_row = "\t".join(origin_columns) + "\n"
+    dest_columns = list(dest_columns_dict.values())
+    dest_new_row = "\t".join(dest_columns) + "\n"
+    if not test_mode:
+        with open(new_transfer.acc_file_name, "a") as acc:
+            acc.write(origin_new_row)
+        with open(dest_new_transfer.acc_file_name, "a") as acc:
+            acc.write(dest_new_row)
+        print(
+            f"\nOrigen: Dinero en {origin_acc}: ${float(new_transfer.new_total):.2f}\n",
+            f"\nDestino: Dinero en {dest_acc}: ${float(dest_new_transfer.Total):.2f}\n",
+        )
+        return
+    if test_mode:
+        return origin_new_row, dest_new_row
 
 
-@account_checker
-def reajuste():
-    """
-    Account operation:
-    Ajust the account total according to the given input. It is used if for
-    some reason the tracked expenses/incomes are not precise and a correction
-    to the total values is needed in order to update amounts. It automatically
-    decides if it is an income or and expense.
-    Saves the data into the given account and appends one row into the balance
-    file
-    """
-    file_name = misc.asignador_cuentas()
-    acc_name = misc.extra_char_cleaner(file_name)
-    acc_data = pd.read_csv(file_name, sep="\t", encoding="latin1")["Total"]
-    # If empty account, then do nothing
-    if len(acc_data) == 0:
-        return print(f"\nNo hay datos en la cuenta {acc_name}\n")
-    last_total = acc_data.values[-1]
-    columns = misc.operation_selector(operation="readjustment")
-    new_total = float(columns["total"])
-    # Negative values not allowed
-    if new_total < 0:
-        return print("\nNo se puede reajustar a valores negativos!\n")
-    # No readjustment
-    if last_total == new_total:
-        return print("\nNo hay nada que reajustar.\n")
-    # Positive readjustment
-    if last_total < new_total:
-        columns["subcategory"] = "Positivo"
-        columns["description"] = "Reajuste positivo de saldo"
-        income = new_total - last_total
-        columns["income"] = f"{income:.2f}"
-    # Negative readjustment
-    elif last_total > new_total:
-        columns["subcategory"] = "Negativo"
-        columns["description"] = "Reajuste negativo de saldo"
-        extraction = last_total - new_total
-        columns["extraction"] = f"{extraction:.2f}"
-    # Redefine columns from dict to list
-    columns = list(columns.values())
-    # Escribo la fila que se va a appendear al archivo
-    row = "\t".join(columns) + "\n"
-    # La appendeo al archivo
-    with open(file_name, "a") as myaccount:
-        myaccount.write(row)
-    print(
-        f"\nDinero en cuenta: ${new_total:.2f}",
-        f"\nDinero total {info.totales()['total']:.2f}\n",
-    )
-    analysis.balances()
+def readjustment(
+    value=None, acc_name=None, acc_currency=None, test_mode=False
+) -> None:
+    """Saves into the account file the readjustment information."""
+    if acc_name is None or acc_currency is None:
+        account_dict = account_selector()
+        acc_name = account_dict["acc_name"]
+        acc_currency = account_dict["currency"]
+    if value is None:
+        value = float(input("\nIngrese saldo actual\n"))
+    category = "Reajuste"
+    new_readjustment = operation.Operations(acc_name, acc_currency, value)
+    new_readjustment.readjustment_operation()
+
+    if value < float(new_readjustment.Total):
+        subcategory = "Negativo"
+        description = "Reajuste negativo de saldo"
+    if value > float(new_readjustment.Total):
+        subcategory = "Positivo"
+        description = "Reajuste positivo de saldo"
+    columns_dict = {
+        "date": new_readjustment.opdate,
+        "hour": new_readjustment.optime,
+        "total": new_readjustment.new_total,
+        "income": new_readjustment.new_income,
+        "extraction": new_readjustment.new_extraction,
+        "expense": new_readjustment.new_expense,
+        "category": category,
+        "subcategory": subcategory,
+        "description": description,
+        "balance": new_readjustment.new_balance,
+    }
+    columns = list(columns_dict.values())
+    new_row = "\t".join(columns) + "\n"
+    if not test_mode:
+        with open(new_readjustment.acc_file_name, "a") as acc:
+            acc.write(new_row)
+        print(
+            f"\nDinero en cuenta: ${float(new_readjustment.new_total):.2f}\n"
+            f"\nDinero total {info.totales()['total']:.2f}\n",
+        )
+        analysis.balances()
+        return
+    if test_mode:
+        return new_row
