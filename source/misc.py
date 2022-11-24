@@ -10,17 +10,6 @@ import os
 from datetime import datetime
 
 
-def date_gen():
-    """
-    Non-user function:
-    Generates a dictionary with date an time in a latin-format: d-m-y
-    """
-    time = datetime.now()
-    date = time.strftime("%d-%m-%Y")
-    hour = time.strftime("%H:%M:%S")
-    return {"Fecha": date, "hora": hour}
-
-
 def extra_char_cleaner(charchain: str):
     """
     Non-user function:

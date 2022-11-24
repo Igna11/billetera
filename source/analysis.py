@@ -22,7 +22,6 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from source.misc import date_gen
 from source.misc import asignador_cuentas
 from source.misc import extra_char_cleaner
 from source.info import totales
@@ -50,18 +49,18 @@ def balances():
     functions.
     """
     total, total_pesos, total_dolares = list(totales().values())
-    fecha = date_gen()["Fecha"]
-    hora = date_gen()["hora"]
+    time = datetime.now().time().strftime("%H:%M:%S")
+    date = datetime.now().date().strftime("%d-%m-%Y")
     if not os.path.isfile("Balance.txt"):
         with open("Balance.txt", "x") as balance:
             balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
             balance.write(
-                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
+                f"{time}\t{date}\t{total}\t{total_pesos}\t{total_dolares}\n"
             )
     elif os.path.isfile("Balance.txt"):
         with open("Balance.txt", "a") as balance:
             balance.write(
-                f"{hora}\t{fecha}\t{total}\t{total_pesos}\t{total_dolares}\n"
+                f"{time}\t{date}\t{total}\t{total_pesos}\t{total_dolares}\n"
             )
 
 
