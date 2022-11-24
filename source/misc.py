@@ -50,25 +50,13 @@ def users_list():
     return user_list
 
 
-def lista_cuentas():
-    """
-    Non-user function:
-    Lists all accounts found inside the given user's directory"""
-    file_list = os.listdir()
-    acc_list = []
-    for file in file_list:
-        if "_ACC_" in file:
-            acc_list.append(file)
-    return acc_list
-
-
 def asignador_cuentas():
     """
     Non-user function:
     Account selector in a numerical way: Associates a number to a given account
     so it can be selected by typing the number and not the name
     """
-    acc_list = lista_cuentas()
+    acc_list = [acc for acc in os.listdir() if "_ACC_" in acc]
     acc_range = range(1, len(acc_list) + 1)
     dic = dict(zip(acc_range, acc_list))
     account_index = ""
@@ -91,55 +79,3 @@ def asignador_cuentas():
             )
             print("Presione Ctrol+C para salir\n")
             print("=" * 79)
-
-
-def input_selector() -> tuple:
-    """
-    Non-user function:
-    Intended to be only by operation_selector
-    """
-    category = input("\nCategoría: \n")
-    subcategory = input("\nSubcategoría: \n")
-    description = input("\nDescripción: \n")
-    return category, subcategory, description
-
-
-def operation_selector(operation: str) -> dict:
-    """
-    Non-user function:
-    generates de columns that will be append into the account file
-    """
-    date = date_gen()["Fecha"]
-    hour = date_gen()["hora"]
-    income = expense = extraction = total = balance = "0.00"
-    if operation == "income":
-        income = input("\nCantidad de dinero a ingresar\n")
-        category, subcategory, description = input_selector()
-    elif operation == "expense":
-        expense = input("\nValor del gasto\n")
-        category, subcategory, description = input_selector()
-    elif operation == "extraction":
-        extraction = input("\nCantidad de dinero a extraer\n")
-        category, subcategory, description = input_selector()
-    elif operation == "transfer":
-        income = extraction = input("\nCantidad de dinero a transferir\n")
-        expense = "0.00"
-        category = "Transferencia"
-        subcategory = description = ""
-    elif operation == "readjustment":
-        total = input("\nIngrese el saldo actual\n")
-        category = "Reajuste"
-        subcategory = description = ""
-    columns_dict = {
-        "date": date,
-        "hour": hour,
-        "total": total,
-        "income": income,
-        "extraction": extraction,
-        "expense": expense,
-        "category": category,
-        "subcategory": subcategory,
-        "description": description,
-        "balance": balance,
-    }
-    return columns_dict

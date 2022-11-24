@@ -23,7 +23,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from source.misc import date_gen
-from source.misc import lista_cuentas
 from source.misc import asignador_cuentas
 from source.misc import extra_char_cleaner
 from source.info import totales
@@ -227,7 +226,8 @@ def category_spendings(cat: str, subcat="", desc=""):
         the DataFrame of the filtered information
     """
     df_final = pd.DataFrame()
-    for account in lista_cuentas():
+    acc_list = [acc for acc in os.listdir() if "_ACC_" in acc]
+    for account in acc_list:
         if "USD" not in account:
             df_data = pd.read_csv(
                 account,
