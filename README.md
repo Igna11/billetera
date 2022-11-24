@@ -9,10 +9,13 @@ BilleteraAPP
         |__ info.py
         |__ misc.py
         |__ users.py
+        |__ errors.py
         |__ accounts.py
         |__ analysis.py
         |__ currency.py
         |__ operations.py
+        |__ account_core.py
+        |__ operations_core.py
     |__ data
         |__ userUSR
         |__ passwords.sql
@@ -20,7 +23,12 @@ BilleteraAPP
         |__ login.py
         |__ sqlpasswd.py
     |__ tests
-        |__ tests.py
+        |__ tests_accounts_core.py
+        |__ tests_accounts_users.py
+        |__ tests_operations_core.py
+        |__ tests_operations_user.py
+        |__ tests_login.py
+        |__ tests_users.py
     |__ requirements.txt
     |__ .gitignore
     |__ __pycache__
