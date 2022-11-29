@@ -20,8 +20,6 @@ from login import login
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
 os.chdir(DATA_PATH)
-pd.set_option("display.max_columns", 11)
-
 
 def crear_usuario() -> None:
     """
