@@ -17,6 +17,9 @@ BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
 DATA_BASE = os.path.join(DATA_PATH, "passwords.sqlite")
 
+if not os.path.isdir(DATA_PATH):
+    os.mkdir(DATA_PATH)
+
 connection = sql.create_connection(DATA_BASE)
 
 CREATE_USER_TABLE = """
