@@ -33,10 +33,13 @@ TODO    Modulo de inicio de sesión con contraseña. -> done
 
 TODO    Encriptación de datos con sesión cerrada.
 """
+
+import os
+
+import pandas as pd
+
 from source.info import info
 from source.info import precio_dolar
-
-from source.misc import users_list
 
 from source.users import iniciar_sesion
 from source.users import cerrar_sesion
@@ -60,9 +63,16 @@ from source.analysis import datos_cuenta
 from source.analysis import balances_totales
 from source.analysis import category_spendings
 
-if __name__ == "__main__":
+pd.set_option("display.max_columns", 11)
 
-    if len(users_list()) == 0:
+if __name__ == "__main__":
+    users_list = [user for user in os.listdir() if "USR" in user]
+    if len(users_list) == 0:
+        ingreso = income
+        gasto = expense
+        extraccion = extraction
+        transferencia = transfer
+        reajuste = readjustment
         print(
             "Bienvenide!\nNo hay ningún usuario creado todavía.",
             "Para crear un usuario ejecute 'crear_usuario()' y siga las instrucciones.",
