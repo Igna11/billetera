@@ -11,7 +11,13 @@ from source import account_core as account
 
 
 class Operations(account.Accounts):
-    """docstring para income
+    """
+    Core class of operations:
+    -Income
+    -Expense
+    -Extraction
+    -Transfer
+    -readjustment
     inherits: acc_name, currency, acc_file_name, exists, acc_column_headers
     """
 
@@ -32,7 +38,7 @@ class Operations(account.Accounts):
         )
 
     def income_operation(self) -> None:
-        """dostrin"""
+        """Defines the logic behind the income operation."""
         if not self.exists:
             raise errors.AccountNotExistsError(
                 self.acc_name, self.acc_currency
@@ -48,7 +54,7 @@ class Operations(account.Accounts):
             self.new_income = str(self.value)
 
     def expense_operation(self) -> None:
-        """dostrin"""
+        """Defines the logic behind the expense operation."""
         if not self.exists:
             raise errors.AccountNotExistsError(
                 self.acc_name, self.acc_currency
@@ -67,7 +73,10 @@ class Operations(account.Accounts):
                 self.new_expense = str(self.value)
 
     def extraction_operation(self) -> None:
-        """dostring"""
+        """
+        Defines the logic behind the extraction operation.
+        Same as expense operation.
+        """
         if not self.exists:
             raise errors.AccountNotExistsError(
                 self.acc_name, self.acc_currency
@@ -88,7 +97,14 @@ class Operations(account.Accounts):
     def transfer_operation(
         self, dest_acc: str, dest_currency: str
     ) -> account.Accounts:
-        """dostring"""
+        """
+        Defines the logic of the transfer operation.
+        arguments:
+            dest_acc: str
+            Destination account for the transfer.
+            dest_currency: str
+            Currency used by the destination account.
+        """
         if not self.exists:
             raise errors.AccountNotExistsError(
                 self.acc_name, self.acc_currency
@@ -116,7 +132,7 @@ class Operations(account.Accounts):
         return dest_acc
 
     def readjustment_operation(self) -> None:
-        """dostring"""
+        """Defines the logic behind the readjustment operation."""
         if not self.exists:
             raise errors.AccountNotExistsError(
                 self.acc_name, self.acc_currency
