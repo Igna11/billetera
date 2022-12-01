@@ -45,7 +45,7 @@ from source.users import iniciar_sesion
 from source.users import cerrar_sesion
 from source.users import crear_usuario
 from source.users import eliminar_usuario
-from source.users import cambiar_contraseña
+from source.users import cambiar_password
 
 from source.accounts import crear_cuenta
 from source.accounts import eliminar_cuenta

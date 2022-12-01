@@ -95,7 +95,7 @@ def eliminar_usuario() -> None:
         print("Debes cerrar sesion para eliminar un usuario.")
 
 
-def cambiar_contraseña() -> None:
+def cambiar_password() -> None:
     """
     Changes the password of a given user.
     Uses inputs for name of the user, old password and new password.
