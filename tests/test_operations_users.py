@@ -250,8 +250,10 @@ class TestUserExpense(unittest.TestCase):
                 description,
             )
 
+
 class TestUserExtraction(unittest.TestCase):
     """The extraction() function is identical to expense function."""
+
 
 class TestUserTransfer(unittest.TestCase):
     """Tests for user function expense()"""
@@ -298,8 +300,8 @@ class TestUserTransfer(unittest.TestCase):
         dest_column_list = [
             opdate,
             optime,
-            str(round(float(dest_acc.Total) + value,2)),
-            str(value), # income
+            str(round(float(dest_acc.Total) + value, 2)),
+            str(value),  # income
             "0.00",  # extraction
             "0.00",  # expense
             "Transferencia",  # category
