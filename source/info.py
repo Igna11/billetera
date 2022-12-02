@@ -4,6 +4,8 @@
 Created on Sun Sep  4 11:24:19 2022
 
 @author: igna
+
+TODO remover la funcion totales()
 """
 
 import os
