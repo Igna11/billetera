@@ -5,7 +5,6 @@ Created on Sun Sep  4 11:24:19 2022
 
 @author: igna
 
-TODO remover la funcion totales()
 """
 
 import os
@@ -49,59 +48,33 @@ def precio_dolar(verbose=False):
     return float(usd_val.replace(",", "."))
 
 
-def totales():
-    """
-    Non-user function:
-    Calculate the total amount of money for all accounts
-    """
-    acc_list = [acc for acc in os.listdir() if "_ACC_" in acc]
-    usd_val = precio_dolar()
-    total = 0
-    ars_total = 0
-    usd_total = 0
-    for acc in acc_list:
-        df_data = pd.read_csv(acc, sep="\t", encoding="latin1")
-        try:
-            valor_elem = float(df_data["Total"].values[-1])
-            if "USD" in acc:
-                usd_total += valor_elem
-                total += valor_elem * usd_val
-            else:
-                ars_total += valor_elem
-                total += valor_elem
-        except IndexError:
-            pass
-    total = round(total, 2)
-    ars_total = round(ars_total, 2)
-    usd_total = round(usd_total, 2)
-    dic = {"total": total, "total(ARS)": ars_total, "total(USD)": usd_total}
-    return dic
-
-
 def info(verbose=False):
     """List of functions."""
     functions = [
         "info()",
         "precio_dolar()",
         "crear_usuario()",
+        "eliminar_usuario()",
+        "cambiar_password()",
         "iniciar_sesion()",
         "cerrar_sesion()",
         "crear_cuenta()",
-        "datos_cuenta()",
+        "eliminar_cuenta()",
         "ingreso()",
         "gasto()",
         "extraccion()",
         "transferencia()",
         "reajuste()",
+        "datos_cuenta()",
         "filtro()",
-        "balance_graf()",
         "balances_cta()",
         "balances_totales()",
         "category_spendings",
+        "balance_graf()",
     ]
     # lista con los nombres de los archivos de cuenta
     accounts_data = account.AccountParser()
-    usd_val = precio_dolar()
+    usd_value = precio_dolar()
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for acc in accounts_data.acc_list:
@@ -117,7 +90,7 @@ def info(verbose=False):
     for i, elem in enumerate(accounts_data.acc_list):
         if "_USD" in elem:
             dolar_tot = total[i]
-            pesos_tot = total[i] * usd_val
+            pesos_tot = total[i] * usd_value
             info_msg += f"\n{elem}: Saldo u$s {dolar_tot:.2f} (USD), "
             info_msg += f"(${pesos_tot:.2f} ARS)"
         else:
@@ -131,8 +104,10 @@ def info(verbose=False):
     )
 
     # Calculo todos los totales
-
-    totals_dict = totales()
+    accounts_data.get_totals()
+    total = accounts_data.ars_total + accounts_data.usd_total * usd_value
+    ars_total = accounts_data.ars_total
+    usd_total = accounts_data.usd_total
     # Printeo toda la información
     str_functions = "\n".join(functions)
     if verbose:
@@ -140,9 +115,9 @@ def info(verbose=False):
     print("=" * 79)
     print("Cuentas existentes:\n", info_msg)
     print("=" * 79)
-    print(f"Dolares totales: ${totals_dict['total(USD)']:.2f}")
+    print(f"Dolares totales: ${usd_total:.2f}")
     print("=" * 79)
-    print(f"Pesos totales: ${totals_dict['total(ARS)']:.2f}")
+    print(f"Pesos totales: ${ars_total:.2f}")
     print("=" * 79)
-    print(f"Dinero total en cuentas: ${totals_dict['total']:.2f}")
+    print(f"Dinero total en cuentas: ${total:.2f}")
     print("=" * 79)
