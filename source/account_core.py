@@ -89,7 +89,10 @@ class AccountParser:
         """docstring pendiente"""
         self.pattern = r"([a-zA-Z0-9_]*)(_ACC_)([A-Z]*)"
         self.acc_list = [acc for acc in os.listdir() if "_ACC_" in acc]
+        self.acc_data_len = 1
         self.acc_dict = {}
+        self.ars_total = 0.0
+        self.usd_total = 0.0
 
     def acc_indexer(self):
         """
@@ -112,3 +115,22 @@ class AccountParser:
                 "currency": acc_currency,
             }
         return acc_index_dict
+
+    def get_acc_total(self, account):
+        """Returns the last line of the balance.txt file."""
+        with open(account, "r") as acc:
+            account_lines = acc.read().splitlines()
+        self.acc_data_len = len(account_lines)
+        headers = ["Hora", "Fecha", "Total", "Total(ARS)", "Total(USD)"]
+        last_acc_line = account_lines[-1].split("\t")
+        last_line_dict = dict(zip(headers, last_acc_line))
+        return last_line_dict["Total"]
+
+    def get_totals(self):
+        """Sets the values for ars_total, usd_total."""
+        for acc in self.acc_list:
+            value = self.get_acc_total(acc)
+            if "ARS" in acc and self.acc_data_len > 1:
+                self.ars_total += float(value)
+            elif "USD" in acc and self.acc_data_len > 1:
+                self.usd_total += float(value)
