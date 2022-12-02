@@ -7,10 +7,10 @@ Created on Sun Sep  4 11:24:19 2022
 
 """
 
-import os
 import pandas as pd
 
 from source import account_core as account
+from source import colorizer as color
 from source.currency import ConversorMoneda
 
 
@@ -111,13 +111,13 @@ def info(verbose=False):
     # Printeo toda la información
     str_functions = "\n".join(functions)
     if verbose:
-        print("Funciones:\n", str_functions)
-    print("=" * 79)
-    print("Cuentas existentes:\n", info_msg)
-    print("=" * 79)
-    print(f"Dolares totales: ${usd_total:.2f}")
-    print("=" * 79)
-    print(f"Pesos totales: ${ars_total:.2f}")
-    print("=" * 79)
-    print(f"Dinero total en cuentas: ${total:.2f}")
-    print("=" * 79)
+        color.cprint(f"Funciones:\n {str_functions}", "blue", "bold")
+    color.cprint("=" * 79, "grey", "bold")
+    color.cprint(f"Cuentas existentes:\n{info_msg}", "purple", "bold")
+    color.cprint("=" * 79, "grey", "bold")
+    color.cprint(f"Dolares totales: ${usd_total:.2f}", "green")
+    color.cprint("=" * 79, "grey", "bold")
+    color.cprint(f"Pesos totales: ${ars_total:.2f}", "cyan")
+    color.cprint("=" * 79, "grey", "bold")
+    color.cprint(f"Dinero total en cuentas: ${total:.2f}", "blue", "bold")
+    color.cprint("=" * 79, "grey", "bold")
