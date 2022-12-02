@@ -7,7 +7,6 @@ BilleteraAPP
     |__ main.py
     |__ source
         |__ info.py
-        |__ misc.py
         |__ users.py
         |__ errors.py
         |__ accounts.py
