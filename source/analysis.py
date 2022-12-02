@@ -22,46 +22,15 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from source.misc import asignador_cuentas
-from source.misc import extra_char_cleaner
-from source.info import totales
 
-
-def datos_cuenta():
+def datos_cuenta(acc_name: str, acc_currency: str) -> pd.DataFrame:
     """
     Analysis function:
     Return a pandas DataFrame with data of a given account
     """
-    file_name = asignador_cuentas()
-    data = pd.read_csv(file_name, sep="\t", encoding="latin1")
+    acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.txt"
+    data = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
     return data
-
-
-def balances():
-    """
-    Non-user function:
-    Appends one row to the balance file everytime an account operation that
-    modifies the balance is done.
-    If the balance file exists, appends data. If the balance file does not
-    exists, it creates it and appends the data.
-    --------------------------------------------------------------------------
-    Do not use this function manually, it is only intended to be used by other
-    functions.
-    """
-    total, total_pesos, total_dolares = list(totales().values())
-    time = datetime.now().time().strftime("%H:%M:%S")
-    date = datetime.now().date().strftime("%d-%m-%Y")
-    if not os.path.isfile("Balance.txt"):
-        with open("Balance.txt", "x") as balance:
-            balance.write("Hora\tFecha\tTotal\tTotal_pesos\tTotal_dolares\n")
-            balance.write(
-                f"{time}\t{date}\t{total}\t{total_pesos}\t{total_dolares}\n"
-            )
-    elif os.path.isfile("Balance.txt"):
-        with open("Balance.txt", "a") as balance:
-            balance.write(
-                f"{time}\t{date}\t{total}\t{total_pesos}\t{total_dolares}\n"
-            )
 
 
 def balances_cta(account: str, month: int, year: int):
@@ -120,7 +89,7 @@ def balances_totales(month: int, year: int, verbose=False):
     """
     ingresos_tot = gastos_tot = balances_tot = 0
     for cuenta in os.listdir():
-        if "CUENTA" in cuenta and "DOL" not in cuenta:
+        if "_ACC_" in cuenta and "_USD" not in cuenta:
             try:
                 dic_c = balances_cta(cuenta, month, year)
             except AttributeError as error:
@@ -147,8 +116,7 @@ def balance_graf():
     """
     data = pd.read_csv("Balance.txt", sep="\t")
     # Armo un string con la fecha y la hora en el formato del .txt
-    str_time = data["Fecha"] + "-" + data["Hora"]
-    # Especifico ese formato acá, para usarlo en la funcion strptime
+    str_time = data["Date"] + "-" + data["Time"]
     formato = "%d-%m-%Y-%H:%M:%S"
     # transformo el string a un objeto datetime usando el formato dado
     time = [datetime.strptime(i, formato) for i in str_time]
@@ -159,24 +127,24 @@ def balance_graf():
         alpha=0.5,
         fillstyle="full",
         markersize=5,
-        label="Total: $%.2f" % data["Total"].values[-1],
+        label=f"Total: ${data['Total'].values[-1]:.2f}",
     )
     plt.plot(
         time,
-        data["Total_pesos"],
+        data["Total(ARS)"],
         "o-",
         alpha=0.5,
         fillstyle="none",
         markersize=3,
-        label="Total de pesos: $%.2f" % data["Total_pesos"].values[-1],
+        label=f"Total de pesos: {data['Total(ARS)'].values[-1]:.2f}",
     )
     plt.plot(
         time,
-        data["Total_dolares"],
+        data["Total(USD)"],
         "-",
         alpha=0.5,
         fillstyle="none",
-        label="Total de dolares: u$s%.2f" % data["Total_dolares"].values[-1],
+        label=f"Total de dolares: u$s{data['Total(USD)'].values[-1]:.2f}",
     )
     plt.grid(which="both", alpha=0.5)
     plt.legend()
@@ -184,14 +152,13 @@ def balance_graf():
     plt.show()
 
 
-def filtro():
+def filtro(acc_name: str, acc_currency: str) -> pd.DataFrame:
     """
     Analysis function:
     Easy way to filter data from a given account by category and subcategory
     """
-    nombre = asignador_cuentas()
-    # Abre y lee los datos de la cuenta
-    datos = pd.read_csv(nombre, sep="\t", encoding="latin1")
+    acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.txt"
+    datos = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
     categoria = input("\nIngrese la categoría\n")
     datos = datos[datos["Categoria"] == categoria]
     print(datos)
@@ -236,7 +203,7 @@ def category_spendings(cat: str, subcat="", desc=""):
                 dayfirst=True,
                 encoding="latin1",
             )
-            df_data["Account"] = extra_char_cleaner(account)
+            df_data["Account"] = account
 
             if not subcat:
                 df_ = df_data[df_data["Categoria"] == cat]
