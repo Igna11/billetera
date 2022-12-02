@@ -65,12 +65,12 @@ def set_new_balance():
         with open("Balance.txt", "x") as balance:
             balance.write("Time\tDate\tTotal\tTotal(ARS)\tTotal(USD)\n")
             balance.write(
-                f"{time}\t{date}\t{total}\t{ars_total}\t{usd_total}\n"
+                f"{time}\t{date}\t{total:.2f}\t{ars_total:.2f}\t{usd_total:.2f}\n"
             )
     elif os.path.isfile("Balance.txt"):
         with open("Balance.txt", "a") as balance:
             balance.write(
-                f"{time}\t{date}\t{total}\t{ars_total}\t{usd_total}\n"
+                f"{time}\t{date}\t{total:.2f}\t{ars_total:.2f}\t{usd_total:.2f}\n"
             )
 
 
