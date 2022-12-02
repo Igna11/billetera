@@ -63,6 +63,7 @@ from source.analysis import datos_cuenta
 from source.analysis import balances_totales
 from source.analysis import category_spendings
 
+
 pd.set_option("display.max_columns", 11)
 
 if __name__ == "__main__":

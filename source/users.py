@@ -21,6 +21,7 @@ BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
 os.chdir(DATA_PATH)
 
+
 def crear_usuario() -> None:
     """
     Creates an user with its directories and entries in the data base.

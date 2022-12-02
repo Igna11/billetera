@@ -12,9 +12,9 @@ extraction()
 transfer()
 readjustment()
 """
-
+import os
+from datetime import datetime
 from source import info
-from source import analysis
 from source import account_core as account
 from source import operations_core as operation
 
@@ -37,6 +37,41 @@ def account_selector() -> None:
             )
             print("Presione Ctrol+C para salir\n")
             print("=" * 79)
+
+
+def calculate_totals():
+    """
+    Calculates the sum of the totals of all accounts in ARS using the dollar
+    price at the time being.
+    """
+    usd_value = info.precio_dolar()
+    accounts_data = account.AccountParser()
+    accounts_data.get_totals()
+    total = accounts_data.ars_total + accounts_data.usd_total * usd_value
+    ars_total = accounts_data.ars_total
+    usd_total = accounts_data.usd_total
+    return ars_total, usd_total, total
+
+
+def set_new_balance():
+    """
+    Saves the new balances into the balance.txt file when any operation is
+    performed.
+    """
+    ars_total, usd_total, total = calculate_totals()
+    time = datetime.now().time().strftime("%H:%M:%S")
+    date = datetime.now().date().strftime("%d-%m-%Y")
+    if not os.path.isfile("Balance.txt"):
+        with open("Balance.txt", "x") as balance:
+            balance.write("Time\tDate\tTotal\tTotal(ARS)\tTotal(USD)\n")
+            balance.write(
+                f"{time}\t{date}\t{total}\t{ars_total}\t{usd_total}\n"
+            )
+    elif os.path.isfile("Balance.txt"):
+        with open("Balance.txt", "a") as balance:
+            balance.write(
+                f"{time}\t{date}\t{total}\t{ars_total}\t{usd_total}\n"
+            )
 
 
 def income(
@@ -80,11 +115,12 @@ def income(
     if not test_mode:
         with open(new_income.acc_file_name, "a") as acc:
             acc.write(new_row)
+        totals = calculate_totals()[2]
         print(
             f"\nDinero en cuenta: ${float(new_income.new_total):.2f}\n"
-            f"\nDinero total {info.totales()['total']:.2f}\n",
+            f"\nDinero total {totals:.2f}\n",
         )
-        analysis.balances()
+        set_new_balance()
         return
     if test_mode:
         return new_row
@@ -131,11 +167,12 @@ def expense(
     if not test_mode:
         with open(new_expense.acc_file_name, "a") as acc:
             acc.write(new_row)
+        totals = calculate_totals()[2]
         print(
             f"\nDinero en cuenta: ${float(new_expense.new_total):.2f}\n"
-            f"\nDinero total {info.totales()['total']:.2f}\n",
+            f"\nDinero total {totals:.2f}\n",
         )
-        analysis.balances()
+        set_new_balance()
         return
     if test_mode:
         return new_row
@@ -182,11 +219,12 @@ def extraction(
     if not test_mode:
         with open(new_extraction.acc_file_name, "a") as acc:
             acc.write(new_row)
+        totals = calculate_totals()[2]
         print(
             f"\nDinero en cuenta: ${float(new_extraction.new_total):.2f}\n"
-            f"\nDinero total {info.totales()['total']:.2f}\n",
+            f"\nDinero total {totals:.2f}\n",
         )
-        analysis.balances()
+        set_new_balance()
         return
     if test_mode:
         return new_row
@@ -299,11 +337,12 @@ def readjustment(
     if not test_mode:
         with open(new_readjustment.acc_file_name, "a") as acc:
             acc.write(new_row)
+        totals = calculate_totals()[2]
         print(
             f"\nDinero en cuenta: ${float(new_readjustment.new_total):.2f}\n"
-            f"\nDinero total {info.totales()['total']:.2f}\n",
+            f"\nDinero total {totals:.2f}\n",
         )
-        analysis.balances()
+        set_new_balance()
         return
     if test_mode:
         return new_row
