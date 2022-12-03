@@ -10,6 +10,8 @@ Core module of accounts and its operations
 import os
 import re
 
+from source import errors
+
 
 class Accounts:
     """
@@ -72,21 +74,43 @@ class AccountsCreator(Accounts):
     """
 
     def add_account(self) -> None:
-        """Creates the account file where all data will be stored as .txt file"""
-        header = "\t".join(self.acc_column_headers) + "\n"
-        with open(self.acc_file_name, "x", encoding="UTF-8") as account:
-            account.write(header)
+        """
+        Creates the account file where all data will be stored as .txt file
+        only if there is an user loged.
+        """
+        if not "USR" in os.getcwd():
+            raise errors.NotOpenSessionError
+        if "USR" in os.getcwd():
+            header = "\t".join(self.acc_column_headers) + "\n"
+            with open(self.acc_file_name, "x", encoding="UTF-8") as account:
+                account.write(header)
 
     def remove_account(self) -> None:
         """Deletes the account file. The information CAN NOT be recovered"""
-        os.remove(self.acc_file_name)
+        if not "USR" in os.getcwd():
+            raise errors.NotOpenSessionError
+        if "USR" in os.getcwd():
+            os.remove(self.acc_file_name)
 
 
 class AccountParser:
-    """Work in progress"""
+    """
+    This class takes care of the parsing of individual accounts as well as all
+    accounts in order to obtain data of total values for different currencies.
+
+    The attributes of this class are:
+        - pattern: generates de regex patter to extract the name of the
+            account and the currency
+        - acc_list: List of accounts for a given user
+        - acc_data_len: number of lines for a given account, including
+            headers.
+        - acc_dict: An index to enumerate accounts, e.g. :
+            {1: "Dummy_account", 2: "Dummy2_account", ...}
+        - ars_total: total value of ARS of a given account.
+        - usd_total: total value of USD of a given account.
+    """
 
     def __init__(self):
-        """docstring pendiente"""
         self.pattern = r"([a-zA-Z0-9_]*)(_ACC_)([A-Z]*)"
         self.acc_list = [acc for acc in os.listdir() if "_ACC_" in acc]
         self.acc_data_len = 1
@@ -94,17 +118,24 @@ class AccountParser:
         self.ars_total = 0.0
         self.usd_total = 0.0
 
-    def acc_indexer(self):
+    def acc_indexer(self) -> dict:
         """
-        Account selector in a numerical way: Associates a number to a given account
-        so it can be selected by typing the number and not the name
+        Associates a number to a given account so it can be selected by typing
+        the number and not the name.
         """
         acc_indexator = enumerate(self.acc_list, 1)
         self.acc_dict = dict(acc_indexator)
         return self.acc_dict
 
-    def get_acc_properties(self):
-        """docstring pendiente"""
+    def get_acc_properties(self) -> dict:
+        """
+        Returns a dictionary with the numerical index of the account, the
+        account name and the curry, e.g.
+        {
+            1: {"acc_name": "DummyAccount", "acc_currency": "ARS"},
+            2: {"acc_name": "blelbe", "acc_currency": "USD"}
+        }
+        """
         acc_index_dict = self.acc_indexer()
         for key, val in acc_index_dict.items():
             re_matches = re.match(self.pattern, val).groups()
