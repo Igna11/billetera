@@ -16,7 +16,6 @@ TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
 class TestAccount(unittest.TestCase):
     """Test for the functions inside the class Accounts"""
 
-
     def test_add_account(self):
         """Tests that the account file is correctly created"""
         os.chdir(TEST_DIR)

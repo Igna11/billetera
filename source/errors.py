@@ -60,6 +60,7 @@ class AccountNotExistsError(Exception):
         \rThe account {self.acc_name}({self.acc_currency}) does not exists.
         """
 
+
 class NotOpenSessionError(Exception):
     """dostring"""
 
