@@ -10,15 +10,17 @@ import unittest
 from source import account_core as core
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEST_DIR = os.path.join(BASE_DIR, "tests")
+TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
 
 
 class TestAccount(unittest.TestCase):
     """Test for the functions inside the class Accounts"""
 
+
     def test_add_account(self):
         """Tests that the account file is correctly created"""
-        acc_name = os.path.join(TEST_DIR, "Test_Account")
+        os.chdir(TEST_DIR)
+        acc_name = "Test_Account"
         account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
         account.add_account()
         final_acc_name = f"{acc_name}_ACC_ARS.txt"
@@ -29,14 +31,16 @@ class TestAccount(unittest.TestCase):
         Tests that a FileExistsError raises when trying to create an account
         with the same name as an existing one
         """
-        acc_name = os.path.join(TEST_DIR, "Test_Account")
+        os.chdir(TEST_DIR)
+        acc_name = "Test_Account"
         account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
         with self.assertRaises(FileExistsError):
             account.add_account()
 
     def test_remove_account(self):
         """Tests that the account file is correctly deleted"""
-        acc_name = os.path.join(TEST_DIR, "Test_Account")
+        os.chdir(TEST_DIR)
+        acc_name = "Test_Account"
         account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
         account.remove_account()
         final_acc_name = f"{acc_name}_ACC_ARS.txt"
