@@ -9,7 +9,7 @@ Created on Sun Sep  4 11:24:19 2022
 
 from source import account_core as account
 from source import colorizer as color
-from source.currency import ConversorMoneda
+from source import currency
 
 
 def precio_dolar(verbose=False):
@@ -18,18 +18,18 @@ def precio_dolar(verbose=False):
     previuos data from Balances.txt
     """
     # Creo el objeto que maneja la consulta y me devuelve el precio
-    exchange = ConversorMoneda(verbose=verbose)
+    exchange = currency.currencies_values()
     try:
         # Trato de conseguir el precio de internet, si no, handleo el error
-        usd_value = exchange.precio()["Dolar U.S.A"]["Compra"]
-    except AttributeError as error:
+        usd_value = exchange["Dolar U.S.A"]["Compra"]
+    except TypeError as error:
         if verbose is True:
             print("Ocurrio el siguiente error durante la consulta:")
             print(error)
             print("Seguramente se debe a un error urlopen y no de Attribute")
-        print(
-            "No se pudo obtener el precio del dolar de internet, se usó la",
-            " última cotización.",
+        color.cprint(
+            "No se pudo obtener el precio del dolar de internet, se usará la última cotización.",
+            "red",
         )
         # Como no pude conseguir el precio de internet, lo infiero de el último
         # balance en la cuenta Balance.txt
@@ -43,6 +43,9 @@ def precio_dolar(verbose=False):
         usd_total = float(balance_data["Total(USD)"])
         try:
             usd_value = str(round((total - ars_total) / usd_total, 2))
+            color.cprint(
+                f"Última cotización: 1 u$d = $ {usd_value}\n", "green", "bold"
+            )
         except ZeroDivisionError:
             print("No hay dolares, asi que no importa cuanto vale")
             usd_value = "0.00"

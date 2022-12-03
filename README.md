@@ -12,6 +12,7 @@ BilleteraAPP
         |__ accounts.py
         |__ analysis.py
         |__ currency.py
+        |__ colorizer.py
         |__ operations.py
         |__ account_core.py
         |__ operations_core.py
