@@ -55,7 +55,7 @@ class Accounts:
         Opens the account and set all values from the last line as attributes
         with their corresponding column name.
         """
-        with open(self.acc_file_name, "r") as account:
+        with open(self.acc_file_name, "r", encoding="UTF-8") as account:
             account_lines = account.read().splitlines()
         self.acc_data_len = len(account_lines)
         last_acc_line = account_lines[-1].split("\t")
@@ -74,7 +74,7 @@ class AccountsCreator(Accounts):
     def add_account(self) -> None:
         """Creates the account file where all data will be stored as .txt file"""
         header = "\t".join(self.acc_column_headers) + "\n"
-        with open(self.acc_file_name, "x") as account:
+        with open(self.acc_file_name, "x", encoding="UTF-8") as account:
             account.write(header)
 
     def remove_account(self) -> None:
@@ -118,7 +118,7 @@ class AccountParser:
 
     def get_acc_total(self, account):
         """Returns the last line of the balance.txt file."""
-        with open(account, "r") as acc:
+        with open(account, "r", encoding="UTF-8") as acc:
             account_lines = acc.read().splitlines()
         self.acc_data_len = len(account_lines)
         headers = ["Hora", "Fecha", "Total", "Total(ARS)", "Total(USD)"]
