@@ -59,3 +59,9 @@ class AccountNotExistsError(Exception):
         return f"""
         \rThe account {self.acc_name}({self.acc_currency}) does not exists.
         """
+
+class NotOpenSessionError(Exception):
+    """dostring"""
+
+    def __str__(self):
+        return "Can not create an account without an open session."
