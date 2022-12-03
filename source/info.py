@@ -7,8 +7,6 @@ Created on Sun Sep  4 11:24:19 2022
 
 """
 
-import pandas as pd
-
 from source import account_core as account
 from source import colorizer as color
 from source.currency import ConversorMoneda
@@ -23,7 +21,7 @@ def precio_dolar(verbose=False):
     exchange = ConversorMoneda(verbose=verbose)
     try:
         # Trato de conseguir el precio de internet, si no, handleo el error
-        usd_val = exchange.precio()["Dolar U.S.A"]["Compra"]
+        usd_value = exchange.precio()["Dolar U.S.A"]["Compra"]
     except AttributeError as error:
         if verbose is True:
             print("Ocurrio el siguiente error durante la consulta:")
@@ -31,21 +29,25 @@ def precio_dolar(verbose=False):
             print("Seguramente se debe a un error urlopen y no de Attribute")
         print(
             "No se pudo obtener el precio del dolar de internet, se usó la",
-            " última cotización",
+            " última cotización.",
         )
         # Como no pude conseguir el precio de internet, lo infiero de el último
         # balance en la cuenta Balance.txt
-        bal_datos = pd.read_csv("Balance.txt", sep="\t", encoding="latin1")
-        tot_dinero = bal_datos["Total"].values[-1]
-        tot_pesos = bal_datos["Total(ARS)"].values[-1]
-        tot_dolares = bal_datos["Total(USD)"].values[-1]
+        with open("Balance.txt", "r", encoding="UTF-8") as balance_file:
+            file_lines = balance_file.read().splitlines()
+        headers = file_lines[0].split("\t")
+        last_line = file_lines[-1].split("\t")
+        balance_data = dict(zip(headers, last_line))
+        total = float(balance_data["Total"])
+        ars_total = float(balance_data["Total(ARS)"])
+        usd_total = float(balance_data["Total(USD)"])
         try:
-            usd_val = str(round((tot_dinero - tot_pesos) / tot_dolares, 2))
+            usd_value = str(round((total - ars_total) / usd_total, 2))
         except ZeroDivisionError:
             print("No hay dolares, asi que no importa cuanto vale")
-            usd_val = "0.00"
+            usd_value = "0.00"
 
-    return float(usd_val.replace(",", "."))
+    return float(usd_value.replace(",", "."))
 
 
 def info(verbose=False):
@@ -78,13 +80,11 @@ def info(verbose=False):
     # lista con el saldo total de dinero de cada cuenta
     total = []
     for acc in accounts_data.acc_list:
-        acc_total = pd.read_csv(acc, sep="\t", encoding="latin1")["Total"]
-        # Si la cuenta tiene datos, appendeo el valor
-        if len(acc_total) != 0:
-            total.append(acc_total.values[-1])
-        # Si la cuenta es nueva y no tiene datos, appendeo 0
-        else:
+        acc_total = accounts_data.get_acc_total(acc)
+        if acc_total == "Total":
             total.append(0)
+        elif float(acc_total) >= 0:
+            total.append(float(acc_total))
     # Parrafo con los datos de todas las cuentas
     info_msg = ""
     for i, elem in enumerate(accounts_data.acc_list):
