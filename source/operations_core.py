@@ -12,7 +12,7 @@ from source import account_core as account
 
 class Operations(account.Accounts):
     """
-    Core class of operations:
+    Core class of operations, subclass of account_core:
     -Income
     -Expense
     -Extraction
