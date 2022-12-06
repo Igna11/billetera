@@ -8,6 +8,7 @@ Created on Sun Oct 30 16:16:00 2022
 import os
 import unittest
 from source import account_core as core
+from source import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
@@ -33,7 +34,7 @@ class TestAccount(unittest.TestCase):
         os.chdir(TEST_DIR)
         acc_name = "Test_Account"
         account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
-        with self.assertRaises(FileExistsError):
+        with self.assertRaises(errors.AccountAlreadyExistsError):
             account.add_account()
 
     def test_remove_account(self):

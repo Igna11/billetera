@@ -81,6 +81,10 @@ class AccountsCreator(Accounts):
         if not "USR" in os.getcwd():
             raise errors.NotOpenSessionError
         if "USR" in os.getcwd():
+            if self.exists:
+                raise errors.AccountAlreadyExistsError(
+                    self.acc_name, self.acc_currency
+                )
             header = "\t".join(self.acc_column_headers) + "\n"
             with open(self.acc_file_name, "x", encoding="UTF-8") as account:
                 account.write(header)

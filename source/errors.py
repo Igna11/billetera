@@ -61,6 +61,19 @@ class AccountNotExistsError(Exception):
         """
 
 
+class AccountAlreadyExistsError(Exception):
+    """dostring"""
+
+    def __init__(self, acc_name, acc_currency):
+        self.acc_name = acc_name
+        self.acc_currency = acc_currency
+
+    def __str__(self):
+        return f"""
+        \rCan not create account {self.acc_name}({self.acc_currency}) because it already exists.
+        """
+
+
 class NotOpenSessionError(Exception):
     """dostring"""
 
