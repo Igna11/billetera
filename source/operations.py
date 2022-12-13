@@ -17,9 +17,10 @@ from datetime import datetime
 from source import info
 from source import account_core as account
 from source import operations_core as operation
+from source import colorizer as color
 
 
-def account_selector() -> None:
+def account_selector() -> dict:
     """Helping function to select the account when perfoming opreations"""
     accounts_info = account.AccountParser()
     acc_properties = accounts_info.get_acc_properties()
@@ -29,6 +30,9 @@ def account_selector() -> None:
         acc_number = int(input("\nElija la cuenta\n"))
         try:
             account_dict = acc_properties[acc_number]
+            color.cprint(
+                f"Cuenta elegida: {account_dict['acc_name']}", color="ambar"
+            )
             return account_dict
         except KeyError:
             print("=" * 79)
