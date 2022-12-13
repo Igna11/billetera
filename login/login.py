@@ -26,6 +26,7 @@ CREATE_USER_TABLE = """
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
+  email TEXT NOT NULL,
   passwd TEXT NOT NULL
 );
 """
@@ -39,8 +40,9 @@ class UsersDB:
     modify passwords and delete users and passwords.
     """
 
-    def __init__(self, user):
+    def __init__(self, user, email="-"):
         self.user = user
+        self.email = email
         self.user_exists = False
         self.creation_status = False
         self.passwdvalidation = False
@@ -61,7 +63,7 @@ class UsersDB:
         Returns False if conditions don't match and True if they do
         """
         encrypted_passwd = sha256(passwd).hexdigest()
-        query = sql.add_new_user_query(self.user, encrypted_passwd)
+        query = sql.add_new_user_query(self.user, self.email, encrypted_passwd)
         sql.execute_query(connection, query, verbose=True)
         self.creation_status = True
 
