@@ -31,8 +31,9 @@ def crear_usuario() -> None:
     """
     if os.getcwd() == DATA_PATH:
         username = input("\nIngrese el nombre de usuario\n")
+        useremail = input("\nIngrese un e-mail\n")
         user_dir = login.UsersDirs(username)
-        user_db = login.UsersDB(username)
+        user_db = login.UsersDB(username, useremail)
         if not os.path.isdir(user_dir.absdirname):
             # Password input and encode to utf-8
             password = pwinput(prompt="Ingrese una password: ").encode("utf-8")
@@ -69,8 +70,9 @@ def eliminar_usuario() -> None:
     """
     if os.getcwd() == DATA_PATH:
         username = input("\nIngrese el nombre de usuario a borrar\n")
+        useremail = input("\nIngrese el e-mail\n")
         user_dir = login.UsersDirs(username)
-        user_db = login.UsersDB(username)
+        user_db = login.UsersDB(username, useremail)
         if os.path.isdir(user_dir.absdirname):
             password = pwinput("Enter password: ").encode("utf-8")
             user_db.passwd_validation_indb(passwd=password)
@@ -105,8 +107,9 @@ def cambiar_password() -> None:
         username = input(
             "\nIngrese el nombre de usuario para cambiar passwd.\n"
         )
+        useremail = input("\nIngrese el e-mail del usuario\n")
         user_dir = login.UsersDirs(username)
-        user_db = login.UsersDB(username)
+        user_db = login.UsersDB(username, useremail)
         if os.path.isdir(user_dir.absdirname):
             old_password = pwinput("\nIngrese la contraseña actual: ").encode(
                 "utf-8"
@@ -134,14 +137,16 @@ def cambiar_password() -> None:
         print("\nDebes cerrar sesion para cambiar una contraseña.\n")
 
 
-def iniciar_sesion(verbose=True) -> None:
+def iniciar_sesion(username=None, password=None, verbose=True) -> None:
     """Changes the current working directory to the user's directory"""
     if os.getcwd() == DATA_PATH:
-        username = input("\nNombre de usuario\n")
+        if not username:
+            username = input("\nNombre de usuario\n")
         user_dir = login.UsersDirs(username)
         user_db = login.UsersDB(username)
         if os.path.isdir(user_dir.absdirname):
-            password = pwinput("Enter password: ").encode("utf-8")
+            if not password:
+                password = pwinput("Enter password: ").encode("utf-8")
             user_db.passwd_validation_indb(password)
             if user_db.passwdvalidation:
                 os.chdir(user_dir.absdirname)
