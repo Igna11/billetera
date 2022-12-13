@@ -153,7 +153,7 @@ class AccountParser:
 
     def get_acc_total(self, account):
         """Returns the last line of the balance.txt file."""
-        with open(account, "r", encoding="UTF-8") as acc:
+        with open(account, "r", encoding="latin-1") as acc:
             account_lines = acc.read().splitlines()
         self.acc_data_len = len(account_lines)
         headers = ["Hora", "Fecha", "Total", "Total(ARS)", "Total(USD)"]
