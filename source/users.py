@@ -22,7 +22,9 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 os.chdir(DATA_PATH)
 
 
-def crear_usuario() -> None:
+def crear_usuario(
+    username=None, useremail=None, password=None, password_check=None
+) -> None:
     """
     Creates an user with its directories and entries in the data base.
     Uses inputs for name of the user and password.
@@ -30,16 +32,22 @@ def crear_usuario() -> None:
     logged in with another users.s
     """
     if os.getcwd() == DATA_PATH:
-        username = input("\nIngrese el nombre de usuario\n")
-        useremail = input("\nIngrese un e-mail\n")
+        if not username:
+            username = input("\nIngrese el nombre de usuario\n")
+        if not useremail:
+            useremail = input("\nIngrese un e-mail\n")
         user_dir = login.UsersDirs(username)
         user_db = login.UsersDB(username, useremail)
         if not os.path.isdir(user_dir.absdirname):
             # Password input and encode to utf-8
-            password = pwinput(prompt="Ingrese una password: ").encode("utf-8")
-            password_check = pwinput(
-                prompt="Ingrese la password otra vez: "
-            ).encode("utf-8")
+            if not password:
+                password = pwinput(prompt="Ingrese una password: ").encode(
+                    "utf-8"
+                )
+            if not password_check:
+                password_check = pwinput(
+                    prompt="Ingrese la password otra vez: "
+                ).encode("utf-8")
             if password == password_check:
                 user_dir.create_user_dir()
                 user_db.add_user_to_db(passwd=password)
