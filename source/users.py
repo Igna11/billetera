@@ -11,7 +11,6 @@ Refactored on Sun Oct 16 16:00:00 2022
 """
 import os
 
-import pandas as pd
 from pwinput import pwinput
 
 from source import info
