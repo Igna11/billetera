@@ -14,14 +14,13 @@ BilleteraAPP
         |__ currency.py
         |__ colorizer.py
         |__ operations.py
+        |__ sqlpasswd.py
+        |__ users_core.py
         |__ account_core.py
         |__ operations_core.py
     |__ data
         |__ userUSR
         |__ passwords.sql
-    |__ login
-        |__ login.py
-        |__ sqlpasswd.py
     |__ tests
         |__ tests_accounts_core.py
         |__ tests_accounts_users.py
