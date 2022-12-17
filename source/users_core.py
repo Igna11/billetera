@@ -11,7 +11,7 @@ refactor: Sun Oct 16 16:00:00
 import os
 from hashlib import sha256
 
-from login import sqlpasswd as sql
+from source import sqlpasswd as sql
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")

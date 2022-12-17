@@ -7,8 +7,8 @@ Created on Sat Oct 15 11:10:00 2022
 """
 import os
 import unittest
-from login import login
-from login import sqlpasswd as sql
+from source import users_core
+from source import sqlpasswd as sql
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_BASE = os.path.join(BASE_DIR, "data", "passwords.sqlite")
@@ -19,32 +19,32 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_name(self):
         """Tests that the user name is correct"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         self.assertEqual(user.user, "Test_User")
 
     def test_user_not_exists(self):
         """User should not exist yet"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         self.assertEqual(user.user_exists, False)
 
     def test_user_not_creationstatus(self):
         """User should not be created yet"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         self.assertEqual(user.creation_status, False)
 
     def test_user_not_passwdvalidation(self):
         """There should not be a passwd yet"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         self.assertEqual(user.passwdvalidation, False)
 
     def test_user_not_getuserfromdb(self):
         """Test_User should not be in the DB yet"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         self.assertEqual(user.get_user_from_db(), None)
 
     def test_user_addedtodb(self):
         """Adds Test_User to the data base and change the creation status to True"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         password = b"test_password"
         user.add_user_to_db(passwd=password)
         self.assertEqual(user.creation_status, True)
@@ -53,7 +53,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_deletedondb(self):
         """Delete Test_User from the data base"""
-        user = login.UsersDB("Test_User")
+        user = users_core.UsersDB("Test_User")
         user.get_user_from_db()
         self.assertEqual(user.user_exists, True)
         if user.user_exists:
@@ -64,7 +64,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_changepass(self):
         """Test the change of password"""
-        user = login.UsersDB("Test_User_changepwd")
+        user = users_core.UsersDB("Test_User_changepwd")
         first_password = b"test_password"
         user.add_user_to_db(passwd=first_password)
         connection = sql.create_connection(DATA_BASE)
@@ -78,7 +78,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_passwdvalidation(self):
         """Test the validation of the passwd"""
-        user = login.UsersDB("Test_User_pwdvalidation")
+        user = users_core.UsersDB("Test_User_pwdvalidation")
         password = b"test_password"
         user.add_user_to_db(passwd=password)
         self.assertEqual(user.passwdvalidation, False)
@@ -92,31 +92,31 @@ class TestUserDirs(unittest.TestCase):
 
     def test_user_name(self):
         """Tests that the user name is correct"""
-        user = login.UsersDirs("Test_User")
+        user = users_core.UsersDirs("Test_User")
         self.assertTrue(user.user == "Test_User")
 
     def test_user_dirname(self):
         """Tests that the name of tht directory follows the given convention"""
-        user = login.UsersDirs("Test_User")
+        user = users_core.UsersDirs("Test_User")
         self.assertTrue(user.dirname == "Test_UserUSR")
 
     def test_user_createdir(self):
         """Test the creation of the directory for the user"""
-        user = login.UsersDirs("Test_User")
+        user = users_core.UsersDirs("Test_User")
         user.create_user_dir()
         self.assertTrue(os.path.isabs(user.absdirname))
         self.assertTrue(os.path.isdir(user.absdirname))
 
     def test_user_deletedir(self):
         """Test the deletion of the directory for the user"""
-        user = login.UsersDirs("Test_User")
+        user = users_core.UsersDirs("Test_User")
         self.assertTrue(os.path.isdir(user.absdirname))
         user.delete_user_dir()
         self.assertFalse(os.path.isdir(user.absdirname))
 
     def test_user_login(self):
         """Test that when login the directory is the correct one"""
-        user = login.UsersDirs("Test_User")
+        user = users_core.UsersDirs("Test_User")
         user.create_user_dir()
         unloged = user.get_user_cwd()
         user.login()
@@ -126,7 +126,7 @@ class TestUserDirs(unittest.TestCase):
 
     def test_user_logout(self):
         """Test the when loginout the directory is not the one of the user"""
-        user = login.UsersDirs("Test_User")
+        user = users_core.UsersDirs("Test_User")
         loged = user.get_user_cwd()
         user.logout()
         unloged = user.get_user_cwd()
