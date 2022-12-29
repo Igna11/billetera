@@ -79,3 +79,47 @@ class NotOpenSessionError(Exception):
 
     def __str__(self):
         return "Can not create an account without an open session."
+
+
+class UserAlreadyExistsError(Exception):
+    """dostring"""
+
+    def __init__(self, user):
+        self.user = user
+
+    def __str__(self):
+        return f"User {self.user} already exists."
+
+
+class UserDoesNotExistsError(Exception):
+    """dostring"""
+
+    def __init__(self, user):
+        self.user = user
+
+    def __str__(self):
+        return f"User {self.user} does not exist."
+
+
+class WrongDirectoryError(Exception):
+    """dostring"""
+
+    def __str__(self):
+        message = """
+        Make sure you are inside '/data' directory before continuing.
+        """
+        return message
+
+
+class WrongPasswordError(Exception):
+    """dostring"""
+
+    def __str__(self):
+        return "Invalid password."
+
+
+class PasswdsDontMatchError(Exception):
+    """dostring"""
+
+    def __str__(self):
+        return "Password do not match"
