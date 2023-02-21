@@ -9,6 +9,7 @@ import os
 import unittest
 from source import users_core
 from source import sqlpasswd as sql
+from source import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_BASE = os.path.join(BASE_DIR, "data", "passwords.sqlite")
@@ -19,32 +20,39 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_name(self):
         """Tests that the user name is correct"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         self.assertEqual(user.user, "Test_User")
 
     def test_user_not_exists(self):
         """User should not exist yet"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         self.assertEqual(user.user_exists, False)
 
     def test_user_not_creationstatus(self):
         """User should not be created yet"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         self.assertEqual(user.creation_status, False)
 
     def test_user_not_passwdvalidation(self):
         """There should not be a passwd yet"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         self.assertEqual(user.passwdvalidation, False)
 
     def test_user_not_getuserfromdb(self):
         """Test_User should not be in the DB yet"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         self.assertEqual(user.get_user_from_db(), None)
+
+    def test_user_not_valiremail(self):
+        """Test that error InvalidEmailError is raised when an invalid email is entered"""
+        with self.assertRaises(errors.InvalidEmailError):
+            user = users_core.UsersDB(
+                user="Test_bad_mail_user", email="badmail"
+            )
 
     def test_user_addedtodb(self):
         """Adds Test_User to the data base and change the creation status to True"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         password = b"test_password"
         user.add_user_to_db(passwd=password)
         self.assertEqual(user.creation_status, True)
@@ -53,7 +61,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_deletedondb(self):
         """Delete Test_User from the data base"""
-        user = users_core.UsersDB("Test_User")
+        user = users_core.UsersDB(user="Test_User", email="test@test.test")
         user.get_user_from_db()
         self.assertEqual(user.user_exists, True)
         if user.user_exists:
@@ -64,7 +72,9 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_changepass(self):
         """Test the change of password"""
-        user = users_core.UsersDB("Test_User_changepwd")
+        user = users_core.UsersDB(
+            user="Test_User_changepwd", email="test@test.test"
+        )
         first_password = b"test_password"
         user.add_user_to_db(passwd=first_password)
         connection = sql.create_connection(DATA_BASE)
@@ -78,7 +88,9 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_passwdvalidation(self):
         """Test the validation of the passwd"""
-        user = users_core.UsersDB("Test_User_pwdvalidation")
+        user = users_core.UsersDB(
+            user="Test_User_pwdvalidation", email="test@test.test"
+        )
         password = b"test_password"
         user.add_user_to_db(passwd=password)
         self.assertEqual(user.passwdvalidation, False)

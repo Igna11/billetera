@@ -9,9 +9,11 @@ refactor: Sun Oct 16 16:00:00
 """
 
 import os
+import re
 from hashlib import sha256
 
 from source import sqlpasswd as sql
+from source import errors
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
@@ -40,12 +42,16 @@ class UsersDB:
     modify passwords and delete users and passwords.
     """
 
-    def __init__(self, user: str, email: str = "-") -> None:
+    def __init__(self, user: str, email: str) -> None:
         self.user = user
         self.email = email
         self.user_exists = False
         self.creation_status = False
         self.passwdvalidation = False
+        # mail validation
+        email_pattern = r"[\w._]*@[\w+]*[.\w]*"
+        if not re.match(email_pattern, self.email):
+            raise errors.InvalidEmailError(self.email)
 
     def get_user_from_db(self) -> bool:
         """
@@ -62,6 +68,7 @@ class UsersDB:
         Adds the user and hashed passwd to the sql table.
         Returns False if conditions don't match and True if they do
         """
+
         encrypted_passwd = sha256(passwd).hexdigest()
         query = sql.add_new_user_query(self.user, self.email, encrypted_passwd)
         sql.execute_query(connection, query, verbose=True)

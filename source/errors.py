@@ -115,10 +115,7 @@ class WrongDirectoryError(Exception):
     """dostring"""
 
     def __str__(self):
-        message = """
-        Make sure you are inside '/data' directory before continuing.
-        """
-        return message
+        return "Make sure you are inside '/data' directory before continuing."
 
 
 class WrongPasswordError(Exception):
@@ -132,4 +129,14 @@ class PasswdsDontMatchError(Exception):
     """dostring"""
 
     def __str__(self):
-        return "Password do not match"
+        return "Password do not match."
+
+
+class InvalidEmailError(Exception):
+    """
+    21/02/2023: Raised when an email without standard format is entered being:
+    standard: something@other.thing
+    """
+
+    def __str__(self, input_mail):
+        return f"{input_mail} is not a valid format of mail."
