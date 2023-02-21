@@ -91,6 +91,16 @@ class UserAlreadyExistsError(Exception):
         return f"User {self.user} already exists."
 
 
+class UserCouldNotBeDeletedError(Exception):
+    """Raised when a given user could be deleted from database"""
+
+    def __init__(self, user):
+        self.user = user
+
+    def __str__(self):
+        return f"User {self.user} could not be removed from database"
+
+
 class UserDoesNotExistsError(Exception):
     """dostring"""
 

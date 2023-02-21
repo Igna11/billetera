@@ -40,7 +40,7 @@ class UsersDB:
     modify passwords and delete users and passwords.
     """
 
-    def __init__(self, user, email="-"):
+    def __init__(self, user: str, email: str = "-") -> None:
         self.user = user
         self.email = email
         self.user_exists = False
@@ -105,7 +105,7 @@ class UsersDirs:
     def __init__(self, user):
         self.user = user
         self.dirname = user + "USR"
-        self.absdirname = DATA_PATH + "/" + self.dirname
+        self.absdirname = os.path.join(DATA_PATH, self.dirname)
 
     def get_user_cwd(self) -> None:
         """Gets the current working directory."""

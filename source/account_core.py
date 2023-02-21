@@ -134,7 +134,7 @@ class AccountParser:
     def get_acc_properties(self) -> dict:
         """
         Returns a dictionary with the numerical index of the account, the
-        account name and the curry, e.g.
+        account name and the currency, e.g.
         {
             1: {"acc_name": "DummyAccount", "acc_currency": "ARS"},
             2: {"acc_name": "blelbe", "acc_currency": "USD"}
@@ -150,6 +150,15 @@ class AccountParser:
                 "currency": acc_currency,
             }
         return acc_index_dict
+
+    def get_acc_pretty_names(self):
+        """
+        Returns a list with pretty names for the existing accounts.
+        """
+        pretty_list = []
+        for acc in self.acc_list:
+            pretty_list.append(acc.replace(acc[-12:], " (" + acc[-7:-4] + ")"))
+        return pretty_list
 
     def get_acc_total(self, account):
         """Returns the last line of the balance.txt file."""
