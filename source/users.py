@@ -149,8 +149,8 @@ def iniciar_sesion(username=None, password=None, verbose=True) -> None:
     if os.getcwd() == DATA_PATH:
         if not username:
             username = input("\nNombre de usuario\n")
-        user_dir = users_core.UsersDirs(username)
-        user_db = users_core.UsersDB(username)
+        user_dir = users_core.UsersDirs(user=username)
+        user_db = users_core.UsersDB(user=username,email="todo@email.bug")
         if os.path.isdir(user_dir.absdirname):
             if not password:
                 password = pwinput("Enter password: ").encode("utf-8")
