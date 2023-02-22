@@ -140,3 +140,10 @@ class InvalidEmailError(Exception):
 
     def __str__(self, input_mail):
         return f"{input_mail} is not a valid format of mail."
+
+
+class InvalidUserNameError(Exception):
+    """21/02/2023: Raised when an username is and empty string ''"""
+
+    def __str__(self):
+        return "An empty string '' is not a valid username."

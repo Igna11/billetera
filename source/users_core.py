@@ -49,9 +49,12 @@ class UsersDB:
         self.creation_status = False
         self.passwdvalidation = False
         # mail validation
-        email_pattern = r"[\w._]*@[\w+]*[.\w]*"
+        email_pattern = r"[\w._-]*@[\w+]*[.\w]*"
         if not re.match(email_pattern, self.email):
             raise errors.InvalidEmailError(self.email)
+        # username validation
+        if self.user == "":
+            raise errors.InvalidUserNameError(self.user)
 
     def get_user_from_db(self) -> bool:
         """

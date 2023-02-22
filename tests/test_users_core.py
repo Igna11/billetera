@@ -50,6 +50,11 @@ class TestUserDB(unittest.TestCase):
                 user="Test_bad_mail_user", email="badmail"
             )
 
+    def test_user_not_valid_username(self):
+        """Test that error InvalidUserNameError is raised for the empty string '' as username"""
+        with self.assertRaises(errors.InvalidUserNameError):
+            user = users_core.UsersDB(user="", email="some@email.com")
+
     def test_user_addedtodb(self):
         """Adds Test_User to the data base and change the creation status to True"""
         user = users_core.UsersDB(user="Test_User", email="test@test.test")
