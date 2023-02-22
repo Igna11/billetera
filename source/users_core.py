@@ -49,7 +49,7 @@ class UsersDB:
         self.creation_status = False
         self.passwdvalidation = False
         # mail validation
-        email_pattern = r"[\w._-]*@[\w+]*[.\w]*"
+        email_pattern = r"^[\w._%+-]+@[\w.-]+\.[\w]{2,}"
         if not re.match(email_pattern, self.email):
             raise errors.InvalidEmailError(self.email)
         # username validation
