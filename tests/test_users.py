@@ -7,7 +7,7 @@ Created on Wed Mar 30 22:42:17 2022
 """
 import os
 import unittest
-from source.users import cerrar_sesion
+from source.users import log_out
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +20,7 @@ class TestUser(unittest.TestCase):
     def test_cerrar_sesion(self):
         """Tests that when closing sesion the final directory is not an USR one"""
         os.chdir(USER_DIR)
-        cerrar_sesion()
+        log_out()
         self.assertTrue(os.getcwd() != USER_DIR)
 
 
