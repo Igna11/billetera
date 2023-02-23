@@ -21,7 +21,7 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 os.chdir(DATA_PATH)
 
 
-def crear_usuario(
+def create_user(
     username=None, useremail=None, password=None, password_check=None
 ) -> None:
     """
@@ -67,7 +67,7 @@ def crear_usuario(
         )
 
 
-def eliminar_usuario() -> None:
+def delete_user() -> None:
     """
     Deletes an user and all its information stored in its directories and
     data base.
@@ -105,7 +105,7 @@ def eliminar_usuario() -> None:
         print("Debes cerrar sesion para eliminar un usuario.")
 
 
-def cambiar_password() -> None:
+def change_password() -> None:
     """
     Changes the password of a given user.
     Uses inputs for name of the user, old password and new password.
@@ -144,13 +144,13 @@ def cambiar_password() -> None:
         print("\nDebes cerrar sesion para cambiar una contraseña.\n")
 
 
-def iniciar_sesion(username=None, password=None, verbose=True) -> None:
+def log_in(username=None, password=None, verbose=True) -> None:
     """Changes the current working directory to the user's directory"""
     if os.getcwd() == DATA_PATH:
         if not username:
             username = input("\nNombre de usuario\n")
         user_dir = users_core.UsersDirs(user=username)
-        user_db = users_core.UsersDB(user=username,email="todo@email.bug")
+        user_db = users_core.UsersDB(user=username, email="todo@email.bug")
         if os.path.isdir(user_dir.absdirname):
             if not password:
                 password = pwinput("Enter password: ").encode("utf-8")
@@ -169,7 +169,7 @@ def iniciar_sesion(username=None, password=None, verbose=True) -> None:
         print(f"\nUbicación inválida: {os.getcwd()}\n")
 
 
-def cerrar_sesion():
+def log_out():
     """Changes the current working directory to the base directory"""
     if "USR" in os.getcwd():
         os.chdir(DATA_PATH)

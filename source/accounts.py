@@ -6,16 +6,14 @@ Created on Sat Sept 03 20:01:51 2022
 @author: igna
 Modulo para condensar las funciones que tienen las cuentas
 
-crear_cuenta()
-eliminar_cuenta()
-
-TODO no poder crear cuentas, ni borrar cuentas si no hay sesión iniciada
+create_account()
+delete_account()
 """
 
 from source.account_core import AccountsCreator
 
 
-def crear_cuenta():
+def create_account():
     """Creates a .txt file which name will be the account name"""
     name_acc = input("\nIntroduzca el nombre para la nueva cuenta\n")
     currency_acc = input(
@@ -26,7 +24,7 @@ def crear_cuenta():
     print(f"\nSe ha creado la cuenta '{name_acc}'\n")
 
 
-def eliminar_cuenta():
+def delete_account():
     """Deletes the .txt file of the given account name"""
     name_acc = input("\nIntroduzca el nombre de la cuenta a eliminar\n")
     currency_acc = input(

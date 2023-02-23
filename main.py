@@ -41,14 +41,14 @@ import pandas as pd
 from source.info import info
 from source.info import precio_dolar
 
-from source.users import iniciar_sesion
-from source.users import cerrar_sesion
-from source.users import crear_usuario
-from source.users import eliminar_usuario
-from source.users import cambiar_password
+from source.users import log_in
+from source.users import log_out
+from source.users import create_user
+from source.users import delete_user
+from source.users import change_password
 
-from source.accounts import crear_cuenta
-from source.accounts import eliminar_cuenta
+from source.accounts import create_account
+from source.accounts import delete_account
 
 from source.operations import income
 from source.operations import expense
@@ -62,6 +62,7 @@ from source.analysis import balance_graf
 from source.analysis import datos_cuenta
 from source.analysis import balances_totales
 from source.analysis import category_spendings
+from source.analysis import monthly_categorical_spendings
 
 
 pd.set_option("display.max_columns", 11)
@@ -69,17 +70,36 @@ pd.set_option("display.max_columns", 11)
 if __name__ == "__main__":
     users_list = [user for user in os.listdir() if "USR" in user]
     if len(users_list) == 0:
+        crear_usuario = create_user
+        eliminar_usuario = delete_user
+        cambiar_password = change_password
+        iniciar_sesion = log_in
+        cerrar_sesion = log_out
+
+        crear_cuenta = create_account
+        eliminar_cuenta = delete_account
+
         ingreso = income
         gasto = expense
         extraccion = extraction
         transferencia = transfer
         reajuste = readjustment
+
         print(
             "Bienvenide!\nNo hay ningún usuario creado todavía.",
             "Para crear un usuario ejecute 'crear_usuario()' y siga las instrucciones.",
             "Para iniciar sesión con el usuario ejecute 'iniciar_sesion()'",
         )
     else:
+        crear_usuario = create_user
+        eliminar_usuario = delete_user
+        cambiar_password = change_password
+        iniciar_sesion = log_in
+        cerrar_sesion = log_out
+
+        crear_cuenta = create_account
+        eliminar_cuenta = delete_account
+        
         ingreso = income
         gasto = expense
         extraccion = extraction
