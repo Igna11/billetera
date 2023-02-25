@@ -112,6 +112,8 @@ class Operations(account.Accounts):
         if self.value <= 0:
             raise errors.NegativeOrZeroValueError
         self.get_last_line()
+        if self.acc_name == dest_acc and self.acc_currency == dest_currency:
+            raise errors.SameAccountTransferError
         if self.acc_data_len == 1:
             raise errors.EmptyAccountError
         if self.value > float(self.Total):

@@ -144,6 +144,21 @@ class TestTransferOperation(unittest.TestCase):
                 dest_acc="dest_acc", dest_currency="ARS"
             )
 
+    def test_same_origin_destination_account(self):
+        """
+        Test that SameAccountTransferError is raised when the same account is used as
+        origin and destination
+        """
+        name_acc = "TEST"
+        currency_acc = "ARS"
+        transfer = oper.Operations(
+            acc_name=name_acc, acc_currency=currency_acc, value=400
+        )
+        with self.assertRaises(errors.SameAccountTransferError):
+            transfer.transfer_operation(
+                dest_acc=name_acc, dest_currency=currency_acc
+            )
+
     def test_account_transfer_negative_value(self):
         """Tests that NegativeOrZeroValueError is raised when a negative value is provided"""
         os.chdir(TEST_DIR)

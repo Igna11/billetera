@@ -147,3 +147,10 @@ class InvalidUserNameError(Exception):
 
     def __str__(self):
         return "An empty string '' is not a valid username."
+
+
+class SameAccountTransferError(Exception):
+    """Raised when a transfer where the destination account and the origina account are the same"""
+
+    def __str__(self):
+        return "Transfer with same origin and destination account can't be processed."
