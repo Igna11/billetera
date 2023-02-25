@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
         crear_cuenta = create_account
         eliminar_cuenta = delete_account
-        
+
         ingreso = income
         gasto = expense
         extraccion = extraction
