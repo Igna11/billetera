@@ -82,7 +82,7 @@ background-color:rgb(221, 255, 233);</string>
 background-color:rgb(221, 255, 233);</string>
     </property>
     <property name="text">
-     <string>Create new account</string>
+     <string>Create new user account</string>
     </property>
    </widget>
    <widget class="QPushButton" name="delete_user_button">
