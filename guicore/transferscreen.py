@@ -29,7 +29,7 @@ class TransferScreen(QDialog):
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(TransferScreen, self).__init__(parent)
         operation_transfer_screen = os.path.join(
-            GUI_PATH, "operation_transfer_menu.ui"
+            GUI_PATH, "operation_transfer_screen.ui"
         )
         loadUi(operation_transfer_screen, self)
         self.widget = widget

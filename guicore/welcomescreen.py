@@ -26,7 +26,7 @@ class WelcomeScreen(QDialog):
 
     def __init__(self, parent=None, widget=None):
         super(WelcomeScreen, self).__init__(parent)
-        welcome_screen = os.path.join(GUI_PATH, "billescreen.ui")
+        welcome_screen = os.path.join(GUI_PATH, "bille_screen.ui")
         loadUi(welcome_screen, self)
 
         self.widget = widget

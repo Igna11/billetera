@@ -29,7 +29,7 @@ class ReadjustmentScreen(QDialog):
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(ReadjustmentScreen, self).__init__(parent)
         operation_readjustment_screen = os.path.join(
-            GUI_PATH, "operation_readjustment_menu.ui"
+            GUI_PATH, "operation_readjustment_screen.ui"
         )
         loadUi(operation_readjustment_screen, self)
         self.widget = widget

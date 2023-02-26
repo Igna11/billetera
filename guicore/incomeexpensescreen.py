@@ -28,7 +28,7 @@ class IncomeExpenseScreen(QDialog):
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(IncomeExpenseScreen, self).__init__(parent)
         operation_incomeexpense_screen = os.path.join(
-            GUI_PATH, "operation_incomeexpense_menu.ui"
+            GUI_PATH, "operation_incomeexpense_screen.ui"
         )
         loadUi(operation_incomeexpense_screen, self)
         self.widget = widget
