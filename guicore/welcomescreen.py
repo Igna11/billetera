@@ -7,7 +7,7 @@ import os
 
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMainWindow
 
 from guicore import loginscreen
 from guicore import createuserscreen
@@ -18,7 +18,7 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 GUI_PATH = os.path.join(BASE_PATH)
 
 
-class WelcomeScreen(QDialog):
+class WelcomeScreen(QMainWindow):
     """
     UI where the user can choose between log in into an existing account or
     creating a new one.

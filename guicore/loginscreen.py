@@ -7,7 +7,7 @@ import os
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMainWindow
 
 from source import errors
 from guicore import users_gui
@@ -19,7 +19,7 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 GUI_PATH = os.path.join(BASE_PATH)
 
 
-class LoginScreen(QDialog):
+class LoginScreen(QMainWindow):
     """
     UI where the users can log in with their accounts using their credentials.
     """

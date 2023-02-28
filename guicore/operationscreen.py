@@ -27,7 +27,7 @@ class OperationScreen(QDialog):
 
     def __init__(self, parent=None, widget=None):
         super(OperationScreen, self).__init__(parent)
-        operation_screen = os.path.join(GUI_PATH, "operation_screen.ui")
+        operation_screen = os.path.join(GUI_PATH, "operation_screen2.ui")
         loadUi(operation_screen, self)
         self.widget = widget
         self.operation = None
