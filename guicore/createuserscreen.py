@@ -7,7 +7,7 @@ import os
 
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QDialog, QLineEdit, QMessageBox,QMainWindow
 from source import errors
 from guicore import users_gui
 from guicore import welcomescreen
@@ -18,7 +18,7 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 GUI_PATH = os.path.join(BASE_PATH)
 
 
-class CreateUserScreen(QDialog):
+class CreateUserScreen(QMainWindow):
     """
     UI where the users can create a new account with an e-mail, user name, and password
     """

@@ -7,7 +7,7 @@ import os
 
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMainWindow
 
 from guicore import users_gui
 from guicore import loginscreen
@@ -20,14 +20,14 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 GUI_PATH = os.path.join(BASE_PATH)
 
 
-class OperationScreen(QDialog):
+class OperationScreen(QMainWindow):
     """
     Operation screen
     """
 
     def __init__(self, parent=None, widget=None):
         super(OperationScreen, self).__init__(parent)
-        operation_screen = os.path.join(GUI_PATH, "operation_screen2.ui")
+        operation_screen = os.path.join(GUI_PATH, "operation_screen.ui")
         loadUi(operation_screen, self)
         self.widget = widget
         self.operation = None

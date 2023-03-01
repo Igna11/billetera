@@ -8,7 +8,7 @@ Created on 12/02/2023 18:10
 import os
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QMainWindow
 
 from source import account_core as account
 from source import operations
@@ -21,7 +21,7 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 GUI_PATH = os.path.join(BASE_PATH)
 
 
-class ReadjustmentScreen(QDialog):
+class ReadjustmentScreen(QMainWindow):
     """
     Screen where the user can make readjustment in accounts
     """
