@@ -7,13 +7,14 @@ import os
 
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog, QMainWindow
+from PyQt5.QtWidgets import QMainWindow
 
 from guicore import users_gui
 from guicore import loginscreen
 from guicore import incomeexpensescreen
 from guicore import readjustmentscreen
 from guicore import transferscreen
+from guicore import createaccountscreen
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
@@ -35,6 +36,7 @@ class OperationScreen(QMainWindow):
         self.expense_button.clicked.connect(self.pre_expense)
         self.transfer_button.clicked.connect(self.pre_transfer)
         self.readjustment_button.clicked.connect(self.pre_readjustment)
+        self.create_new_account_button.clicked.connect(self.create_account)
 
     def pre_income(self):
         self.operation = "income"
@@ -66,6 +68,13 @@ class OperationScreen(QMainWindow):
             self.operation, widget=self.widget
         )
         self.widget.addWidget(operation_inputs)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
+    def create_account(self):
+        create_account_window = createaccountscreen.CreateAccount(
+            widget=self.widget
+        )
+        self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def keyPressEvent(self, e):

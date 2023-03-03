@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>945</width>
-    <height>717</height>
+    <width>605</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -169,7 +169,7 @@ background-color:rgb(221, 255, 233);</string>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="crerate_new_account_button">
+          <widget class="QPushButton" name="create_new_account_button">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -248,7 +248,7 @@ background-color:rgb(222, 255, 233);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>945</width>
+     <width>605</width>
      <height>26</height>
     </rect>
    </property>

@@ -6,32 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>745</width>
-    <height>664</height>
+    <width>800</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <property name="windowIcon">
-   <iconset theme="file:///windows/AlmacenamientoProgramas/ignag/Igna/Python%20Scripts/Billetera/guicore/icon.svg&#13;&#10;"/>
-  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="verticalWidget" native="true">
       <property name="styleSheet">
-       <string notr="true">QWidget#widget{
+       <string notr="true">QWidget#verticalWidget{
 background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, stop:0.132159 rgba(156, 178, 178, 255), stop:1 rgba(255, 255, 255, 255))}</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="7,7,1">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="5,5,1">
        <item>
-        <widget class="QWidget" name="label_widget" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <widget class="QWidget" name="widget_2" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:600; color:#ffffff;&quot;&gt;BilleterApp&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:600; color:#ffffff;&quot;&gt;Create Account&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -39,58 +36,34 @@ background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, 
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="main_widget" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,1,2">
+        <widget class="QWidget" name="widget" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
           <item>
-           <layout class="QVBoxLayout" name="data_verticalLayout">
+           <layout class="QVBoxLayout" name="acc_verticalLayout" stretch="0,0,0">
             <item>
-             <widget class="QLabel" name="account_label_2">
+             <widget class="QLabel" name="acc_label">
               <property name="font">
                <font>
                 <pointsize>8</pointsize>
                </font>
               </property>
               <property name="text">
-               <string>Origin Account</string>
+               <string>Account name</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="accounts_origin_comboBox"/>
-            </item>
-            <item>
-             <widget class="QLabel" name="account_label_3">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Destination Account</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="accounts_dest_comboBox"/>
-            </item>
-            <item>
-             <widget class="QLabel" name="quantity_label">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Quantity</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="quantity_line">
+             <widget class="QLineEdit" name="acc_name_line">
               <property name="minimumSize">
                <size>
                 <width>0</width>
                 <height>40</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>350</width>
+                <height>16777215</height>
                </size>
               </property>
               <property name="toolTip">
@@ -108,19 +81,12 @@ border-radius:5px;
                <bool>false</bool>
               </property>
               <property name="placeholderText">
-               <string>Quantity</string>
+               <string>Account name</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="status_label">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="data_verticalSpacer">
+             <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -135,60 +101,31 @@ border-radius:5px;
            </layout>
           </item>
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="acc_verticalLayout" stretch="0,0,0">
+           <layout class="QVBoxLayout" name="currency_verticalLayout">
             <item>
-             <widget class="QLabel" name="total_origin_label">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>60</height>
-               </size>
-              </property>
+             <widget class="QLabel" name="currency_label">
               <property name="font">
                <font>
-                <weight>75</weight>
-                <bold>true</bold>
+                <pointsize>8</pointsize>
                </font>
               </property>
               <property name="text">
-               <string>Total: </string>
+               <string>Currency</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="total_dest_label">
-              <property name="minimumSize">
+             <widget class="QComboBox" name="currency_comboBox">
+              <property name="maximumSize">
                <size>
-                <width>0</width>
-                <height>60</height>
+                <width>150</width>
+                <height>16777215</height>
                </size>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Total: </string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_3">
+             <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -254,7 +191,7 @@ border-radius:5px;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>745</width>
+     <width>800</width>
      <height>26</height>
     </rect>
    </property>

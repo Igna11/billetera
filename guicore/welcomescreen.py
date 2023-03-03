@@ -7,7 +7,7 @@ import os
 
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog, QMainWindow
+from PyQt5.QtWidgets import QMainWindow
 
 from guicore import loginscreen
 from guicore import createuserscreen

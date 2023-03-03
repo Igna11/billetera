@@ -69,8 +69,12 @@ class TransferScreen(QMainWindow):
         self.origin_acc_name = account_dict[index]["acc_name"]
         self.origin_acc_currency = account_dict[index]["currency"]
         print(self.acc_list[i])
-        self.origin_acc_total = account.AccountParser().get_acc_total(self.acc_list[i])
-        self.total_origin_label.setText(f"<b>Total</b>: {self.origin_acc_total}")
+        self.origin_acc_total = account.AccountParser().get_acc_total(
+            self.acc_list[i]
+        )
+        self.total_origin_label.setText(
+            f"<b>Total</b>: {self.origin_acc_total}"
+        )
 
     def dest_account_index(self, i: int):
         """
@@ -82,7 +86,9 @@ class TransferScreen(QMainWindow):
         self.dest_acc_name = account_dict[index]["acc_name"]
         self.dest_acc_currency = account_dict[index]["currency"]
         print(self.acc_list[i])
-        self.dest_acc_total = account.AccountParser().get_acc_total(self.acc_list[i])
+        self.dest_acc_total = account.AccountParser().get_acc_total(
+            self.acc_list[i]
+        )
         self.total_dest_label.setText(f"<b>Total</b>: {self.dest_acc_total}")
 
     def save(self):
@@ -103,13 +109,25 @@ class TransferScreen(QMainWindow):
                     )
                     # Display the new totals in the origin account
                     origin_index = self.accounts_origin_comboBox.currentIndex()
-                    self.origin_acc_total = account.AccountParser().get_acc_total(self.acc_list[origin_index])
-                    self.total_origin_label.setText(f"<b>Total</b>: {self.origin_acc_total}")
+                    self.origin_acc_total = (
+                        account.AccountParser().get_acc_total(
+                            self.acc_list[origin_index]
+                        )
+                    )
+                    self.total_origin_label.setText(
+                        f"<b>Total</b>: {self.origin_acc_total}"
+                    )
 
                     # Display the new totals in the destination account
                     origin_index = self.accounts_dest_comboBox.currentIndex()
-                    self.dest_acc_total = account.AccountParser().get_acc_total(self.acc_list[origin_index])
-                    self.total_dest_label.setText(f"<b>Total</b>: {self.dest_acc_total}")
+                    self.dest_acc_total = (
+                        account.AccountParser().get_acc_total(
+                            self.acc_list[origin_index]
+                        )
+                    )
+                    self.total_dest_label.setText(
+                        f"<b>Total</b>: {self.dest_acc_total}"
+                    )
                 except errors.SameAccountTransferError:
                     self.status_label.setText(
                         "<font color='red'>Origin and destination accounts can't be the same.</font>"
