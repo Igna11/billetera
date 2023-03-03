@@ -59,7 +59,7 @@ class TestUserIncome(unittest.TestCase):
 
     def test_account_income_account_not_exists(self):
         """
-        Tests that AccountNotExistsError is raised when the account does not
+        Tests that AccountDoesNotExistError is raised when the account does not
         exists.
         """
         os.chdir(TEST_DIR)
@@ -67,7 +67,7 @@ class TestUserIncome(unittest.TestCase):
         currency_acc = "ARS"
         value = 0
         category = subcategory = description = "test"
-        with self.assertRaises(errors.AccountNotExistsError):
+        with self.assertRaises(errors.AccountDoesNotExistError):
             operations.income(
                 value,
                 name_acc,
@@ -158,7 +158,7 @@ class TestUserExpense(unittest.TestCase):
 
     def test_account_expense_account_not_exists(self):
         """
-        Tests that AccountNotExistsError is raised when the account does not
+        Tests that AccountDoesNotExistError is raised when the account does not
         exists.
         """
         os.chdir(TEST_DIR)
@@ -166,7 +166,7 @@ class TestUserExpense(unittest.TestCase):
         currency_acc = "ARS"
         value = 0
         category = subcategory = description = "test"
-        with self.assertRaises(errors.AccountNotExistsError):
+        with self.assertRaises(errors.AccountDoesNotExistError):
             operations.expense(
                 value,
                 name_acc,

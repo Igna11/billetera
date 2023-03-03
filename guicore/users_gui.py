@@ -84,7 +84,7 @@ def change_password(
     user_dir = users_core.UsersDirs(username)
     user_db = users_core.UsersDB(username, useremail)
     if not os.path.isdir(user_dir.absdirname):
-        raise errors.AccountNotExistsError
+        raise errors.AccountDoesNotExistError
 
     user_db.passwd_validation_indb(passwd=old_password)
     if not user_db.passwdvalidation:

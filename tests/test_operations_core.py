@@ -18,13 +18,13 @@ class TestIncomeOperations(unittest.TestCase):
     """Tests for income_operations method of the class Operations"""
 
     def test_account_income_not_exists(self):
-        """Tests that AccountNotExistsError is raised when the account does not exists"""
+        """Tests that AccountDoesNotExistError is raised when the account does not exists"""
         name_acc = "AccTest"
         currency_acc = "ARS"
         income = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
         )
-        with self.assertRaises(errors.AccountNotExistsError):
+        with self.assertRaises(errors.AccountDoesNotExistError):
             income.income_operation()
 
     def test_account_income_negative_value(self):
@@ -69,13 +69,13 @@ class TestExpenseOperations(unittest.TestCase):
     """Tests for expense_operations method of the class Operations"""
 
     def test_account_expense_not_exists(self):
-        """Tests that AccountNotExistsError is raised when the account does not exists"""
+        """Tests that AccountDoesNotExistError is raised when the account does not exists"""
         name_acc = "AccTest"
         currency_acc = "ARS"
         expense = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
         )
-        with self.assertRaises(errors.AccountNotExistsError):
+        with self.assertRaises(errors.AccountDoesNotExistError):
             expense.expense_operation()
 
     def test_account_expense_negative_value(self):
@@ -133,13 +133,13 @@ class TestTransferOperation(unittest.TestCase):
     """Tests for transfer_operation method of class Operations"""
 
     def test_account_origin_transfer_not_exists(self):
-        """Tests that AccountNotExistsError is raised when the account does not exists"""
+        """Tests that AccountDoesNotExistError is raised when the account does not exists"""
         name_acc = "AccTest"
         currency_acc = "ARS"
         transfer = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
         )
-        with self.assertRaises(errors.AccountNotExistsError):
+        with self.assertRaises(errors.AccountDoesNotExistError):
             transfer.transfer_operation(
                 dest_acc="dest_acc", dest_currency="ARS"
             )
@@ -232,13 +232,13 @@ class TestReadjustmentOperation(unittest.TestCase):
     """Tests readjustment_operation method of class Operations"""
 
     def test_account_readjusment_not_exists(self):
-        """Tests that AccountNotExistsError is raised when account not exists."""
+        """Tests that AccountDoesNotExistError is raised when account not exists."""
         name_acc = "AccTest"
         currency_acc = "ARS"
         readjustment = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
         )
-        with self.assertRaises(errors.AccountNotExistsError):
+        with self.assertRaises(errors.AccountDoesNotExistError):
             readjustment.readjustment_operation()
 
     def test_account_readjustment_negative_value(self):

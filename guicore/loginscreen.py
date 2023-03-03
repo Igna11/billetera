@@ -43,7 +43,7 @@ class LoginScreen(QMainWindow):
             )
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
-        except errors.InvalidUserNameError:
+        except errors.InvalidNameError:
             self.login_label.setText(
                 "<font color='red'>Invalid username.</font>"
             )

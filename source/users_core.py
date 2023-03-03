@@ -54,7 +54,7 @@ class UsersDB:
             raise errors.InvalidEmailError(self.email)
         # username validation
         if self.user == "":
-            raise errors.InvalidUserNameError(self.user)
+            raise errors.InvalidNameError(self.user)
 
     def get_user_from_db(self) -> bool:
         """

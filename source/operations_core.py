@@ -40,7 +40,7 @@ class Operations(account.Accounts):
     def income_operation(self) -> None:
         """Defines the logic behind the income operation."""
         if not self.exists:
-            raise errors.AccountNotExistsError(
+            raise errors.AccountDoesNotExistError(
                 self.acc_name, self.acc_currency
             )
         if self.value <= 0:
@@ -56,7 +56,7 @@ class Operations(account.Accounts):
     def expense_operation(self) -> None:
         """Defines the logic behind the expense operation."""
         if not self.exists:
-            raise errors.AccountNotExistsError(
+            raise errors.AccountDoesNotExistError(
                 self.acc_name, self.acc_currency
             )
         if self.value <= 0:
@@ -78,7 +78,7 @@ class Operations(account.Accounts):
         Same as expense operation.
         """
         if not self.exists:
-            raise errors.AccountNotExistsError(
+            raise errors.AccountDoesNotExistError(
                 self.acc_name, self.acc_currency
             )
         if self.value <= 0:
@@ -106,7 +106,7 @@ class Operations(account.Accounts):
             Currency used by the destination account.
         """
         if not self.exists:
-            raise errors.AccountNotExistsError(
+            raise errors.AccountDoesNotExistError(
                 self.acc_name, self.acc_currency
             )
         if self.value <= 0:
@@ -136,7 +136,7 @@ class Operations(account.Accounts):
     def readjustment_operation(self) -> None:
         """Defines the logic behind the readjustment operation."""
         if not self.exists:
-            raise errors.AccountNotExistsError(
+            raise errors.AccountDoesNotExistError(
                 self.acc_name, self.acc_currency
             )
         if self.value < 0:
