@@ -48,7 +48,7 @@ class NotEqualCurrencyError(Exception):
         """
 
 
-class AccountNotExistsError(Exception):
+class AccountDoesNotExistError(Exception):
     """dostring"""
 
     def __init__(self, acc_name, acc_currency):
@@ -72,6 +72,17 @@ class AccountAlreadyExistsError(Exception):
         return f"""
         \rCan not create account {self.acc_name}({self.acc_currency}) because it already exists.
         """
+
+
+class NoConfirmationToDeleteAccountError(Exception):
+    """Raised when an account is trying to be deleted with no confirmation from user"""
+
+    def __init__(self, acc_name, acc_currency):
+        self.acc_name = acc_name
+        self.acc_currency = acc_currency
+
+    def __str__(self):
+        return f"Account {self.acc_name}_{self.acc_currency.upper()} can not be deleted withouth confirmation."
 
 
 class NotOpenSessionError(Exception):
@@ -142,11 +153,11 @@ class InvalidEmailError(Exception):
         return f"{input_mail} is not a valid format of mail."
 
 
-class InvalidUserNameError(Exception):
-    """21/02/2023: Raised when an username is and empty string ''"""
+class InvalidNameError(Exception):
+    """21/02/2023: Raised when a name is and empty string ''"""
 
     def __str__(self):
-        return "An empty string '' is not a valid username."
+        return "An empty string '' is not a valid name for account or user."
 
 
 class SameAccountTransferError(Exception):
