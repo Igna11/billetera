@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QMainWindow
 
 from source import account_core as account
 from source import operations
+from source import errors
 from guicore import operationscreen
 
 
@@ -44,6 +45,7 @@ class IncomeExpenseScreen(QMainWindow):
         self.set_acc_data(self.accounts_comboBox.currentIndex())
         self.accounts_comboBox.currentIndexChanged.connect(self.set_acc_data)
         self.save_button.clicked.connect(self.save)
+        self.cancel_button.clicked.connect(self.cancel)
 
     def set_acc_data(self, i: int) -> None:
         """Sets the values of acc_name, acc_currency and the value of total label."""
@@ -57,29 +59,62 @@ class IncomeExpenseScreen(QMainWindow):
 
     def save(self):
         """Saves the operation into the .txt account"""
-        value = float(self.quantity_line.text())
+        value = self.quantity_line.text()
         category = self.category_line.text()
         subcategory = self.subcategory_line.text()
         description = self.description_line.text()
         if self.operation_flag == "income":
-            operations.income(
-                value,
-                self.acc_name,
-                self.acc_currency,
-                category,
-                subcategory,
-                description,
-            )
+            try:
+                value = float(value)
+                operations.income(
+                    value,
+                    self.acc_name,
+                    self.acc_currency,
+                    category,
+                    subcategory,
+                    description,
+                )
+                self.status_label.setText(
+                    f"<font color='green'>Operation successfull</font>"
+                )
+            except ValueError:
+                self.status_label.setText(
+                    f"<font color='red'>Invalid value entered.</font>"
+                )
+            except errors.NegativeOrZeroValueError:
+                self.status_label.setText(
+                    f"<font color='red'>Quantity must be greater than 0!</font>"
+                )
         elif self.operation_flag == "expense":
-            operations.expense(
-                value,
-                self.acc_name,
-                self.acc_currency,
-                category,
-                subcategory,
-                description,
-            )
-
+            try:
+                value = float(value)
+                operations.expense(
+                    value,
+                    self.acc_name,
+                    self.acc_currency,
+                    category,
+                    subcategory,
+                    description,
+                )
+                self.status_label.setText(
+                    f"<font color='green'>Operation successfull</font>"
+                )
+            except ValueError:
+                self.status_label.setText(
+                    f"<font color='red'>Invalid value entered.</font>"
+                )
+            except errors.NegativeOrZeroValueError:
+                self.status_label.setText(
+                    f"<font color='red'>Quantity must be greater than 0!</font>"
+                )
+            except errors.NegativeTotalError:
+                self.status_label.setText(
+                    f"<font color='red'>The account has not enough balance.</font>"
+                )
+            except errors.EmptyAccountError:
+                self.status_label.setText(
+                    f"<font color='red'>Quantity must be greater than 0!</font>"
+                )
         print(
             self.acc_name,
             self.acc_currency,
@@ -91,7 +126,14 @@ class IncomeExpenseScreen(QMainWindow):
         # Updates the total value of the account in the label "total_label"
         self.set_acc_data(self.accounts_comboBox.currentIndex())
 
+    def cancel(self) -> None:
+        """Returns to the OperationScreen Menu"""
+        operation_screen = operationscreen.OperationScreen(widget=self.widget)
+        self.widget.addWidget(operation_screen)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
     def keyPressEvent(self, e):
+        """Returns to the OperationScreen Menu when Esc key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             operation_screen = operationscreen.OperationScreen(
                 widget=self.widget

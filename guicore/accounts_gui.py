@@ -13,10 +13,13 @@ from source import errors
 
 
 def create_account(name_acc: str = None, currency_acc: str = None) -> None:
-    """Creates a .txt file which name will be the account name"""
+    """
+    Creates a .txt file which name will be the account name. Currencies must
+    follow the ISO 4217 standard.
+    """
     if name_acc.strip() == "":
         raise errors.InvalidNameError
-    if currency_acc == "":
+    if currency_acc == "" or len(currency_acc) != 3:
         raise ValueError
     account = accounts.AccountsCreator(
         acc_name=name_acc, acc_currency=currency_acc

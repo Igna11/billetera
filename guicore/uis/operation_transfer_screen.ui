@@ -14,7 +14,8 @@
    <string>MainWindow</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="file:///windows/AlmacenamientoProgramas/ignag/Igna/Python%20Scripts/Billetera/guicore/icon.svg&#13;&#10;"/>
+   <iconset theme="file:///windows/AlmacenamientoProgramas/ignag/Igna/Python%20Scripts/Billetera/guicore/icon.svg&#13;&#10;">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -24,7 +25,7 @@
        <string notr="true">QWidget#widget{
 background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, stop:0.132159 rgba(156, 178, 178, 255), stop:1 rgba(255, 255, 255, 255))}</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="7,7,1">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="7,7,0,1">
        <item>
         <widget class="QWidget" name="label_widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -114,6 +115,12 @@ border-radius:5px;
             </item>
             <item>
              <widget class="QLabel" name="status_label">
+              <property name="font">
+               <font>
+                <pointsize>7</pointsize>
+                <italic>true</italic>
+               </font>
+              </property>
               <property name="text">
                <string/>
               </property>
@@ -206,6 +213,23 @@ border-radius:5px;
         </widget>
        </item>
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QLabel" name="status_label_2">
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+             <italic>true</italic>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QWidget" name="sabe_button_widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
@@ -222,9 +246,22 @@ border-radius:5px;
            </spacer>
           </item>
           <item>
+           <widget class="QPushButton" name="cancel_button">
+            <property name="text">
+             <string>cancel</string>
+            </property>
+            <property name="autoDefault">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="save_button">
             <property name="text">
              <string>Save</string>
+            </property>
+            <property name="autoDefault">
+             <bool>true</bool>
             </property>
            </widget>
           </item>

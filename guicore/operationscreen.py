@@ -37,8 +37,10 @@ class OperationScreen(QMainWindow):
         self.transfer_button.clicked.connect(self.pre_transfer)
         self.readjustment_button.clicked.connect(self.pre_readjustment)
         self.create_new_account_button.clicked.connect(self.create_account)
+        self.back_button.clicked.connect(self.back)
 
     def pre_income(self):
+        """Takes the user to the income/expense screen and sets the flag operation to income"""
         self.operation = "income"
         operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
             self.operation, widget=self.widget
@@ -47,6 +49,7 @@ class OperationScreen(QMainWindow):
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def pre_expense(self):
+        """Takes the user to the income/expense screen and sets the flag operation to expense"""
         self.operation = "expense"
         operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
             self.operation, widget=self.widget
@@ -55,6 +58,7 @@ class OperationScreen(QMainWindow):
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def pre_transfer(self):
+        """Takes the user to the transfer screen and sets the flag operation to transfer"""
         self.operation = "transfer"
         operation_inputs = transferscreen.TransferScreen(
             self.operation, widget=self.widget
@@ -63,6 +67,7 @@ class OperationScreen(QMainWindow):
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def pre_readjustment(self):
+        """Takes the user to the readjustment screen and sets the flag operation to readjustment"""
         self.operation = "readjustment"
         operation_inputs = readjustmentscreen.ReadjustmentScreen(
             self.operation, widget=self.widget
@@ -71,13 +76,22 @@ class OperationScreen(QMainWindow):
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def create_account(self):
+        """Takes the user to the CreateAccount screen"""
         create_account_window = createaccountscreen.CreateAccount(
             widget=self.widget
         )
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
+    def back(self) -> None:
+        """Returns to the LoginScreen Menu"""
+        login_screen = loginscreen.LoginScreen(widget=self.widget)
+        self.widget.addWidget(login_screen)
+        users_gui.logout()
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
     def keyPressEvent(self, e):
+        """Returns to the LoginScreen Menu when Esc key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             login_screen = loginscreen.LoginScreen(widget=self.widget)
             self.widget.addWidget(login_screen)

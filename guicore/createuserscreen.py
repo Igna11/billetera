@@ -31,9 +31,11 @@ class CreateUserScreen(QMainWindow):
         self.password_line.setEchoMode(QLineEdit.Password)
         self.confirm_password_line.setEchoMode(QLineEdit.Password)
         self.signup_button.clicked.connect(self.sign_up)
+        self.back_button.clicked.connect(self.back)
         self.usr_created_msg = QMessageBox()
 
     def sign_up(self):
+        """Creates the user: saves it into the database and creates the directories"""
         username = self.user_name_line.text()
         useremail = self.email_line.text()
         password = self.password_line.text().encode("utf-8")
@@ -57,7 +59,7 @@ class CreateUserScreen(QMainWindow):
                 self.login(username, password)
 
             if popup_message == QMessageBox.No:
-                self.goback()
+                self.back()
         except errors.PasswdsDontMatchError:
             self.create_user_label.setText(
                 f"<font color='red'>Passwords do not match.</font>"
@@ -72,17 +74,20 @@ class CreateUserScreen(QMainWindow):
             )
 
     def login(self, username, password):
+        """Logs in and takes the user to the OperationScreen menu."""
         users_gui.login(username, password)
         operation_screen = operationscreen.OperationScreen(widget=self.widget)
         self.widget.addWidget(operation_screen)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def goback(self):
+    def back(self):
+        """Returns to the WelcomeScreen."""
         welcome = welcomescreen.WelcomeScreen(widget=self.widget)
         self.widget.addWidget(welcome)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def keyPressEvent(self, e):
+        """Returns to the WelcomeScreen when Esc Key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             welcome = welcomescreen.WelcomeScreen(widget=self.widget)
             self.widget.addWidget(welcome)

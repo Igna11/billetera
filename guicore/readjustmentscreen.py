@@ -43,6 +43,7 @@ class ReadjustmentScreen(QMainWindow):
         self.set_acc_data(self.accounts_comboBox.currentIndex())
         self.accounts_comboBox.currentIndexChanged.connect(self.set_acc_data)
         self.save_button.clicked.connect(self.save)
+        self.cancel_button.clicked.connect(self.cancel)
 
     def set_acc_data(self, i: int):
         """Sets the values of acc_name, acc_currency and the value of total label."""
@@ -55,23 +56,52 @@ class ReadjustmentScreen(QMainWindow):
         self.total_label.setText(f"Total: {account_total}")
 
     def save(self):
-        value = float(self.quantity_line.text())
+        """Saves the new total value of the account."""
+        value = self.quantity_line.text()
         if self.operation_flag == "readjustment":
-            operations.readjustment(
-                value,
-                self.acc_name,
-                self.acc_currency,
-            )
+            try:
+                value = float(value)
+                operations.readjustment(
+                    value,
+                    self.acc_name,
+                    self.acc_currency,
+                )
+                self.status_label.setText(
+                    f"<font color='green'>Operation successfull</font>"
+                )
+                print(
+                    self.acc_name,
+                    self.acc_currency,
+                    value,
+                )
+            except ValueError:
+                self.status_label.setText(
+                    f"<font color='red'>Invalid value.</font>"
+                )
+            except errors.NotReadjustmentError:
+                self.status_label.setText(
+                    f"<font color='red'>The balance is up to date!</font>"
+                )
+            except errors.NegativeOrZeroValueError:
+                self.status_label.setText(
+                    f"<font color='red'>Quantity must be greater than 0!</font>"
+                )
+            except errors.NegativeTotalError:
+                self.status_label.setText(
+                    f"<font color='red'>Quantity must be greater than 0!</font>"
+                )
 
-        print(
-            self.acc_name,
-            self.acc_currency,
-            value,
-        )
         # Updates the total value of the account in the label "total_label"
         self.set_acc_data(self.accounts_comboBox.currentIndex())
 
+    def cancel(self):
+        """Returns to the OperationScreen menu"""
+        operation_screen = operationscreen.OperationScreen(widget=self.widget)
+        self.widget.addWidget(operation_screen)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
     def keyPressEvent(self, e):
+        """Returns to the OperationScreen menu when Esc key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             operation_screen = operationscreen.OperationScreen(
                 widget=self.widget

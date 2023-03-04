@@ -7,7 +7,7 @@ import os
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.uic import loadUi
-from PyQt5.QtWidgets import QDialog, QMainWindow
+from PyQt5.QtWidgets import QMainWindow
 
 from source import errors
 from guicore import users_gui
@@ -31,8 +31,10 @@ class LoginScreen(QMainWindow):
         self.widget = widget
         self.password_line.setEchoMode(QtWidgets.QLineEdit.Password)
         self.login_button.clicked.connect(self.login)
+        self.back_button.clicked.connect(self.back)
 
     def login(self):
+        """Logs in the user and takes them to the OperationScreen menu."""
         user_name = self.user_name_line.text()
         password = self.password_line.text().encode("utf-8")
         operation_screen = operationscreen.OperationScreen(widget=self.widget)
@@ -56,7 +58,14 @@ class LoginScreen(QMainWindow):
                 f"<font color='red'>Username <b>{user_name}</b> does not exist.</font>"
             )
 
+    def back(self):
+        """Returns to the WelcomeScreen menu"""
+        welcome = welcomescreen.WelcomeScreen(widget=self.widget)
+        self.widget.addWidget(welcome)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
     def keyPressEvent(self, e):
+        """Returns to the WelcomeScvreen menu when Esc Key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             welcome = welcomescreen.WelcomeScreen(widget=self.widget)
             self.widget.addWidget(welcome)

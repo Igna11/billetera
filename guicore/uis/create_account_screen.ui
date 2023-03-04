@@ -147,6 +147,12 @@ border-radius:5px;
                 <height>16777215</height>
                </size>
               </property>
+              <property name="editable">
+               <bool>true</bool>
+              </property>
+              <property name="frame">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
@@ -182,6 +188,13 @@ border-radius:5px;
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="cancel_button">
+            <property name="text">
+             <string>Cancel</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="save_button">

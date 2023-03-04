@@ -30,9 +30,11 @@ class DeleteUserScreen(QMainWindow):
         self.widget = widget
         self.password_line.setEchoMode(QLineEdit.Password)
         self.delete_user_button.clicked.connect(self.delete_user)
+        self.back_button.clicked.connect(self.back)
         self.usr_deleted_msg = QMessageBox()
 
     def delete_user(self):
+        """Deletes the user: Remove data from database and remove all directories with accounts on it."""
         username = self.user_name_line.text()
         useremail = self.email_line.text()
         password = self.password_line.text().encode("utf-8")
@@ -47,7 +49,7 @@ class DeleteUserScreen(QMainWindow):
                 QMessageBox.Yes,
             )
             if popup_message == QMessageBox.Yes:
-                self.goback()
+                self.back()
             if popup_message == QMessageBox.No:
                 pass
             self.delete_label.setText(
@@ -70,12 +72,14 @@ class DeleteUserScreen(QMainWindow):
                 f"<font color='red'>Invalid email format.</font>"
             )
 
-    def goback(self):
+    def back(self):
+        """Returns to the WelcomScren menu."""
         welcome = welcomescreen.WelcomeScreen(widget=self.widget)
         self.widget.addWidget(welcome)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def keyPressEvent(self, e):
+        """Returns to the WelcomScren menu when Esc Key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             welcome = welcomescreen.WelcomeScreen(widget=self.widget)
             self.widget.addWidget(welcome)

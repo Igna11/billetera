@@ -30,6 +30,7 @@ class CreateAccount(QMainWindow):
         loadUi(operation_screen, self)
         self.widget = widget
         self.save_button.clicked.connect(self.create_account)
+        self.cancel_button.clicked.connect(self.cancel)
         self.currency_comboBox.addItems(["ARS", "USD"])
         self.acc_name = self.acc_name_line.text()
         self.acc_currency = self.currency_comboBox.currentText()
@@ -55,7 +56,14 @@ class CreateAccount(QMainWindow):
                 f"<font color='red'>Invalid currency'</b>.</font>"
             )
 
+    def cancel(self):
+        """Cancel creation of account and returns to OperationScreen"""
+        login_screen = operationscreen.OperationScreen(widget=self.widget)
+        self.widget.addWidget(login_screen)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
     def keyPressEvent(self, e):
+        """Returns to OperationScreen when Esc key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             login_screen = operationscreen.OperationScreen(widget=self.widget)
             self.widget.addWidget(login_screen)

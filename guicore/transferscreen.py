@@ -58,6 +58,7 @@ class TransferScreen(QMainWindow):
             self.set_dest_acc_data
         )
         self.save_button.clicked.connect(self.save)
+        self.cancel_button.clicked.connect(self.cancel)
 
     def set_origin_acc_data(self, i: int):
         """
@@ -93,50 +94,59 @@ class TransferScreen(QMainWindow):
 
     def save(self):
         """Function called by the save_button to perform the transfer."""
-        try:
-            value = float(self.quantity_line.text())
-            if self.operation_flag == "transfer":
-                try:
-                    operations.transfer(
-                        value,
-                        self.origin_acc_name,
-                        self.origin_acc_currency,
-                        self.dest_acc_name,
-                        self.dest_acc_currency,
-                    )
-                    self.status_label.setText(
-                        "<font color='green'>Transfer successful!</font>"
-                    )
-                    # Display the new totals in the origin account
-                    self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
+        value = self.quantity_line.text()
+        if self.operation_flag == "transfer":
+            try:
+                value = float(value)
+                operations.transfer(
+                    value,
+                    self.origin_acc_name,
+                    self.origin_acc_currency,
+                    self.dest_acc_name,
+                    self.dest_acc_currency,
+                )
+                self.status_label.setText(
+                    "<font color='green'>Transfer successful!</font>"
+                )
+                # Display the new totals in the origin account
+                self.set_origin_acc_data(
+                    self.accounts_origin_comboBox.currentIndex()
+                )
 
-                    # Display the new totals in the destination account
-                    self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
+                # Display the new totals in the destination account
+                self.set_dest_acc_data(
+                    self.accounts_dest_comboBox.currentIndex()
+                )
+            except ValueError:
+                self.status_label.setText(
+                    "<font color='red'>Invalid value entered.</font>"
+                )
+            except errors.SameAccountTransferError:
+                self.status_label.setText(
+                    "<font color='red'>Origin and destination accounts can't be the same.</font>"
+                )
+            except errors.NotEqualCurrencyError:
+                self.status_label.setText(
+                    "<font color='red'>Can not transfer between accounts with different currencies.</font>"
+                )
+            except errors.EmptyAccountError:
+                self.status_label.setText(
+                    "<font color='red'>Origin account is empty."
+                )
+            except errors.NegativeOrZeroValueError:
+                self.status_label.setText(
+                    "<font color='red'>Quantity to transfer must be greater that 0."
+                )
+            print("trasnfer successfull")
 
-                except errors.SameAccountTransferError:
-                    self.status_label.setText(
-                        "<font color='red'>Origin and destination accounts can't be the same.</font>"
-                    )
-                except errors.NotEqualCurrencyError:
-                    self.status_label.setText(
-                        "<font color='red'>Can not transfer between accounts with different currencies.</font>"
-                    )
-                except errors.EmptyAccountError:
-                    self.status_label.setText(
-                        "<font color='red'>Origin account is empty."
-                    )
-                except errors.NegativeOrZeroValueError:
-                    self.status_label.setText(
-                        "<font color='red'>Quantity to transfer must be greater that 0."
-                    )
-                print("trasnfer successfull")
-        except ValueError:
-            self.status_label.setText(
-                "<font color='red'>Quantity field must not be empty."
-            )
+    def cancel(self):
+        """Returns to previous screen OperationScreen menu."""
+        operation_screen = operationscreen.OperationScreen(widget=self.widget)
+        self.widget.addWidget(operation_screen)
+        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
     def keyPressEvent(self, e):
-        """Returns to previous screen when the Esc key is pressed"""
+        """Returns to OperationScreen menu when the Esc key is pressed"""
         if e.key() == QtCore.Qt.Key_Escape:
             operation_screen = operationscreen.OperationScreen(
                 widget=self.widget
