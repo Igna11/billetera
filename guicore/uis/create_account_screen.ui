@@ -39,7 +39,7 @@ background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, 
         <widget class="QWidget" name="widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1">
           <item>
-           <layout class="QVBoxLayout" name="acc_verticalLayout" stretch="0,0,0">
+           <layout class="QVBoxLayout" name="acc_verticalLayout" stretch="0,0,0,0">
             <item>
              <widget class="QLabel" name="acc_label">
               <property name="font">
@@ -82,6 +82,31 @@ border-radius:5px;
               </property>
               <property name="placeholderText">
                <string>Account name</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="create_account_label">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>15</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>15</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>7</pointsize>
+                <italic>true</italic>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
               </property>
              </widget>
             </item>
@@ -198,6 +223,11 @@ border-radius:5px;
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>acc_name_line</tabstop>
+  <tabstop>currency_comboBox</tabstop>
+  <tabstop>save_button</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -15,7 +15,7 @@ from guicore import welcomescreen
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
-GUI_PATH = os.path.join(BASE_PATH)
+GUI_PATH = os.path.join(BASE_PATH, "uis")
 
 
 class DeleteUserScreen(QMainWindow):

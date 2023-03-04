@@ -9,12 +9,14 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
+from source import errors
 from guicore import users_gui
+from guicore import accounts_gui
 from guicore import operationscreen
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
-GUI_PATH = os.path.join(BASE_PATH)
+GUI_PATH = os.path.join(BASE_PATH, "uis")
 
 
 class CreateAccount(QMainWindow):
@@ -29,9 +31,29 @@ class CreateAccount(QMainWindow):
         self.widget = widget
         self.save_button.clicked.connect(self.create_account)
         self.currency_comboBox.addItems(["ARS", "USD"])
+        self.acc_name = self.acc_name_line.text()
+        self.acc_currency = self.currency_comboBox.currentText()
 
     def create_account(self):
-        pass
+        """Creates the .txt file tha thold data' account."""
+        acc_name = self.acc_name_line.text()
+        acc_currency = self.currency_comboBox.currentText()
+        print(acc_name, ": ", acc_currency)
+        try:
+            accounts_gui.create_account(
+                name_acc=acc_name, currency_acc=acc_currency
+            )
+            self.create_account_label.setText(
+                f"<font color='green'>Account <b>'{acc_name}'</b> successfully created.</font>"
+            )
+        except errors.InvalidNameError:
+            self.create_account_label.setText(
+                f"<font color='red'>Invalid account name <b>'{acc_name}'</b>.</font>"
+            )
+        except ValueError:
+            self.create_account_label.setText(
+                f"<font color='red'>Invalid currency'</b>.</font>"
+            )
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Escape:

@@ -17,7 +17,7 @@ from guicore import operationscreen
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
-GUI_PATH = os.path.join(BASE_PATH)
+GUI_PATH = os.path.join(BASE_PATH, "uis")
 
 
 class IncomeExpenseScreen(QMainWindow):
@@ -32,28 +32,31 @@ class IncomeExpenseScreen(QMainWindow):
         )
         loadUi(operation_incomeexpense_screen, self)
         self.widget = widget
-        self.index = 0
+        self.operation_flag = operation_flag
+
+        self.index = None
         self.acc_name = None
         self.acc_currency = None
-        self.operation_flag = operation_flag
-        self.acc_pretty_names_list = (
-            account.AccountParser().get_acc_pretty_names()
-        )
-        self.accounts_comboBox.addItems(self.acc_pretty_names_list)
-        self.accounts_comboBox.currentIndexChanged.connect(self.account_index)
+        self.acc_items_list = account.AccountParser().get_acc_pretty_names()
+        self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
+
+        self.accounts_comboBox.addItems(self.acc_items_list)
+        self.set_acc_data(self.accounts_comboBox.currentIndex())
+        self.accounts_comboBox.currentIndexChanged.connect(self.set_acc_data)
         self.save_button.clicked.connect(self.save)
 
-    def account_index(self, i: int):
+    def set_acc_data(self, i: int) -> None:
+        """Sets the values of acc_name, acc_currency and the value of total label."""
         account_dict = account.AccountParser().get_acc_properties()
         self.index = i + 1
         self.acc_name = account_dict[self.index]["acc_name"]
         self.acc_currency = account_dict[self.index]["currency"]
-        acc_list = [acc for acc in os.listdir() if "ACC" in acc]
-        print(acc_list[i])
-        account_total = account.AccountParser().get_acc_total(acc_list[i])
+        print(self.acc_list[i])
+        account_total = account.AccountParser().get_acc_total(self.acc_list[i])
         self.total_label.setText(f"Total: {account_total}")
 
     def save(self):
+        """Saves the operation into the .txt account"""
         value = float(self.quantity_line.text())
         category = self.category_line.text()
         subcategory = self.subcategory_line.text()
@@ -85,11 +88,8 @@ class IncomeExpenseScreen(QMainWindow):
             subcategory,
             description,
         )
-        # Next lines updates the total value of the account in the label "total_label"
-        acc_list = [acc for acc in os.listdir() if "ACC" in acc]
-        i = self.index - 1
-        account_total = account.AccountParser().get_acc_total(acc_list[i])
-        self.total_label.setText(f"Total: {account_total}")
+        # Updates the total value of the account in the label "total_label"
+        self.set_acc_data(self.accounts_comboBox.currentIndex())
 
     def keyPressEvent(self, e):
         if e.key() == QtCore.Qt.Key_Escape:

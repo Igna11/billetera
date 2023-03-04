@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created viernes 03/03/2023 
+@author: igna
+Modulo para condensar las funciones que tienen las cuentas GUI
+create_account()
+delete_account()
+"""
+
+from source import account_core as accounts
+from source import errors
+
+
+def create_account(name_acc: str = None, currency_acc: str = None) -> None:
+    """Creates a .txt file which name will be the account name"""
+    if name_acc.strip() == "":
+        raise errors.InvalidNameError
+    if currency_acc == "":
+        raise ValueError
+    account = accounts.AccountsCreator(
+        acc_name=name_acc, acc_currency=currency_acc
+    )
+    account.add_account()
+    print(f"\nSe ha creado la cuenta '{name_acc}'\n")
+
+
+def delete_account(
+    name_acc: str = None, currency_acc: str = None, confirmation: bool = False
+) -> None:
+    """Deletes the .txt file of the given account name"""
+    if name_acc.strip() == "":
+        raise errors.InvalidNameError
+    if currency_acc == "":
+        raise ValueError
+    account = accounts.AccountsCreator(
+        acc_name=name_acc, acc_currency=currency_acc
+    )
+    if not account.exists:
+        raise errors.AccountDoesNotExistError
+    if not confirmation:
+        raise errors.NoConfirmationToDeleteAccountError
+    account.remove_account()
+    print(f"\nSe eliminó la cuenta '{name_acc}'\n")
