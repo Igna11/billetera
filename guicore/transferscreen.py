@@ -44,22 +44,22 @@ class TransferScreen(QMainWindow):
         self.dest_acc_total = None
 
         self.operation_flag = operation_flag
-        self.acc_pretty_names_list = (
-            account.AccountParser().get_acc_pretty_names()
-        )
+        self.acc_item_list = account.AccountParser().get_acc_pretty_names()
         # origin accounts comboBox
-        self.accounts_origin_comboBox.addItems(self.acc_pretty_names_list)
+        self.accounts_origin_comboBox.addItems(self.acc_item_list)
+        self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
         self.accounts_origin_comboBox.currentIndexChanged.connect(
-            self.origin_account_index
+            self.set_origin_acc_data
         )
         # dest accounts comboBox
-        self.accounts_dest_comboBox.addItems(self.acc_pretty_names_list)
+        self.accounts_dest_comboBox.addItems(self.acc_item_list)
+        self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
         self.accounts_dest_comboBox.currentIndexChanged.connect(
-            self.dest_account_index
+            self.set_dest_acc_data
         )
         self.save_button.clicked.connect(self.save)
 
-    def origin_account_index(self, i: int):
+    def set_origin_acc_data(self, i: int):
         """
         Called when user switchs items in the comboBox in order to update the
         total value of the origin account
@@ -76,7 +76,7 @@ class TransferScreen(QMainWindow):
             f"<b>Total</b>: {self.origin_acc_total}"
         )
 
-    def dest_account_index(self, i: int):
+    def set_dest_acc_data(self, i: int):
         """
         Called when user switchs items in the comboBox in order to update the
         total value of the destination account
@@ -108,26 +108,11 @@ class TransferScreen(QMainWindow):
                         "<font color='green'>Transfer successful!</font>"
                     )
                     # Display the new totals in the origin account
-                    origin_index = self.accounts_origin_comboBox.currentIndex()
-                    self.origin_acc_total = (
-                        account.AccountParser().get_acc_total(
-                            self.acc_list[origin_index]
-                        )
-                    )
-                    self.total_origin_label.setText(
-                        f"<b>Total</b>: {self.origin_acc_total}"
-                    )
+                    self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
 
                     # Display the new totals in the destination account
-                    origin_index = self.accounts_dest_comboBox.currentIndex()
-                    self.dest_acc_total = (
-                        account.AccountParser().get_acc_total(
-                            self.acc_list[origin_index]
-                        )
-                    )
-                    self.total_dest_label.setText(
-                        f"<b>Total</b>: {self.dest_acc_total}"
-                    )
+                    self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
+
                 except errors.SameAccountTransferError:
                     self.status_label.setText(
                         "<font color='red'>Origin and destination accounts can't be the same.</font>"

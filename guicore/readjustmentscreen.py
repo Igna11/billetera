@@ -37,9 +37,7 @@ class ReadjustmentScreen(QMainWindow):
         self.acc_name = None
         self.acc_currency = None
         self.operation_flag = operation_flag
-        self.acc_items_list = (
-            account.AccountParser().get_acc_pretty_names()
-        )
+        self.acc_items_list = account.AccountParser().get_acc_pretty_names()
         self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
         self.accounts_comboBox.addItems(self.acc_items_list)
         self.set_acc_data(self.accounts_comboBox.currentIndex())
