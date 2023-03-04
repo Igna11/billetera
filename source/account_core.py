@@ -20,6 +20,7 @@ class Accounts:
     like name, currency, filename, column headers of the file, if the account
     exists or not, the amount of rows in the file and the get_last_line method
     to retrieve as attributes the values of the las line of the file.
+    ISO 4217 must be used to define currencies.
     """
 
     def __init__(self, acc_name: str, acc_currency: str) -> None:
