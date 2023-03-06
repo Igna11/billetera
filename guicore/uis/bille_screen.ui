@@ -104,11 +104,19 @@ background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, 
               <string notr="true">QPushButton {
 	border-radius:10px;
 	border: 1px solid rgb(172, 198, 181);
-	background-color:rgb(221, 255, 233);
+	background-color:rgb(224, 253, 249);
 }
 
 QPushButton:hover{
-	background-color:rgb(224, 253, 249)
+	background-color:rgb(221, 255, 233)
+}
+
+QPushButton:pressed{
+	background-color:rgb(139, 188, 182)
+}
+
+QPushButton:selected{
+	background-color:rgb(221, 255, 233)
 }</string>
              </property>
              <property name="text">
@@ -176,11 +184,15 @@ QPushButton:hover{
               <string notr="true">QPushButton {
 	border-radius:10px;
 	border: 1px solid rgb(172, 198, 181);
-	background-color:rgb(221, 255, 233);
+	background-color:rgb(224, 253, 249);
 }
 
 QPushButton:hover{
-	background-color:rgb(224, 253, 249)
+	background-color:rgb(221, 255, 233)
+}
+
+QPushButton:pressed{
+	background-color:rgb(139, 188, 182)
 }</string>
              </property>
              <property name="text">

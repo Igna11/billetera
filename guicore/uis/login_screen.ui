@@ -267,8 +267,19 @@ border-radius:5px;
                <bool>false</bool>
               </property>
               <property name="styleSheet">
-               <string notr="true">border-radius:10px;
-background-color:rgb(221, 255, 233);</string>
+               <string notr="true">QPushButton {
+	border-radius:10px;
+	border: 1px solid rgb(172, 198, 181);
+	background-color:rgb(224, 253, 249);
+}
+
+QPushButton:hover{
+	background-color:rgb(221, 255, 233)
+}
+
+QPushButton:pressed{
+	background-color:rgb(139, 188, 182)
+}</string>
               </property>
               <property name="text">
                <string>Log in</string>
