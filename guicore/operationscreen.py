@@ -15,6 +15,7 @@ from guicore import incomeexpensescreen
 from guicore import readjustmentscreen
 from guicore import transferscreen
 from guicore import createaccountscreen
+from source import account_core as acc
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
@@ -38,6 +39,14 @@ class OperationScreen(QMainWindow):
         self.readjustment_button.clicked.connect(self.pre_readjustment)
         self.create_new_account_button.clicked.connect(self.create_account)
         self.back_button.clicked.connect(self.back)
+        # checks if any account exists.
+        if not acc.AccountParser().acc_list:
+            self.income_button.setEnabled(False)
+            self.expense_button.setEnabled(False)
+            self.transfer_button.setEnabled(False)
+            self.readjustment_button.setEnabled(False)
+
+
 
     def pre_income(self):
         """Takes the user to the income/expense screen and sets the flag operation to income"""
