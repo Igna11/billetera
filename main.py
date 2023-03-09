@@ -20,16 +20,12 @@ TODO    Graficos:
         por mes, por año.
 
 TODO    Interfaz Gráfica y ejectuable:
-        nada, eso, a futuro (lejano)
+        09/03/2023 In progress 
 
 TODO    Implementación de presupuestos: Una función con la cual setear el
         presupuesto máximo que se quiere gastar por y/o por categoria y
         subcategoria por mes. Y que con cada gasto en esa dada categoria avise
         cuánto queda de presupuesto
-
-TODO    Modulo de inicio de sesión con contraseña. -> done
-                Implementar base de datos para guardar contraseñas -> done
-                Implementar cambio de contraseña -> done
 
 TODO    Encriptación de datos con sesión cerrada.
 """
