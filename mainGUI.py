@@ -5,17 +5,16 @@ created on 05/02/2023
 """
 
 import sys
+import os
 
 from guicore import welcomescreen
 from PyQt5.QtWidgets import QApplication, QStackedWidget
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     widget = QStackedWidget()
     main_window = welcomescreen.WelcomeScreen(widget=widget)
     widget.addWidget(main_window)
-    widget.setFixedHeight(500)
-    widget.setFixedWidth(700)
     widget.show()
-
     app.exec()
