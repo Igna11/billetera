@@ -42,7 +42,9 @@ class LoginScreen(QMainWindow):
             self.login_label.setText(
                 "<font color='green'>Log in successfull</font>"
             )
-            operation_screen = operationscreen.OperationScreen(widget=self.widget)
+            operation_screen = operationscreen.OperationScreen(
+                widget=self.widget
+            )
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
         except errors.InvalidNameError:

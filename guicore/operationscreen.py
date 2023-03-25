@@ -46,8 +46,6 @@ class OperationScreen(QMainWindow):
             self.transfer_button.setEnabled(False)
             self.readjustment_button.setEnabled(False)
 
-
-
     def pre_income(self):
         """Takes the user to the income/expense screen and sets the flag operation to income"""
         self.operation = "income"
