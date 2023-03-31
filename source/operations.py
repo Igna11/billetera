@@ -258,7 +258,7 @@ def transfer(
         dest_acc, dest_currency
     )
     category = "Transferencia"
-    origin_subcategory = "Tranferencia de salida"
+    origin_subcategory = "Transferencia de salida"
     dest_subcategory = "Transferencia de entrada"
     origin_description = f"Transferencia a {dest_acc}"
     dest_description = f"Transferencia de {origin_acc}"
