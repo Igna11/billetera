@@ -289,7 +289,7 @@ class TestUserTransfer(unittest.TestCase):
             str(value),  # extraction
             "0.00",  # expense
             "Transferencia",  # category
-            "Tranferencia de salida",  # subcategory
+            "Transferencia de salida",  # subcategory
             f"Transferencia a {dest_name_acc}",  # description
             "0.00",  # balance
         ]
