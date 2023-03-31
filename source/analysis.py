@@ -152,22 +152,22 @@ def balance_graf():
     plt.show()
 
 
-def filtro(acc_name: str, acc_currency: str) -> pd.DataFrame:
+def data_filter(acc_name: str, acc_currency: str) -> pd.DataFrame:
     """
     Analysis function:
     Easy way to filter data from a given account by category and subcategory
     """
     acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.txt"
-    datos = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
+    data = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
     categoria = input("\nIngrese la categoría\n")
-    datos = datos[datos["Categoria"] == categoria]
-    print(datos)
-    respuesta = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
-    if respuesta == "si":
-        subcategoria = input("\nIngrese la subcategoría\n")
-        datos = datos[datos["Subcategoria"] == subcategoria]
-        return datos
-    return datos
+    data = data[data["Categoria"] == categoria]
+    print(data)
+    user_answer = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
+    if user_answer == "si":
+        subcategory = input("\nIngrese la subcategoría\n")
+        data = data[data["Subcategoria"] == subcategory]
+        return data
+    return data
 
 
 def category_spendings(cat: str, subcat="", desc=""):

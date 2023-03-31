@@ -52,7 +52,7 @@ from source.operations import extraction
 from source.operations import transfer
 from source.operations import readjustment
 
-from source.analysis import filtro
+from source.analysis import data_filter
 from source.analysis import account_balances
 from source.analysis import balance_graf
 from source.analysis import account_data
