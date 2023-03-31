@@ -33,7 +33,7 @@ def account_data(acc_name: str, acc_currency: str) -> pd.DataFrame:
     return data
 
 
-def balances_cta(account: str, month: int, year: int):
+def account_balances(account: str, month: int, year: int):
     """
     Analysis function:
     Easy way to get the monthly balance of a given account: Incomes, expenses
@@ -73,7 +73,7 @@ def balances_cta(account: str, month: int, year: int):
     }
 
 
-def balances_totales(month: int, year: int, verbose=False):
+def total_balances(month: int, year: int, verbose=False):
     """
     Analysis function:
     Easy way to see the total balance of the sum all over the accounts, given
@@ -87,23 +87,23 @@ def balances_totales(month: int, year: int, verbose=False):
     returns: dic
         Ingresos, Gastos y Balances mensuales por usuario: float
     """
-    ingresos_tot = gastos_tot = balances_tot = 0
-    for cuenta in os.listdir():
-        if "_ACC_" in cuenta and "_USD" not in cuenta:
+    total_incomes = total_expenses = total_balance = 0
+    for acc in os.listdir():
+        if "_ACC_" in acc and "_USD" not in acc:
             try:
-                dic_c = balances_cta(cuenta, month, year)
+                balances_dict = account_balances(acc, month, year)
             except AttributeError as error:
                 if verbose is True:
-                    print("Error en la cuenta: ", cuenta)
+                    print("Error en la cuenta: ", acc)
                     print(error)
-            ingresos_tot += dic_c["Ingresos_m"]
-            gastos_tot += dic_c["Gasto_m"]
-            balances_tot += dic_c["Balance_m"]
+            total_incomes += balances_dict["Ingresos_m"]
+            total_expenses += balances_dict["Gasto_m"]
+            total_balance += balances_dict["Balance_m"]
 
     return {
-        "Ingresos_tot": round(ingresos_tot, 2),
-        "Gasto_tot": round(gastos_tot, 2),
-        "Balance_tot": round(balances_tot, 2),
+        "total_incomes": round(total_incomes, 2),
+        "total_expenses": round(total_expenses, 2),
+        "total_balances": round(total_balance, 2),
     }
 
 

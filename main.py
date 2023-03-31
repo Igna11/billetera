@@ -53,10 +53,10 @@ from source.operations import transfer
 from source.operations import readjustment
 
 from source.analysis import filtro
-from source.analysis import balances_cta
+from source.analysis import account_balances
 from source.analysis import balance_graf
-from source.analysis import datos_cuenta
-from source.analysis import balances_totales
+from source.analysis import account_data
+from source.analysis import total_balances
 from source.analysis import category_spendings
 from source.analysis import monthly_categorical_spendings
 
