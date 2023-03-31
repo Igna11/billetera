@@ -23,7 +23,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def datos_cuenta(acc_name: str, acc_currency: str) -> pd.DataFrame:
+def account_data(acc_name: str, acc_currency: str) -> pd.DataFrame:
     """
     Analysis function:
     Return a pandas DataFrame with data of a given account
