@@ -246,3 +246,169 @@ def monthly_categorical_spendings(
     df = category_spendings(cat=cat, subcat=subcat, desc=desc)
     total = df[(df.index.month == month) & (df.index.year == year)].Gasto.sum()
     return round(total, 2)
+
+
+class DataAnalyzer:
+    """
+    Class with several analysis methods to get insights of the data and get
+    value from it.
+    Loads data from all accounts of the user, including all different currencies
+    """
+
+    def __init__(self):
+        """Get the list of accounts and its currencies"""
+        self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
+        self.acc_currencies = set(
+            acc.strip(".txt")[-3:] for acc in self.acc_list
+        )
+        # Loading data
+        df_list = []
+        for acc in self.acc_list:
+            df_raw = pd.read_csv(acc, sep="\t")
+            df_raw["account"] = acc.replace(".txt", "").replace("_ACC", "")
+            df_list.append(df_raw)
+        self.main_df = pd.concat(df_list, axis=0, ignore_index=True)
+        # add a column with datetime type to the dataframe
+        self.main_df["datetime"] = pd.to_datetime(
+            self.main_df["Fecha"] + " " + self.main_df["hora"],
+            format="%d-%m-%Y %H:%M:%S",
+        )
+        # drop of unnecesary columns
+        self.main_df.drop(columns=["Fecha", "hora", "Balance"], inplace=True)
+        # sort data by datetime
+        self.main_df.sort_values(by="datetime", inplace=True)
+
+    def get_data_per_currency(self, currency):
+        """Generates a new dataframe containing only the desired type of currency"""
+        mask = self.main_df["account"].str.upper().str.contains(currency)
+        self.main_df = self.main_df[mask]
+
+    # data of a given arbitrary period of time
+    def get_period_expenses_by_category(
+        self, initial_time: datetime, final_time: datetime
+    ) -> pd.DataFrame:
+        """
+        Generates a dataframe of expenses grouped by category, containing data
+        of a given period of time.
+        initial_time: datatime object - sets the date and time for the lower limit data
+        final_time: datatime object - sets the date and time for the upper limit data
+        """
+        mask = (
+            self.main_df["datetime"].between(initial_time, final_time)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Gasto"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria"])["Gasto"].sum()
+
+    def get_period_expenses_by_subcategory(
+        self, initial_time: datetime, final_time: datetime
+    ) -> pd.DataFrame:
+        """
+        Generates a dataframe of expenses grouped by category and subcategory,
+        containing data of a given period of time.
+        initial_time: datatime object - sets the date and time for the lower limit data
+        final_time: datatime object - sets the date and time for the upper limit data
+        """
+        mask = (
+            self.main_df["datetime"].between(initial_time, final_time)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Gasto"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])[
+            "Gasto"
+        ].sum()
+
+    def get_period_incomes_by_category(
+        self, initial_time: datetime, final_time: datetime
+    ) -> pd.DataFrame:
+        """
+        Generates a dataframe of incomes grouped by category, containing data
+        of a given period of time.
+        initial_time: datatime object - sets the date and time for the lower limit data
+        final_time: datatime object - sets the date and time for the upper limit data
+        """
+        mask = (
+            self.main_df["datetime"].between(initial_time, final_time)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Ingresos"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria"])["Ingresos"].sum()
+
+    def get_period_incomes_by_subcategory(
+        self, initial_time: datetime, final_time: datetime
+    ) -> pd.DataFrame:
+        """
+        Generates a dataframe of incomes grouped by category and subcategory,
+        containing data of a given period of time.
+        initial_time: datatime object - sets the date and time for the lower limit data
+        final_time: datatime object - sets the date and time for the upper limit data
+        """
+        mask = (
+            self.main_df["datetime"].between(initial_time, final_time)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Ingresos"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])[
+            "Ingresos"
+        ].sum()
+
+    # data of a given month and year
+    def get_month_expenses_by_category(
+        self, month: int, year: int
+    ) -> pd.DataFrame:
+        """Returns a DataFrame containing the sum of expenses by category in one month"""
+        mask = (
+            (self.main_df["datetime"].dt.month == month)
+            & (self.main_df["datetime"].dt.year == year)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Gasto"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria"])["Gasto"].sum()
+
+    def get_month_expenses_by_subcategory(
+        self, month: int, year: int
+    ) -> pd.DataFrame:
+        """Return a DataFrame containing the sum of expenses by subcategory in one month"""
+        mask = (
+            (self.main_df["datetime"].dt.month == month)
+            & (self.main_df["datetime"].dt.year == year)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Gasto"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])[
+            "Gasto"
+        ].sum()
+
+    def get_month_incomes_by_category(
+        self, month: int, year: int
+    ) -> pd.DataFrame:
+        """Returns a DataFrame containing the sum of incomes by category in one month"""
+        mask = (
+            (self.main_df["datetime"].dt.month == month)
+            & (self.main_df["datetime"].dt.year == year)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Ingresos"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria"])["Ingresos"].sum()
+
+    def get_month_incomes_by_subcategory(
+        self, month: int, year: int
+    ) -> pd.DataFrame:
+        """Return a DataFrame containing the sum of incomes by subcategory in one month"""
+        mask = (
+            (self.main_df["datetime"].dt.month == month)
+            & (self.main_df["datetime"].dt.year == year)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Ingresos"] != 0)
+        )
+        filtered_df = self.main_df[mask].copy()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])[
+            "Ingresos"
+        ].sum()
