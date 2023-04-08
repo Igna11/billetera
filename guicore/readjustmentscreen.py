@@ -28,9 +28,7 @@ class ReadjustmentScreen(QMainWindow):
 
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(ReadjustmentScreen, self).__init__(parent)
-        operation_readjustment_screen = os.path.join(
-            GUI_PATH, "operation_readjustment_screen.ui"
-        )
+        operation_readjustment_screen = os.path.join(GUI_PATH, "operation_readjustment_screen.ui")
         loadUi(operation_readjustment_screen, self)
         self.widget = widget
         self.index = 0
@@ -66,22 +64,16 @@ class ReadjustmentScreen(QMainWindow):
                     self.acc_name,
                     self.acc_currency,
                 )
-                self.status_label.setText(
-                    f"<font color='green'>Operation successfull</font>"
-                )
+                self.status_label.setText(f"<font color='green'>Operation successfull</font>")
                 print(
                     self.acc_name,
                     self.acc_currency,
                     value,
                 )
             except ValueError:
-                self.status_label.setText(
-                    f"<font color='red'>Invalid value.</font>"
-                )
+                self.status_label.setText(f"<font color='red'>Invalid value.</font>")
             except errors.NotReadjustmentError:
-                self.status_label.setText(
-                    f"<font color='red'>The balance is up to date!</font>"
-                )
+                self.status_label.setText(f"<font color='red'>The balance is up to date!</font>")
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     f"<font color='red'>Quantity must be greater than 0!</font>"
@@ -103,8 +95,6 @@ class ReadjustmentScreen(QMainWindow):
     def keyPressEvent(self, e):
         """Returns to the OperationScreen menu when Esc key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
-            operation_screen = operationscreen.OperationScreen(
-                widget=self.widget
-            )
+            operation_screen = operationscreen.OperationScreen(widget=self.widget)
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)

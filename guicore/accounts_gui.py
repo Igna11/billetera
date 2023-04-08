@@ -21,9 +21,7 @@ def create_account(name_acc: str = None, currency_acc: str = None) -> None:
         raise errors.InvalidNameError
     if currency_acc == "" or len(currency_acc) != 3:
         raise ValueError
-    account = accounts.AccountsCreator(
-        acc_name=name_acc, acc_currency=currency_acc
-    )
+    account = accounts.AccountsCreator(acc_name=name_acc, acc_currency=currency_acc)
     account.add_account()
     print(f"\nSe ha creado la cuenta '{name_acc}'\n")
 
@@ -36,9 +34,7 @@ def delete_account(
         raise errors.InvalidNameError
     if currency_acc == "":
         raise ValueError
-    account = accounts.AccountsCreator(
-        acc_name=name_acc, acc_currency=currency_acc
-    )
+    account = accounts.AccountsCreator(acc_name=name_acc, acc_currency=currency_acc)
     if not account.exists:
         raise errors.AccountDoesNotExistError
     if not confirmation:

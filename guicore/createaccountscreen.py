@@ -41,9 +41,7 @@ class CreateAccount(QMainWindow):
         acc_currency = self.currency_comboBox.currentText()
         print(acc_name, ": ", acc_currency)
         try:
-            accounts_gui.create_account(
-                name_acc=acc_name, currency_acc=acc_currency
-            )
+            accounts_gui.create_account(name_acc=acc_name, currency_acc=acc_currency)
             self.create_account_label.setText(
                 f"<font color='green'>Account <b>'{acc_name}'</b> successfully created.</font>"
             )
@@ -52,9 +50,7 @@ class CreateAccount(QMainWindow):
                 f"<font color='red'>Invalid account name <b>'{acc_name}'</b>.</font>"
             )
         except ValueError:
-            self.create_account_label.setText(
-                f"<font color='red'>Invalid currency'</b>.</font>"
-            )
+            self.create_account_label.setText(f"<font color='red'>Invalid currency'</b>.</font>")
 
     def cancel(self):
         """Cancel creation of account and returns to OperationScreen"""

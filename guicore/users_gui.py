@@ -21,9 +21,7 @@ DATA_PATH = os.path.join(BASE_PATH, "data")
 os.chdir(DATA_PATH)
 
 
-def create_user(
-    username: str, useremail: str, password: bytes, password_check: bytes
-) -> None:
+def create_user(username: str, useremail: str, password: bytes, password_check: bytes) -> None:
     """
     Creates an user with its directories and entries in the data base.
     Uses inputs for name of the user and password.
@@ -42,9 +40,7 @@ def create_user(
     user_db.add_user_to_db(passwd=password)
 
 
-def delete_user(
-    username: str, useremail: str, password: bytes, confirmation: bool
-) -> None:
+def delete_user(username: str, useremail: str, password: bytes, confirmation: bool) -> None:
     """
     Deletes an user and all its information stored in its directories and
     data base.

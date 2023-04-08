@@ -28,9 +28,7 @@ class IncomeExpenseScreen(QMainWindow):
 
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(IncomeExpenseScreen, self).__init__(parent)
-        operation_incomeexpense_screen = os.path.join(
-            GUI_PATH, "operation_incomeexpense_screen.ui"
-        )
+        operation_incomeexpense_screen = os.path.join(GUI_PATH, "operation_incomeexpense_screen.ui")
         loadUi(operation_incomeexpense_screen, self)
         self.widget = widget
         self.operation_flag = operation_flag
@@ -74,13 +72,9 @@ class IncomeExpenseScreen(QMainWindow):
                     subcategory,
                     description,
                 )
-                self.status_label.setText(
-                    f"<font color='green'>Operation successfull</font>"
-                )
+                self.status_label.setText(f"<font color='green'>Operation successfull</font>")
             except ValueError:
-                self.status_label.setText(
-                    f"<font color='red'>Invalid value entered.</font>"
-                )
+                self.status_label.setText(f"<font color='red'>Invalid value entered.</font>")
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     f"<font color='red'>Quantity must be greater than 0!</font>"
@@ -96,13 +90,9 @@ class IncomeExpenseScreen(QMainWindow):
                     subcategory,
                     description,
                 )
-                self.status_label.setText(
-                    f"<font color='green'>Operation successfull</font>"
-                )
+                self.status_label.setText(f"<font color='green'>Operation successfull</font>")
             except ValueError:
-                self.status_label.setText(
-                    f"<font color='red'>Invalid value entered.</font>"
-                )
+                self.status_label.setText(f"<font color='red'>Invalid value entered.</font>")
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     f"<font color='red'>Quantity must be greater than 0!</font>"
@@ -135,8 +125,6 @@ class IncomeExpenseScreen(QMainWindow):
     def keyPressEvent(self, e):
         """Returns to the OperationScreen Menu when Esc key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
-            operation_screen = operationscreen.OperationScreen(
-                widget=self.widget
-            )
+            operation_screen = operationscreen.OperationScreen(widget=self.widget)
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)

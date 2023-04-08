@@ -52,25 +52,17 @@ class DeleteUserScreen(QMainWindow):
                 self.back()
             if popup_message == QMessageBox.No:
                 pass
-            self.delete_label.setText(
-                f"<font color='green'>User {username} deleted.</font>"
-            )
+            self.delete_label.setText(f"<font color='green'>User {username} deleted.</font>")
         except errors.UserDoesNotExistsError:
             self.delete_label.setText(
                 f"<font color='red'>User <b>{username}</b> does not exist</font>"
             )
         except errors.WrongPasswordError:
-            self.delete_label.setText(
-                "<font color='red'>Wrong password</font>"
-            )
+            self.delete_label.setText("<font color='red'>Wrong password</font>")
         except errors.UserCouldNotBeDeletedError:
-            self.delete_label.setText(
-                f"<font color='red'>Please mark 'I am sure'.</font>"
-            )
+            self.delete_label.setText(f"<font color='red'>Please mark 'I am sure'.</font>")
         except errors.InvalidEmailError:
-            self.delete_label.setText(
-                f"<font color='red'>Invalid email format.</font>"
-            )
+            self.delete_label.setText(f"<font color='red'>Invalid email format.</font>")
 
     def back(self):
         """Returns to the WelcomScren menu."""

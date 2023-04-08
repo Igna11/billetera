@@ -70,30 +70,18 @@ class CategoricalPieChart(QtChart.QChart):
         raw_data.get_data_per_currency(curr)
         if mode == "monthly" and type == "expenses":
             data_outer = raw_data.get_month_expenses_by_category(month, year)
-            data_inner = raw_data.get_month_expenses_by_subcategory(
-                month, year
-            )
+            data_inner = raw_data.get_month_expenses_by_subcategory(month, year)
         elif mode == "monthly" and type == "incomes":
             data_outer = raw_data.get_month_incomes_by_category(month, year)
             data_inner = raw_data.get_month_incomes_by_subcategory(month, year)
         elif mode == "period" and type == "expenses":
-            data_outer = raw_data.get_period_expenses_by_category(
-                initial, final
-            )
-            data_inner = raw_data.get_period_expenses_by_subcategory(
-                initial, final
-            )
+            data_outer = raw_data.get_period_expenses_by_category(initial, final)
+            data_inner = raw_data.get_period_expenses_by_subcategory(initial, final)
         elif mode == "period" and type == "incomes":
-            data_outer = raw_data.get_period_incomes_by_category(
-                initial, final
-            )
-            data_inner = raw_data.get_period_incomes_by_subcategory(
-                initial, final
-            )
+            data_outer = raw_data.get_period_incomes_by_category(initial, final)
+            data_inner = raw_data.get_period_incomes_by_subcategory(initial, final)
         else:
-            raise ValueError(
-                "Valid modes: 'expenses', 'incomes'. Valid types: 'monthly', 'period'"
-            )
+            raise ValueError("Valid modes: 'expenses', 'incomes'. Valid types: 'monthly', 'period'")
         return data_inner, data_outer
 
     def clear_slices(self):
@@ -106,10 +94,7 @@ class CategoricalPieChart(QtChart.QChart):
         for pie_slice in self.series_inner.slices():
             self.series_inner.take(pie_slice)
 
-
-    def add_slices(
-        self, data_inner: pd.DataFrame, data_outer: pd.DataFrame
-    ) -> None:
+    def add_slices(self, data_inner: pd.DataFrame, data_outer: pd.DataFrame) -> None:
         """
         Loops through the data to the create each slice of the inner and
         the outer series of the pie chart.
@@ -124,14 +109,10 @@ class CategoricalPieChart(QtChart.QChart):
             ):
                 slice_inner = QtChart.QPieSlice(idx_inner, val_inner)
                 slice_inner.hovered.connect(
-                    lambda is_hovered, slice_=slice_inner: slice_.setLabelVisible(
-                        is_hovered
-                    )
+                    lambda is_hovered, slice_=slice_inner: slice_.setLabelVisible(is_hovered)
                 )
                 slice_inner.hovered.connect(
-                    lambda is_hovered, slice_=slice_inner: slice_.setExploded(
-                        is_hovered
-                    )
+                    lambda is_hovered, slice_=slice_inner: slice_.setExploded(is_hovered)
                 )
                 slice_inner.setExplodeDistanceFactor(0.05)
                 label = f"<p align='center' style='color:black'>{idx_inner}<br><b>${val_inner:.2f}</b></p>"
@@ -150,13 +131,13 @@ class CategoricalPieChart(QtChart.QChart):
         for pie_slice in self.series_outer.slices():
             slice_lbl = pie_slice.label()
             slice_val = pie_slice.value()
-            label = f"<p align='center' style='color:black'>{slice_lbl}<br><b>${slice_val:.2f}</b></p>"
+            label = (
+                f"<p align='center' style='color:black'>{slice_lbl}<br><b>${slice_val:.2f}</b></p>"
+            )
             if pie_slice.percentage() > 0.03:
                 pie_slice.setLabelVisible()
             elif pie_slice.percentage() <= 0.03:
                 pie_slice.hovered.connect(
-                    lambda is_hovered, slice_=pie_slice: slice_.setLabelVisible(
-                        is_hovered
-                    )
+                    lambda is_hovered, slice_=pie_slice: slice_.setLabelVisible(is_hovered)
                 )
             pie_slice.setLabel(label)

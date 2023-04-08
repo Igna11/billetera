@@ -28,9 +28,7 @@ class TransferScreen(QMainWindow):
 
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(TransferScreen, self).__init__(parent)
-        operation_transfer_screen = os.path.join(
-            GUI_PATH, "operation_transfer_screen.ui"
-        )
+        operation_transfer_screen = os.path.join(GUI_PATH, "operation_transfer_screen.ui")
         loadUi(operation_transfer_screen, self)
         self.widget = widget
         self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
@@ -48,15 +46,11 @@ class TransferScreen(QMainWindow):
         # origin accounts comboBox
         self.accounts_origin_comboBox.addItems(self.acc_item_list)
         self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
-        self.accounts_origin_comboBox.currentIndexChanged.connect(
-            self.set_origin_acc_data
-        )
+        self.accounts_origin_comboBox.currentIndexChanged.connect(self.set_origin_acc_data)
         # dest accounts comboBox
         self.accounts_dest_comboBox.addItems(self.acc_item_list)
         self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
-        self.accounts_dest_comboBox.currentIndexChanged.connect(
-            self.set_dest_acc_data
-        )
+        self.accounts_dest_comboBox.currentIndexChanged.connect(self.set_dest_acc_data)
         self.save_button.clicked.connect(self.save)
         self.cancel_button.clicked.connect(self.cancel)
 
@@ -70,12 +64,8 @@ class TransferScreen(QMainWindow):
         self.origin_acc_name = account_dict[index]["acc_name"]
         self.origin_acc_currency = account_dict[index]["currency"]
         print(self.acc_list[i])
-        self.origin_acc_total = account.AccountParser().get_acc_total(
-            self.acc_list[i]
-        )
-        self.total_origin_label.setText(
-            f"<b>Total</b>: {self.origin_acc_total}"
-        )
+        self.origin_acc_total = account.AccountParser().get_acc_total(self.acc_list[i])
+        self.total_origin_label.setText(f"<b>Total</b>: {self.origin_acc_total}")
 
     def set_dest_acc_data(self, i: int):
         """
@@ -87,9 +77,7 @@ class TransferScreen(QMainWindow):
         self.dest_acc_name = account_dict[index]["acc_name"]
         self.dest_acc_currency = account_dict[index]["currency"]
         print(self.acc_list[i])
-        self.dest_acc_total = account.AccountParser().get_acc_total(
-            self.acc_list[i]
-        )
+        self.dest_acc_total = account.AccountParser().get_acc_total(self.acc_list[i])
         self.total_dest_label.setText(f"<b>Total</b>: {self.dest_acc_total}")
 
     def save(self):
@@ -105,22 +93,14 @@ class TransferScreen(QMainWindow):
                     self.dest_acc_name,
                     self.dest_acc_currency,
                 )
-                self.status_label.setText(
-                    "<font color='green'>Transfer successful!</font>"
-                )
+                self.status_label.setText("<font color='green'>Transfer successful!</font>")
                 # Display the new totals in the origin account
-                self.set_origin_acc_data(
-                    self.accounts_origin_comboBox.currentIndex()
-                )
+                self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
 
                 # Display the new totals in the destination account
-                self.set_dest_acc_data(
-                    self.accounts_dest_comboBox.currentIndex()
-                )
+                self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
             except ValueError:
-                self.status_label.setText(
-                    "<font color='red'>Invalid value entered.</font>"
-                )
+                self.status_label.setText("<font color='red'>Invalid value entered.</font>")
             except errors.SameAccountTransferError:
                 self.status_label.setText(
                     "<font color='red'>Origin and destination accounts can't be the same.</font>"
@@ -130,9 +110,7 @@ class TransferScreen(QMainWindow):
                     "<font color='red'>Can not transfer between accounts with different currencies.</font>"
                 )
             except errors.EmptyAccountError:
-                self.status_label.setText(
-                    "<font color='red'>Origin account is empty."
-                )
+                self.status_label.setText("<font color='red'>Origin account is empty.")
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     "<font color='red'>Quantity to transfer must be greater that 0."
@@ -148,8 +126,6 @@ class TransferScreen(QMainWindow):
     def keyPressEvent(self, e):
         """Returns to OperationScreen menu when the Esc key is pressed"""
         if e.key() == QtCore.Qt.Key_Escape:
-            operation_screen = operationscreen.OperationScreen(
-                widget=self.widget
-            )
+            operation_screen = operationscreen.OperationScreen(widget=self.widget)
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)

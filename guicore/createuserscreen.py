@@ -42,9 +42,7 @@ class CreateUserScreen(QMainWindow):
         password_check = self.confirm_password_line.text().encode("utf-8")
         print(type(password))
         try:
-            users_gui.create_user(
-                username, useremail, password, password_check
-            )
+            users_gui.create_user(username, useremail, password, password_check)
             self.create_user_label.setText(
                 f"<font color='green'>User {username} successfully created.</font>"
             )
@@ -61,9 +59,7 @@ class CreateUserScreen(QMainWindow):
             if popup_message == QMessageBox.No:
                 self.back()
         except errors.PasswdsDontMatchError:
-            self.create_user_label.setText(
-                f"<font color='red'>Passwords do not match.</font>"
-            )
+            self.create_user_label.setText(f"<font color='red'>Passwords do not match.</font>")
         except errors.UserAlreadyExistsError:
             self.create_user_label.setText(
                 f"<font color='red'>User {username} already exists.</font>"

@@ -39,22 +39,14 @@ class LoginScreen(QMainWindow):
         password = self.password_line.text().encode("utf-8")
         try:
             users_gui.login(user_name, password)
-            self.login_label.setText(
-                "<font color='green'>Log in successfull</font>"
-            )
-            operation_screen = operationscreen.OperationScreen(
-                widget=self.widget
-            )
+            self.login_label.setText("<font color='green'>Log in successfull</font>")
+            operation_screen = operationscreen.OperationScreen(widget=self.widget)
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
         except errors.InvalidNameError:
-            self.login_label.setText(
-                "<font color='red'>Invalid username.</font>"
-            )
+            self.login_label.setText("<font color='red'>Invalid username.</font>")
         except errors.WrongPasswordError:
-            self.login_label.setText(
-                "<font color='red'>Wrong password.</font>"
-            )
+            self.login_label.setText("<font color='red'>Wrong password.</font>")
         except errors.UserDoesNotExistsError:
             self.login_label.setText(
                 f"<font color='red'>Username <b>{user_name}</b> does not exist.</font>"
