@@ -50,23 +50,13 @@ class OperationScreen(QMainWindow):
 
         self.back_button.clicked.connect(self.back)
         self.switch_type_button.clicked.connect(self.switch_chart_type)
-        self.previous_month_button.clicked.connect(self.previous_month)
-        self.next_month_button.clicked.connect(self.next_month)
-        self.reset_month_button.clicked.connect(self.current_month)
+        self.previous_month_button.clicked.connect(self.previous_month_chart)
+        self.next_month_button.clicked.connect(self.next_month_chart)
+        self.reset_month_button.clicked.connect(self.current_month_chart)
 
         self.chart = categorypiechart.CategoricalPieChart()
-        raw_data = analysis.DataAnalyzer()
-
-        self.chart.setTitle(self.curr_datetime.strftime(format="%B %Y").title())
-        data_inner, data_outer = self.chart.load_data(
-            raw_data,
-            mode="monthly",
-            curr="ARS",
-            type=self.chart_type,
-        )
-        self.chart.add_slices(data_inner, data_outer)
-        self.chart.update_labels()
         self.chartView = QChartView(self.chart)
+        self.current_month_chart()
         self.chartView.setRenderHint(QPainter.Antialiasing)
 
         # Add the chartView to the central_VR_layout
@@ -117,7 +107,41 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def previous_month(self):
+    def _chart_title_formatter(self, type: str, month: str) -> str:
+        """
+        Formats the given string to make it a title for the Chart.
+        """
+        type = type.title()
+        month = month.title()
+        title = f"<h2><p align='center' style='color:black'><b>{type}:<br>{month}</b></p>"
+        return title
+
+    def current_month_chart(self):
+        """
+        Generates a new piechart of the current month and updates the variable
+        self.selected_datetime
+        """
+        self.selected_datetime = self.curr_datetime
+        raw_data = analysis.DataAnalyzer()
+        self.chart.clear_slices()
+        title_type = self.chart_type
+        title_month = self.curr_datetime.strftime(format="%B %Y")
+        title = self._chart_title_formatter(title_type, title_month)
+        self.chart.setTitle(title)
+        data_inner, data_outer = self.chart.load_data(
+            raw_data,
+            mode="monthly",
+            month=self.curr_datetime.month,
+            year=self.curr_datetime.year,
+            curr="ARS",
+            type=self.chart_type,
+        )
+        self.chart.add_slices(data_inner, data_outer)
+        self.chart.update_labels()
+        # Add the chartView to the central_VR_layout
+        self.central_VR_Layout.addWidget(self.chartView)
+
+    def previous_month_chart(self):
         """
         Generates a new piechart of the previous month and updates the
         variable self.selected_datetime
@@ -126,9 +150,9 @@ class OperationScreen(QMainWindow):
         self.chart.clear_slices()
         cur_date = self.selected_datetime.day
         self.selected_datetime = self.selected_datetime - timedelta(days=cur_date)
-        title_type = self.chart_type.title()
-        title_month = self.selected_datetime.strftime(format="%B %Y").title()
-        title = f"{title_type} {title_month}"
+        title_type = self.chart_type
+        title_month = self.selected_datetime.strftime(format="%B %Y")
+        title = self._chart_title_formatter(title_type, title_month)
         self.chart.setTitle(title)
         # self.chart.setTitle(self.selected_datetime.strftime(format="%B %Y").title())
         data_inner, data_outer = self.chart.load_data(
@@ -144,32 +168,7 @@ class OperationScreen(QMainWindow):
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
 
-    def current_month(self):
-        """
-        Generates a new piechart of the current month and updates the variable
-        self.selected_datetime
-        """
-        self.selected_datetime = self.curr_datetime
-        raw_data = analysis.DataAnalyzer()
-        self.chart.clear_slices()
-        title_type = self.chart_type.title()
-        title_month = self.curr_datetime.strftime(format="%B %Y").title()
-        title = f"{title_type} {title_month}"
-        self.chart.setTitle(title)
-        data_inner, data_outer = self.chart.load_data(
-            raw_data,
-            mode="monthly",
-            month=self.curr_datetime.month,
-            year=self.curr_datetime.year,
-            curr="ARS",
-            type=self.chart_type,
-        )
-        self.chart.add_slices(data_inner, data_outer)
-        self.chart.update_labels()
-        # Add the chartView to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chartView)
-
-    def next_month(self):
+    def next_month_chart(self):
         """
         Generates a new piechart of the next month and updates the
         variable self.selected_datetime
@@ -181,9 +180,9 @@ class OperationScreen(QMainWindow):
         self.selected_datetime = self.selected_datetime - timedelta(days=cur_date - 1)
         # sums 35 days to make sure to get next month
         self.selected_datetime = self.selected_datetime + timedelta(days=32)
-        title_type = self.chart_type.title()
-        title_month = self.selected_datetime.strftime(format="%B %Y").title()
-        title = f"{title_type} {title_month}"
+        title_type = self.chart_type
+        title_month = self.selected_datetime.strftime(format="%B %Y")
+        title = self._chart_title_formatter(title_type, title_month)
         self.chart.setTitle(title)
         data_inner, data_outer = self.chart.load_data(
             raw_data,
@@ -213,9 +212,9 @@ class OperationScreen(QMainWindow):
         else:
             time = self.selected_datetime
 
-        title_type = self.chart_type.title()
-        title_month = time.strftime(format="%B %Y").title()
-        title = f"{title_type} {title_month}"
+        title_type = self.chart_type
+        title_month = time.strftime(format="%B %Y")
+        title = self._chart_title_formatter(title_type, title_month)
         self.chart.setTitle(title)
         data_inner, data_outer = self.chart.load_data(
             raw_data,
