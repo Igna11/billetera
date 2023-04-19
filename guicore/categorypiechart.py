@@ -6,9 +6,7 @@ created on 06/04/2023
 from datetime import datetime
 import pandas as pd
 
-from PyQt5 import QtCore, QtChart
-from PyQt5.QtGui import QBrush, QColor
-
+from PyQt5 import QtChart
 
 class CategoricalPieChart(QtChart.QChart):
     """
@@ -21,10 +19,6 @@ class CategoricalPieChart(QtChart.QChart):
 
     def __init__(self, parent=None) -> None:
         super(CategoricalPieChart, self).__init__(parent)
-
-        # text_item = QGraphicsTextItem("Custom Text")
-        # text_item.setPos(250, 150)
-        # text_item.setFont(QFont("Arial", 16, QFont.Bold))
 
         self.month = datetime.now().month
         self.year = datetime.now().year
@@ -39,14 +33,10 @@ class CategoricalPieChart(QtChart.QChart):
         self.addSeries(self.series_outer)
         self.addSeries(self.series_inner)
 
-        # Create a QChart and set the series on it
-        self.setBackgroundBrush(QBrush(QColor(0, 0, 0, 0)))
-        # self.setBackgroundBrush(QBrush(QColor("salmon")))
         self.legend().hide()
-        self.setMargins(QtCore.QMargins(0, 0, 0, 0))
         self.setAnimationOptions(QtChart.QChart.SeriesAnimations)
 
-        self.setBackgroundRoundness(100)
+        self.setBackgroundRoundness(20)
 
     def load_data(
         self,
@@ -134,9 +124,9 @@ class CategoricalPieChart(QtChart.QChart):
             label = (
                 f"<p align='center' style='color:black'>{slice_lbl}<br><b>${slice_val:.2f}</b></p>"
             )
-            if pie_slice.percentage() > 0.03:
+            if pie_slice.percentage() > 0.05:
                 pie_slice.setLabelVisible()
-            elif pie_slice.percentage() <= 0.03:
+            elif pie_slice.percentage() <= 0.05:
                 pie_slice.hovered.connect(
                     lambda is_hovered, slice_=pie_slice: slice_.setLabelVisible(is_hovered)
                 )

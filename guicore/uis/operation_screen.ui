@@ -444,7 +444,22 @@ QPushButton:disabled {
             </layout>
            </item>
            <item>
-            <layout class="QVBoxLayout" name="central_VR_Layout"/>
+            <layout class="QVBoxLayout" name="central_VR_Layout">
+             <item>
+              <widget class="QFrame" name="frame">
+               <property name="styleSheet">
+                <string notr="true">QWidget#frame{
+background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, stop:0.132159 rgba(156, 178, 178, 255), stop:1 rgba(255, 255, 255, 255))}</string>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::StyledPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Raised</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </item>

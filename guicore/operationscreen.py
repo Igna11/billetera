@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QPainter
 from PyQt5.QtChart import QChartView
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QGraphicsTextItem
 
 from guicore import users_gui
 from guicore import loginscreen
@@ -33,7 +33,7 @@ class OperationScreen(QMainWindow):
     Operation screen
     """
 
-    def __init__(self, parent=None, widget=None):
+    def __init__(self, parent=None, widget=None) -> None:
         super(OperationScreen, self).__init__(parent)
         operation_screen = os.path.join(GUI_PATH, "operation_screen.ui")
         loadUi(operation_screen, self)
@@ -49,11 +49,16 @@ class OperationScreen(QMainWindow):
         self.create_new_account_button.clicked.connect(self.create_account)
 
         self.back_button.clicked.connect(self.back)
+
         self.switch_type_button.clicked.connect(self.switch_chart_type)
+
         self.previous_month_button.clicked.connect(self.previous_month_chart)
+
         self.next_month_button.clicked.connect(self.next_month_chart)
+
         self.reset_month_button.clicked.connect(self.current_month_chart)
 
+        self.text_item = QGraphicsTextItem("0")
         self.chart = categorypiechart.CategoricalPieChart()
         self.chartView = QChartView(self.chart)
         self.current_month_chart()
@@ -69,7 +74,7 @@ class OperationScreen(QMainWindow):
             self.transfer_button.setEnabled(False)
             self.readjustment_button.setEnabled(False)
 
-    def pre_income(self):
+    def pre_income(self) -> None:
         """Takes the user to the income/expense screen and sets the flag operation to income"""
         self.operation = "income"
         operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
@@ -78,7 +83,7 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(operation_inputs)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def pre_expense(self):
+    def pre_expense(self) -> None:
         """Takes the user to the income/expense screen and sets the flag operation to expense"""
         self.operation = "expense"
         operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
@@ -87,36 +92,45 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(operation_inputs)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def pre_transfer(self):
+    def pre_transfer(self) -> None:
         """Takes the user to the transfer screen and sets the flag operation to transfer"""
         self.operation = "transfer"
         operation_inputs = transferscreen.TransferScreen(self.operation, widget=self.widget)
         self.widget.addWidget(operation_inputs)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def pre_readjustment(self):
+    def pre_readjustment(self) -> None:
         """Takes the user to the readjustment screen and sets the flag operation to readjustment"""
         self.operation = "readjustment"
         operation_inputs = readjustmentscreen.ReadjustmentScreen(self.operation, widget=self.widget)
         self.widget.addWidget(operation_inputs)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def create_account(self):
+    def create_account(self) -> None:
         """Takes the user to the CreateAccount screen"""
         create_account_window = createaccountscreen.CreateAccount(widget=self.widget)
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def _chart_title_formatter(self, type: str, month: str) -> str:
+    def _chart_title_formatter(self, title_type: str, title_month: str) -> str:
         """
         Formats the given string to make it a title for the Chart.
         """
-        type = type.title()
-        month = month.title()
-        title = f"<h2><p align='center' style='color:black'><b>{type}:<br>{month}</b></p>"
+        month = self.selected_datetime.month
+        year = self.selected_datetime.year
+        raw_data = analysis.DataAnalyzer()
+        raw_data.get_data_per_currency("ARS")
+        if self.chart_type == "expenses":
+            total = raw_data.get_month_expenses_by_category(month, year).sum()
+        elif self.chart_type == "incomes":
+            total = raw_data.get_month_incomes_by_category(month, year).sum()
+        title_type = title_type.title()
+        title_month = title_month.title()
+        total = str(round(total,2)).replace(".","<sup>") + "</sup>"
+        title = f"<h3><p align='center' style='color:black'><b>{title_type}: ${total}<br>{title_month}</b></p>"
         return title
 
-    def current_month_chart(self):
+    def current_month_chart(self) -> None:
         """
         Generates a new piechart of the current month and updates the variable
         self.selected_datetime
@@ -141,7 +155,7 @@ class OperationScreen(QMainWindow):
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
 
-    def previous_month_chart(self):
+    def previous_month_chart(self) -> None:
         """
         Generates a new piechart of the previous month and updates the
         variable self.selected_datetime
@@ -168,7 +182,7 @@ class OperationScreen(QMainWindow):
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
 
-    def next_month_chart(self):
+    def next_month_chart(self) -> None:
         """
         Generates a new piechart of the next month and updates the
         variable self.selected_datetime
@@ -197,7 +211,7 @@ class OperationScreen(QMainWindow):
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
 
-    def switch_chart_type(self):
+    def switch_chart_type(self) -> None:
         """
         Changes the chart type to switch between incomes and expenses
         """
