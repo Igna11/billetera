@@ -39,11 +39,22 @@ class IncomeExpenseScreen(QMainWindow):
         self.acc_items_list = account.AccountParser().get_acc_pretty_names()
         self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
 
+        self.set_oepration_label(operation_flag)
         self.accounts_comboBox.addItems(self.acc_items_list)
         self.set_acc_data(self.accounts_comboBox.currentIndex())
         self.accounts_comboBox.currentIndexChanged.connect(self.set_acc_data)
         self.save_button.clicked.connect(self.save)
         self.cancel_button.clicked.connect(self.cancel)
+
+    def set_oepration_label(self, operation_flag) -> None:
+        """
+        Sets the label of the operation to let know the user
+        if it is an income or an expense
+        """
+        if operation_flag == "income":
+            self.operation_label.setText("<font color='green'><b>INCOME</b></font>")
+        elif operation_flag == "expense":
+            self.operation_label.setText("<font color='orange'><b>EXPENSE</b></font>")
 
     def set_acc_data(self, i: int) -> None:
         """Sets the values of acc_name, acc_currency and the value of total label."""

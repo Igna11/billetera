@@ -19,6 +19,7 @@ from guicore import readjustmentscreen
 from guicore import transferscreen
 from guicore import createaccountscreen
 from guicore import categorypiechart
+from guicore import calendardialog
 from source import account_core as acc
 from source import analysis
 
@@ -49,6 +50,8 @@ class OperationScreen(QMainWindow):
         self.create_new_account_button.clicked.connect(self.create_account)
 
         self.back_button.clicked.connect(self.back)
+
+        self.custom_period_button.clicked.connect(self.custom_date_range)
 
         self.switch_type_button.clicked.connect(self.switch_chart_type)
 
@@ -112,6 +115,11 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
+    def custom_date_range(self) -> None:
+        print("custom button")
+        calendar_dialog = calendardialog.Calendar()
+        self.Central_HLayout.addWidget(calendar_dialog)
+
     def _chart_title_formatter(self, title_type: str, title_month: str) -> str:
         """
         Formats the given string to make it a title for the Chart.
@@ -126,7 +134,7 @@ class OperationScreen(QMainWindow):
             total = raw_data.get_month_incomes_by_category(month, year).sum()
         title_type = title_type.title()
         title_month = title_month.title()
-        total = str(round(total,2)).replace(".","<sup>") + "</sup>"
+        total = str(round(total, 2)).replace(".", "<sup>") + "</sup>"
         title = f"<h3><p align='center' style='color:black'><b>{title_type}: ${total}<br>{title_month}</b></p>"
         return title
 

@@ -8,6 +8,7 @@ import pandas as pd
 
 from PyQt5 import QtChart
 
+
 class CategoricalPieChart(QtChart.QChart):
     """
     class to create pie charts with expenses and incomes with slices for categories
