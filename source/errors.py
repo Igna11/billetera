@@ -165,3 +165,10 @@ class SameAccountTransferError(Exception):
 
     def __str__(self):
         return "Transfer with same origin and destination account can't be processed."
+
+
+class UserHasNotAccountsError(Exception):
+    """Raised when DataAnalyzer class try to parse an user with no accounts"""
+
+    def __str__(self):
+        return "User has no accounts yet to gather data to analyze."

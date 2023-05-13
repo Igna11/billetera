@@ -5,7 +5,6 @@ created on 05/02/2023
 """
 
 import sys
-import os
 
 from guicore import welcomescreen
 from PyQt5.QtWidgets import QApplication, QStackedWidget

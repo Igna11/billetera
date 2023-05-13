@@ -22,6 +22,7 @@ from guicore import categorypiechart
 from guicore import calendardialog
 from source import account_core as acc
 from source import analysis
+from source import errors
 
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -117,8 +118,9 @@ class OperationScreen(QMainWindow):
 
     def custom_date_range(self) -> None:
         print("custom button")
-        calendar_dialog = calendardialog.Calendar()
-        self.Central_HLayout.addWidget(calendar_dialog)
+        calendar_dialog = calendardialog.CalendarDialog()
+        calendar_dialog.exec_()
+        self.widget.addWidget(calendar_dialog)
 
     def _chart_title_formatter(self, title_type: str, title_month: str) -> str:
         """
@@ -126,8 +128,12 @@ class OperationScreen(QMainWindow):
         """
         month = self.selected_datetime.month
         year = self.selected_datetime.year
-        raw_data = analysis.DataAnalyzer()
-        raw_data.get_data_per_currency("ARS")
+        try:
+            raw_data = analysis.DataAnalyzer()
+            raw_data.get_data_per_currency("ARS")
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
         if self.chart_type == "expenses":
             total = raw_data.get_month_expenses_by_category(month, year).sum()
         elif self.chart_type == "incomes":
@@ -144,7 +150,11 @@ class OperationScreen(QMainWindow):
         self.selected_datetime
         """
         self.selected_datetime = self.curr_datetime
-        raw_data = analysis.DataAnalyzer()
+        try:
+            raw_data = analysis.DataAnalyzer()
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
         self.chart.clear_slices()
         title_type = self.chart_type
         title_month = self.curr_datetime.strftime(format="%B %Y")
@@ -168,7 +178,11 @@ class OperationScreen(QMainWindow):
         Generates a new piechart of the previous month and updates the
         variable self.selected_datetime
         """
-        raw_data = analysis.DataAnalyzer()
+        try:
+            raw_data = analysis.DataAnalyzer()
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
         self.chart.clear_slices()
         cur_date = self.selected_datetime.day
         self.selected_datetime = self.selected_datetime - timedelta(days=cur_date)
@@ -195,7 +209,11 @@ class OperationScreen(QMainWindow):
         Generates a new piechart of the next month and updates the
         variable self.selected_datetime
         """
-        raw_data = analysis.DataAnalyzer()
+        try:
+            raw_data = analysis.DataAnalyzer()
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
         self.chart.clear_slices()
         cur_date = self.selected_datetime.day
         # sets the first day of the mont
@@ -223,7 +241,11 @@ class OperationScreen(QMainWindow):
         """
         Changes the chart type to switch between incomes and expenses
         """
-        raw_data = analysis.DataAnalyzer()
+        try:
+            raw_data = analysis.DataAnalyzer()
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
         self.chart.clear_slices()
         if self.chart_type == "expenses":
             self.chart_type = "incomes"

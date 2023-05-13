@@ -22,6 +22,8 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from source import errors
+
 
 def account_data(acc_name: str, acc_currency: str) -> pd.DataFrame:
     """
@@ -258,6 +260,8 @@ class DataAnalyzer:
     def __init__(self):
         """Get the list of accounts and its currencies"""
         self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
+        if not self.acc_list:
+            raise errors.UserHasNotAccountsError
         self.acc_currencies = set(
             acc.strip(".txt")[-3:] for acc in self.acc_list
         )
