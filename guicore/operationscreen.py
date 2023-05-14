@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QPainter
 from PyQt5.QtChart import QChartView
-from PyQt5.QtWidgets import QMainWindow, QGraphicsTextItem
+from PyQt5.QtWidgets import QPushButton, QMainWindow, QGraphicsTextItem
 
 from guicore import users_gui
 from guicore import loginscreen
@@ -44,6 +44,8 @@ class OperationScreen(QMainWindow):
         self.chart_type = "expenses"
         self.curr_datetime = datetime.now()
         self.selected_datetime = self.curr_datetime
+        self.custom_initial_date = None
+        self.custom_final_date = None
         self.income_button.clicked.connect(self.pre_income)
         self.expense_button.clicked.connect(self.pre_expense)
         self.transfer_button.clicked.connect(self.pre_transfer)
@@ -115,12 +117,6 @@ class OperationScreen(QMainWindow):
         create_account_window = createaccountscreen.CreateAccount(widget=self.widget)
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
-
-    def custom_date_range(self) -> None:
-        print("custom button")
-        calendar_dialog = calendardialog.CalendarDialog()
-        calendar_dialog.exec_()
-        self.widget.addWidget(calendar_dialog)
 
     def _chart_title_formatter(self, title_type: str, title_month: str) -> str:
         """
@@ -218,7 +214,7 @@ class OperationScreen(QMainWindow):
         cur_date = self.selected_datetime.day
         # sets the first day of the mont
         self.selected_datetime = self.selected_datetime - timedelta(days=cur_date - 1)
-        # sums 35 days to make sure to get next month
+        # sums 32 days to make sure to get next month
         self.selected_datetime = self.selected_datetime + timedelta(days=32)
         title_type = self.chart_type
         title_month = self.selected_datetime.strftime(format="%B %Y")
@@ -236,6 +232,35 @@ class OperationScreen(QMainWindow):
         self.chart.update_labels()
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
+
+    def custom_date_range(self) -> None:
+        calendar_dialog = calendardialog.CalendarDialog()
+        ok_button = QPushButton("Ok")
+        calendar_dialog.layout.addWidget(ok_button)
+        ok_button.clicked.connect(calendar_dialog.get_date_range)
+        calendar_dialog.exec_()
+        self.widget.addWidget(calendar_dialog)
+        self.custom_initial_date = str(calendar_dialog.initial_d)
+        self.custom_final_date = str(calendar_dialog.final_d)
+        print("initial:",self.custom_initial_date, "final:", self.custom_final_date)
+        print("type initial:", type(self.custom_initial_date), "type final:", type(self.custom_final_date))
+        try:
+            raw_data = analysis.DataAnalyzer()
+            raw_data.get_data_per_currency("ARS")
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
+        self.chart.clear_slices()
+        data_inner, data_outer = self.chart.load_data(
+            raw_data,
+            mode="period",
+            initial=self.custom_initial_date,
+            final=self.custom_final_date,
+            type=self.chart_type,
+        )
+        self.chart.add_slices(data_inner, data_outer)
+        self.chart.update_labels()
+
 
     def switch_chart_type(self) -> None:
         """
