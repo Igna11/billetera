@@ -41,6 +41,7 @@ class OperationScreen(QMainWindow):
         loadUi(operation_screen, self)
         self.widget = widget
         self.operation = None
+        self.chart_mode = "monthly"
         self.chart_type = "expenses"
         self.curr_datetime = datetime.now()
         self.selected_datetime = self.curr_datetime
@@ -168,6 +169,8 @@ class OperationScreen(QMainWindow):
         self.chart.update_labels()
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
+        # reset the chart mode in case the period mode was activated
+        self.chart_mode = "monthly"
 
     def previous_month_chart(self) -> None:
         """
@@ -199,6 +202,8 @@ class OperationScreen(QMainWindow):
         self.chart.update_labels()
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
+        # reset the chart mode in case the period mode was activated
+        self.chart_mode = "monthly"
 
     def next_month_chart(self) -> None:
         """
@@ -232,8 +237,13 @@ class OperationScreen(QMainWindow):
         self.chart.update_labels()
         # Add the chartView to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chartView)
+        # reset the chart mode in case the period mode was activated
+        self.chart_mode = "monthly"
 
     def custom_date_range(self) -> None:
+        """
+        Generates a new piechart of the period of time selected in the calendar
+        """
         calendar_dialog = calendardialog.CalendarDialog()
         ok_button = QPushButton("Ok")
         calendar_dialog.layout.addWidget(ok_button)
@@ -242,8 +252,6 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(calendar_dialog)
         self.custom_initial_date = str(calendar_dialog.initial_d)
         self.custom_final_date = str(calendar_dialog.final_d)
-        print("initial:",self.custom_initial_date, "final:", self.custom_final_date)
-        print("type initial:", type(self.custom_initial_date), "type final:", type(self.custom_final_date))
         try:
             raw_data = analysis.DataAnalyzer()
             raw_data.get_data_per_currency("ARS")
@@ -260,6 +268,9 @@ class OperationScreen(QMainWindow):
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
+        self.central_VR_Layout.addWidget(self.chartView)
+        # set the chart mode to period
+        self.chart_mode = "period"
 
 
     def switch_chart_type(self) -> None:
@@ -276,23 +287,33 @@ class OperationScreen(QMainWindow):
             self.chart_type = "incomes"
         elif self.chart_type == "incomes":
             self.chart_type = "expenses"
-        if self.curr_datetime == self.selected_datetime:
-            time = self.selected_datetime
-        else:
-            time = self.selected_datetime
-
+        time = self.selected_datetime
         title_type = self.chart_type
-        title_month = time.strftime(format="%B %Y")
-        title = self._chart_title_formatter(title_type, title_month)
-        self.chart.setTitle(title)
-        data_inner, data_outer = self.chart.load_data(
-            raw_data,
-            mode="monthly",
-            month=time.month,
-            year=time.year,
-            curr="ARS",
-            type=self.chart_type,
-        )
+        print(self.chart_mode)
+        if self.chart_mode == "monthly":
+            title_month = time.strftime(format="%B %Y")
+            title = self._chart_title_formatter(title_type, title_month)
+            self.chart.setTitle(title)
+            data_inner, data_outer = self.chart.load_data(
+                raw_data,
+                mode=self.chart_mode,
+                month=time.month,
+                year=time.year,
+                curr="ARS",
+                type=self.chart_type,
+            )
+        elif self.chart_mode == "period":
+            title_period = f"Period: {self.custom_initial_date} -- {self.custom_final_date}"
+            title = self._chart_title_formatter(title_type, title_period)
+            self.chart.setTitle(title)
+            data_inner, data_outer = self.chart.load_data(
+                raw_data,
+                mode=self.chart_mode,
+                initial=self.custom_initial_date,
+                final=self.custom_final_date,
+                curr="ARS",
+                type=self.chart_type,
+            )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
         # Add the chartView to the central_VR_layout
