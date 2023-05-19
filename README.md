@@ -23,7 +23,16 @@ BilleteraAPP
         |__ passwords.sql
     |__ guicore
 	|__ uis
-	|__
+	|__ accounts_gui.py
+	|__ calendardialog.py
+	|__ categorypiechart.py
+	|__ confirmation_dialog.py
+	|__ createaccountscreen.py
+	|__ createuserscreen.py
+	|__ deleteuserscreen.py
+	|__ incomeexpensescreen.py
+	|__ loginscreen.py
+	|__ operationscreen.py
     |__ tests
         |__ tests_accounts_core.py
         |__ tests_accounts_users.py
