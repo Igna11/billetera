@@ -21,6 +21,9 @@ BilleteraAPP
     |__ data
         |__ userUSR
         |__ passwords.sql
+    |__ guicore
+	|__ uis
+	|__
     |__ tests
         |__ tests_accounts_core.py
         |__ tests_accounts_users.py
