@@ -242,7 +242,10 @@ class OperationScreen(QMainWindow):
 
     def custom_date_range(self) -> None:
         """
-        Generates a new piechart of the period of time selected in the calendar
+        Generates a new piechart of the period of time selected in the calendar.
+        First it opens up a calendar widget to select the 2 dates that conform the
+        desired period of time. Then uses it to gather the information needed for
+        the pie chart.
         """
         calendar_dialog = calendardialog.CalendarDialog()
         ok_button = QPushButton("Ok")
@@ -250,28 +253,28 @@ class OperationScreen(QMainWindow):
         ok_button.clicked.connect(calendar_dialog.get_date_range)
         calendar_dialog.exec_()
         self.widget.addWidget(calendar_dialog)
-        self.custom_initial_date = str(calendar_dialog.initial_d)
-        self.custom_final_date = str(calendar_dialog.final_d)
-        try:
-            raw_data = analysis.DataAnalyzer()
-            raw_data.get_data_per_currency("ARS")
-        except errors.UserHasNotAccountsError:
-            print("No data to display")
-            return 0
-        self.chart.clear_slices()
-        data_inner, data_outer = self.chart.load_data(
-            raw_data,
-            mode="period",
-            initial=self.custom_initial_date,
-            final=self.custom_final_date,
-            type=self.chart_type,
-        )
-        self.chart.add_slices(data_inner, data_outer)
-        self.chart.update_labels()
-        self.central_VR_Layout.addWidget(self.chartView)
-        # set the chart mode to period
-        self.chart_mode = "period"
-
+        if self.custom_initial_date and self.custom_final_date:
+            self.custom_initial_date = str(calendar_dialog.initial_d)
+            self.custom_final_date = str(calendar_dialog.final_d)
+            try:
+                raw_data = analysis.DataAnalyzer()
+                raw_data.get_data_per_currency("ARS")
+                self.chart.clear_slices()
+                data_inner, data_outer = self.chart.load_data(
+                    raw_data,
+                    mode="period",
+                    initial=self.custom_initial_date,
+                    final=self.custom_final_date,
+                    type=self.chart_type,
+                )
+                self.chart.add_slices(data_inner, data_outer)
+                self.chart.update_labels()
+                self.central_VR_Layout.addWidget(self.chartView)
+                # set the chart mode to period
+                self.chart_mode = "period"
+            except errors.UserHasNotAccountsError:
+                print("No data to display")
+                return 0
 
     def switch_chart_type(self) -> None:
         """

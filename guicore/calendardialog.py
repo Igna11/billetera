@@ -7,6 +7,7 @@ created on 08/02/2023
 from PyQt5.QtWidgets import QDialog, QCalendarWidget, QVBoxLayout, QApplication, QPushButton
 from PyQt5.QtGui import QPalette, QTextCharFormat
 from PyQt5.QtCore import Qt
+from PyQt5 import QtCore
 
 
 class Calendar(QCalendarWidget):
@@ -60,11 +61,6 @@ class CalendarDialog(QDialog):
         self.calendar = Calendar()
         self.layout.addWidget(self.calendar)
 
-        # self.ok_button = QPushButton("Ok")
-        # layout.addWidget(self.ok_button)
-
-        # self.ok_button.clicked.connect(self.get_date_range)
-
     def get_date_range(self):
         if self.calendar.initial_date and self.calendar.final_date:
             self.initial_d = min(
@@ -73,4 +69,3 @@ class CalendarDialog(QDialog):
             self.final_d = max(
                 self.calendar.initial_date.toPyDate(), self.calendar.final_date.toPyDate()
             )
-            # print(self.initial_d, self.final_d)
