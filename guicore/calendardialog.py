@@ -7,7 +7,6 @@ created on 08/02/2023
 from PyQt5.QtWidgets import QDialog, QCalendarWidget, QVBoxLayout, QApplication, QPushButton
 from PyQt5.QtGui import QPalette, QTextCharFormat
 from PyQt5.QtCore import Qt
-from PyQt5 import QtCore
 
 
 class Calendar(QCalendarWidget):
