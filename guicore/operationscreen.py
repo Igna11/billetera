@@ -47,24 +47,19 @@ class OperationScreen(QMainWindow):
         self.selected_datetime = self.curr_datetime
         self.custom_initial_date = None
         self.custom_final_date = None
+        # Buttons
         self.income_button.clicked.connect(self.pre_income)
         self.expense_button.clicked.connect(self.pre_expense)
         self.transfer_button.clicked.connect(self.pre_transfer)
         self.readjustment_button.clicked.connect(self.pre_readjustment)
         self.create_new_account_button.clicked.connect(self.create_account)
-
         self.back_button.clicked.connect(self.back)
-
         self.custom_period_button.clicked.connect(self.custom_date_range)
-
         self.switch_type_button.clicked.connect(self.switch_chart_type)
-
         self.previous_month_button.clicked.connect(self.previous_month_chart)
-
         self.next_month_button.clicked.connect(self.next_month_chart)
-
         self.reset_month_button.clicked.connect(self.current_month_chart)
-
+        # Modifiers
         self.text_item = QGraphicsTextItem("0")
         self.chart = categorypiechart.CategoricalPieChart()
         self.chartView = QChartView(self.chart)
@@ -252,7 +247,8 @@ class OperationScreen(QMainWindow):
         calendar_dialog.layout.addWidget(ok_button)
         ok_button.clicked.connect(calendar_dialog.get_date_range)
         calendar_dialog.exec_()
-        self.widget.addWidget(calendar_dialog)
+        self.custom_initial_date = calendar_dialog.initial_d
+        self.custom_final_date = calendar_dialog.final_d
         if self.custom_initial_date and self.custom_final_date:
             self.custom_initial_date = str(calendar_dialog.initial_d)
             self.custom_final_date = str(calendar_dialog.final_d)
