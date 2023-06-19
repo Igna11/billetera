@@ -4,9 +4,11 @@
 created on 06/04/2023
 """
 from datetime import datetime
-import pandas as pd
 
+import pandas as pd
 from PyQt5 import QtChart
+
+from source import errors
 
 
 class CategoricalPieChart(QtChart.QChart):
@@ -42,35 +44,34 @@ class CategoricalPieChart(QtChart.QChart):
     def load_data(
         self,
         raw_data: pd.DataFrame,
-        mode: str,
-        month: int = None,
-        year: int = None,
+        chart_mode: str,
+        time_period_object: datetime,
         curr: str = "ARS",
-        type: str = "expenses",
-        initial: datetime = None,
-        final: datetime = None,
+        chart_type: str = "expenses",
     ) -> tuple:
         """
         Loads the raw data in the given currency and for the given filters
         in order to create the desired piechart
         """
-        if not month:
-            month = self.month
-        if not year:
-            year = self.year
         raw_data.get_data_per_currency(curr)
-        if mode == "monthly" and type == "expenses":
-            data_outer = raw_data.get_month_expenses_by_category(month, year)
-            data_inner = raw_data.get_month_expenses_by_subcategory(month, year)
-        elif mode == "monthly" and type == "incomes":
-            data_outer = raw_data.get_month_incomes_by_category(month, year)
-            data_inner = raw_data.get_month_incomes_by_subcategory(month, year)
-        elif mode == "period" and type == "expenses":
-            data_outer = raw_data.get_period_expenses_by_category(initial, final)
-            data_inner = raw_data.get_period_expenses_by_subcategory(initial, final)
-        elif mode == "period" and type == "incomes":
-            data_outer = raw_data.get_period_incomes_by_category(initial, final)
-            data_inner = raw_data.get_period_incomes_by_subcategory(initial, final)
+        if chart_mode == "monthly":
+            month = time_period_object.month
+            year = time_period_object.year
+            if chart_type == "expenses":
+                data_outer = raw_data.get_month_expenses_by_category(month, year)
+                data_inner = raw_data.get_month_expenses_by_subcategory(month, year)
+            elif chart_type == "incomes":
+                data_outer = raw_data.get_month_incomes_by_category(month, year)
+                data_inner = raw_data.get_month_incomes_by_subcategory(month, year)
+        elif chart_mode == "period":
+            initial = time_period_object.initial
+            final = time_period_object.final
+            if chart_type == "expenses":
+                data_outer = raw_data.get_period_expenses_by_category(initial, final)
+                data_inner = raw_data.get_period_expenses_by_subcategory(initial, final)
+            elif chart_type == "incomes":
+                data_outer = raw_data.get_period_incomes_by_category(initial, final)
+                data_inner = raw_data.get_period_incomes_by_subcategory(initial, final)
         else:
             raise ValueError("Valid modes: 'expenses', 'incomes'. Valid types: 'monthly', 'period'")
         return data_inner, data_outer
@@ -132,3 +133,43 @@ class CategoricalPieChart(QtChart.QChart):
                     lambda is_hovered, slice_=pie_slice: slice_.setLabelVisible(is_hovered)
                 )
             pie_slice.setLabel(label)
+
+    def update_title(
+        self,
+        raw_data: pd.DataFrame,
+        chart_mode: str,
+        chart_type: str,
+        time_period_object,
+        ci_date=None,
+        cf_date=None,
+    ) -> str:
+        """
+        Creates the format for the title of the chart and updates it every time a chart
+        is instantiated.
+        chart_mode: monthly or period
+        chart_type: incomes or expenses
+        title_type
+        """
+        try:
+            raw_data.get_data_per_currency("ARS")
+        except errors.UserHasNotAccountsError:
+            print("No data to display")
+            return 0
+        if chart_mode == "monthly":
+            selected_period = time_period_object.strftime(format="%B %Y").capitalize()
+            month = time_period_object.month
+            year = time_period_object.year
+            if chart_type == "expenses":
+                total = raw_data.get_month_expenses_by_category(month, year).sum()
+            elif chart_type == "incomes":
+                total = raw_data.get_month_incomes_by_category(month, year).sum()
+        elif chart_mode == "period":
+            # title_period = f"Period: {self.custom_initial_date} -- {self.custom_final_date}"
+            if chart_type == "expenses":
+                total = raw_data.get_period_expenses_by_category(ci_date, cf_date).sum()
+            elif chart_type == "incomes":
+                total = raw_data.get_period_incomes_by_category(ci_date, cf_date).sum()
+        title_type = chart_type.capitalize()
+        total = str(round(total, 2)).replace(".", "<sup>") + "</sup>"
+        title = f"<h3><p align='center' style='color:black'><b>{title_type}: ${total}<br>{selected_period}</b></p>"
+        self.setTitle(title)

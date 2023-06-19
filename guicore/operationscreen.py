@@ -114,28 +114,6 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def _chart_title_formatter(self, title_type: str, title_month: str) -> str:
-        """
-        Formats the given string to make it a title for the Chart.
-        """
-        month = self.selected_datetime.month
-        year = self.selected_datetime.year
-        try:
-            raw_data = analysis.DataAnalyzer()
-            raw_data.get_data_per_currency("ARS")
-        except errors.UserHasNotAccountsError:
-            print("No data to display")
-            return 0
-        if self.chart_type == "expenses":
-            total = raw_data.get_month_expenses_by_category(month, year).sum()
-        elif self.chart_type == "incomes":
-            total = raw_data.get_month_incomes_by_category(month, year).sum()
-        title_type = title_type.title()
-        title_month = title_month.title()
-        total = str(round(total, 2)).replace(".", "<sup>") + "</sup>"
-        title = f"<h3><p align='center' style='color:black'><b>{title_type}: ${total}<br>{title_month}</b></p>"
-        return title
-
     def current_month_chart(self) -> None:
         """
         Generates a new piechart of the current month and updates the variable
@@ -148,17 +126,18 @@ class OperationScreen(QMainWindow):
             print("No data to display")
             return 0
         self.chart.clear_slices()
-        title_type = self.chart_type
-        title_month = self.curr_datetime.strftime(format="%B %Y")
-        title = self._chart_title_formatter(title_type, title_month)
-        self.chart.setTitle(title)
+        self.chart.update_title(
+            raw_data,
+            chart_mode="monthly",
+            chart_type=self.chart_type,
+            time_period_object=self.curr_datetime,
+        )
         data_inner, data_outer = self.chart.load_data(
             raw_data,
-            mode="monthly",
-            month=self.curr_datetime.month,
-            year=self.curr_datetime.year,
+            chart_mode="monthly",
+            time_period_object=self.curr_datetime,
             curr="ARS",
-            type=self.chart_type,
+            chart_type=self.chart_type,
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
@@ -166,6 +145,7 @@ class OperationScreen(QMainWindow):
         self.central_VR_Layout.addWidget(self.chartView)
         # reset the chart mode in case the period mode was activated
         self.chart_mode = "monthly"
+        print(raw_data.__sizeof__())
 
     def previous_month_chart(self) -> None:
         """
@@ -180,18 +160,18 @@ class OperationScreen(QMainWindow):
         self.chart.clear_slices()
         cur_date = self.selected_datetime.day
         self.selected_datetime = self.selected_datetime - timedelta(days=cur_date)
-        title_type = self.chart_type
-        title_month = self.selected_datetime.strftime(format="%B %Y")
-        title = self._chart_title_formatter(title_type, title_month)
-        self.chart.setTitle(title)
-        # self.chart.setTitle(self.selected_datetime.strftime(format="%B %Y").title())
+        self.chart.update_title(
+            raw_data,
+            chart_mode="monthly",
+            chart_type=self.chart_type,
+            time_period_object=self.selected_datetime,
+        )
         data_inner, data_outer = self.chart.load_data(
             raw_data,
-            mode="monthly",
-            month=self.selected_datetime.month,
-            year=self.selected_datetime.year,
+            chart_mode="monthly",
+            time_period_object=self.selected_datetime,
             curr="ARS",
-            type=self.chart_type,
+            chart_type=self.chart_type,
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
@@ -212,21 +192,22 @@ class OperationScreen(QMainWindow):
             return 0
         self.chart.clear_slices()
         cur_date = self.selected_datetime.day
-        # sets the first day of the mont
+        # sets the first day of the month
         self.selected_datetime = self.selected_datetime - timedelta(days=cur_date - 1)
         # sums 32 days to make sure to get next month
         self.selected_datetime = self.selected_datetime + timedelta(days=32)
-        title_type = self.chart_type
-        title_month = self.selected_datetime.strftime(format="%B %Y")
-        title = self._chart_title_formatter(title_type, title_month)
-        self.chart.setTitle(title)
+        self.chart.update_title(
+            raw_data,
+            chart_mode="monthly",
+            chart_type=self.chart_type,
+            time_period_object=self.selected_datetime,
+        )
         data_inner, data_outer = self.chart.load_data(
             raw_data,
-            mode="monthly",
-            month=self.selected_datetime.month,
-            year=self.selected_datetime.year,
+            chart_mode="monthly",
+            time_period_object=self.selected_datetime,
             curr="ARS",
-            type=self.chart_type,
+            chart_type=self.chart_type,
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
@@ -250,6 +231,12 @@ class OperationScreen(QMainWindow):
         self.custom_initial_date = calendar_dialog.initial_d
         self.custom_final_date = calendar_dialog.final_d
         if self.custom_initial_date and self.custom_final_date:
+            print("inicial ", self.custom_initial_date)
+            print("final ", self.custom_final_date)
+            title_month = f"Period: {self.custom_initial_date} -- {self.custom_final_date}"
+            title_type = self.chart_type
+            title = self._chart_title_formatter(title_type, title_month)
+            self.chart.setTitle(title)
             self.custom_initial_date = str(calendar_dialog.initial_d)
             self.custom_final_date = str(calendar_dialog.final_d)
             try:
@@ -258,10 +245,10 @@ class OperationScreen(QMainWindow):
                 self.chart.clear_slices()
                 data_inner, data_outer = self.chart.load_data(
                     raw_data,
-                    mode="period",
+                    chart_mode="period",
                     initial=self.custom_initial_date,
                     final=self.custom_final_date,
-                    type=self.chart_type,
+                    chart_type=self.chart_type,
                 )
                 self.chart.add_slices(data_inner, data_outer)
                 self.chart.update_labels()
@@ -287,31 +274,25 @@ class OperationScreen(QMainWindow):
         elif self.chart_type == "incomes":
             self.chart_type = "expenses"
         time = self.selected_datetime
-        title_type = self.chart_type
         print(self.chart_mode)
         if self.chart_mode == "monthly":
-            title_month = time.strftime(format="%B %Y")
-            title = self._chart_title_formatter(title_type, title_month)
-            self.chart.setTitle(title)
+            self.chart.update_title(raw_data, chart_mode=self.chart_mode, chart_type=self.chart_type, time_period_object=time)
             data_inner, data_outer = self.chart.load_data(
                 raw_data,
-                mode=self.chart_mode,
-                month=time.month,
-                year=time.year,
+                chart_mode=self.chart_mode,
+                time_period_object=time,
                 curr="ARS",
-                type=self.chart_type,
+                chart_type=self.chart_type,
             )
         elif self.chart_mode == "period":
             title_period = f"Period: {self.custom_initial_date} -- {self.custom_final_date}"
-            title = self._chart_title_formatter(title_type, title_period)
             self.chart.setTitle(title)
             data_inner, data_outer = self.chart.load_data(
                 raw_data,
                 mode=self.chart_mode,
-                initial=self.custom_initial_date,
-                final=self.custom_final_date,
+                time_period_object=None,
                 curr="ARS",
-                type=self.chart_type,
+                chart_type=self.chart_type,
             )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
