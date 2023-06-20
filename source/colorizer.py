@@ -26,36 +26,28 @@ def color_format(text: str, color: str, style=None) -> str:
     style: str
         default: None. Bold to print bold text
     """
+    color_lookup_dict = {
+        "grey": f"{GREY}{text}{ENDC}",
+        "green": f"{GREEN}{text}{ENDC}",
+        "cyan": f"{CYAN}{text}{ENDC}",
+        "blue": f"{BLUE}{text}{ENDC}",
+        "ambar": f"{AMBAR}{text}{ENDC}",
+        "red": f"{RED}{text}{ENDC}",
+        "purple": f"{PURPLE}{text}{ENDC}",
+    }
+    color_bold_lookup_dict = {
+        "grey": f"{BOLD}{GREY}{text}{ENDC}",
+        "green": f"{BOLD}{GREEN}{text}{ENDC}",
+        "cyan": f"{BOLD}{CYAN}{text}{ENDC}",
+        "blue": f"{BOLD}{BLUE}{text}{ENDC}",
+        "ambar": f"{BOLD}{AMBAR}{text}{ENDC}",
+        "red": f"{BOLD}{RED}{text}{ENDC}",
+        "purple": f"{BOLD}{PURPLE}{text}{ENDC}",
+    }
     if style is None:
-        if color == "grey":
-            text = f"{GREY}{text}{ENDC}"
-        elif color == "green":
-            text = f"{GREEN}{text}{ENDC}"
-        elif color == "cyan":
-            text = f"{CYAN}{text}{ENDC}"
-        elif color == "blue":
-            text = f"{BLUE}{text}{ENDC}"
-        elif color == "ambar":
-            text = f"{AMBAR}{text}{ENDC}"
-        elif color == "red":
-            text = f"{RED}{text}{ENDC}"
-        elif color == "purple":
-            text = f"{PURPLE}{text}{ENDC}"
+        text = color_lookup_dict.get(color)
     elif style == "bold":
-        if color == "grey":
-            text = f"{BOLD}{GREY}{text}{ENDC}"
-        elif color == "green":
-            text = f"{BOLD}{GREEN}{text}{ENDC}"
-        elif color == "cian":
-            text = f"{BOLD}{CYAN}{text}{ENDC}"
-        elif color == "blue":
-            text = f"{BOLD}{BLUE}{text}{ENDC}"
-        elif color == "ambar":
-            text = f"{BOLD}{AMBAR}{text}{ENDC}"
-        elif color == "red":
-            text = f"{BOLD}{RED}{text}{ENDC}"
-        elif color == "purple":
-            text = f"{BOLD}{PURPLE}{text}{ENDC}"
+        text = color_bold_lookup_dict.get(color)
     return text
 
 
