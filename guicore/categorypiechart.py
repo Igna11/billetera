@@ -55,8 +55,7 @@ class CategoricalPieChart(QtChart.QChart):
         """
         raw_data.get_data_per_currency(curr)
         if chart_mode == "monthly":
-            month = time_period_object.month
-            year = time_period_object.year
+            month, year = time_period_object.month, time_period_object.year
             if chart_type == "expenses":
                 data_outer = raw_data.get_month_expenses_by_category(month, year)
                 data_inner = raw_data.get_month_expenses_by_subcategory(month, year)
@@ -64,14 +63,13 @@ class CategoricalPieChart(QtChart.QChart):
                 data_outer = raw_data.get_month_incomes_by_category(month, year)
                 data_inner = raw_data.get_month_incomes_by_subcategory(month, year)
         elif chart_mode == "period":
-            initial = time_period_object.initial
-            final = time_period_object.final
+            ci_date, cf_date = time_period_object.values()
             if chart_type == "expenses":
-                data_outer = raw_data.get_period_expenses_by_category(initial, final)
-                data_inner = raw_data.get_period_expenses_by_subcategory(initial, final)
+                data_outer = raw_data.get_period_expenses_by_category(ci_date, cf_date)
+                data_inner = raw_data.get_period_expenses_by_subcategory(ci_date, cf_date)
             elif chart_type == "incomes":
-                data_outer = raw_data.get_period_incomes_by_category(initial, final)
-                data_inner = raw_data.get_period_incomes_by_subcategory(initial, final)
+                data_outer = raw_data.get_period_incomes_by_category(ci_date, cf_date)
+                data_inner = raw_data.get_period_incomes_by_subcategory(ci_date, cf_date)
         else:
             raise ValueError("Valid modes: 'expenses', 'incomes'. Valid types: 'monthly', 'period'")
         return data_inner, data_outer
@@ -157,14 +155,14 @@ class CategoricalPieChart(QtChart.QChart):
             return 0
         if chart_mode == "monthly":
             selected_period = time_period_object.strftime(format="%B %Y").capitalize()
-            month = time_period_object.month
-            year = time_period_object.year
+            month, year = time_period_object.month, time_period_object.year
             if chart_type == "expenses":
                 total = raw_data.get_month_expenses_by_category(month, year).sum()
             elif chart_type == "incomes":
                 total = raw_data.get_month_incomes_by_category(month, year).sum()
         elif chart_mode == "period":
-            # title_period = f"Period: {self.custom_initial_date} -- {self.custom_final_date}"
+            ci_date, cf_date = time_period_object.values()
+            selected_period = f"Period: {ci_date} -- {cf_date}"
             if chart_type == "expenses":
                 total = raw_data.get_period_expenses_by_category(ci_date, cf_date).sum()
             elif chart_type == "incomes":
