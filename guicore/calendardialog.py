@@ -4,7 +4,14 @@
 created on 08/02/2023
 """
 
-from PyQt5.QtWidgets import QDialog, QCalendarWidget, QVBoxLayout, QApplication, QPushButton
+from PyQt5.QtWidgets import (
+    QDialog,
+    QCalendarWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QApplication,
+    QPushButton,
+)
 from PyQt5.QtGui import QPalette, QTextCharFormat
 from PyQt5.QtCore import Qt
 
@@ -16,8 +23,8 @@ class Calendar(QCalendarWidget):
     https://learndataanalysis.org/source-code-how-to-use-calendar-widget-to-select-a-date-range-pyqt5-tutorial/
     """
 
-    def __init__(self, parent=None):
-        super(Calendar, self).__init__(parent)
+    def __init__(self):
+        super().__init__()
         self.highlighter = QTextCharFormat()
         self.highlighter.setBackground(self.palette().brush(QPalette.Highlight))
         self.highlighter.setForeground(self.palette().color(QPalette.HighlightedText))
@@ -46,19 +53,31 @@ class Calendar(QCalendarWidget):
 
 
 class CalendarDialog(QDialog):
-    def __init__(self, parent=None):
-        super(CalendarDialog, self).__init__(parent)
-        self.calendar_width = 600
-        self.calendar_height = 400
+    def __init__(self):
+        super().__init__()
+        self.calendar_width = 500
+        self.calendar_height = 300
         self.setMinimumSize(self.calendar_width, self.calendar_height)
+
+        self.calendar = Calendar()
+
+        self.top_layout = QVBoxLayout()
+        self.top_layout.addWidget(self.calendar)
+
+        self.bottom_layout = QHBoxLayout()
+        self.select_button = QPushButton("Select")
+        self.cancel_button = QPushButton("Cancel")
+        self.bottom_layout.addWidget(self.select_button)
+        self.bottom_layout.addWidget(self.cancel_button)
+        self.select_button.clicked.connect(self.get_date_range)
+
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(self.top_layout)
+        main_layout.addLayout(self.bottom_layout)
 
         self.initial_d = None
         self.final_d = None
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self.calendar = Calendar()
-        self.layout.addWidget(self.calendar)
+        self.setLayout(main_layout)
 
     def get_date_range(self):
         if self.calendar.initial_date and self.calendar.final_date:
