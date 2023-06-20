@@ -20,7 +20,7 @@ TODO    Graficos:
         por mes, por año.
 
 TODO    Interfaz Gráfica y ejectuable:
-        09/03/2023 In progress 
+        09/03/2023 In progress
 
 TODO    Implementación de presupuestos: Una función con la cual setear el
         presupuesto máximo que se quiere gastar por y/o por categoria y
