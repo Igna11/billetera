@@ -8,35 +8,35 @@ Created on Sat Nov 19 19:00:00 2022
 
 
 class EmptyAccountError(Exception):
-    """dostring"""
+    """Raised when an operation is trying to be performed in an empty account."""
 
     def __str__(self):
         return "The operation can't be performed because the account is empty."
 
 
 class NegativeTotalError(Exception):
-    """dostring"""
+    """Raised when the result of an operation is negative."""
 
     def __str__(self):
         return "The operation can't be performed because there is not enough money in account."
 
 
 class NegativeOrZeroValueError(Exception):
-    """dostring"""
+    """Raised when the input value is negative or zero."""
 
     def __str__(self):
         return "The value provided is either zero or negative and that's not allowed."
 
 
 class NotReadjustmentError(Exception):
-    """dostrin"""
+    """Raised when the readjustment value is the same as the current value."""
 
     def __str__(self):
         return "There is nothing to readjust."
 
 
 class NotEqualCurrencyError(Exception):
-    """dostring"""
+    """Raised when a transfer is trying to be performed between accounts with different currency."""
 
     def __init__(self, origin_currency, destination_currency):
         self.origin_currency = origin_currency
@@ -49,7 +49,7 @@ class NotEqualCurrencyError(Exception):
 
 
 class AccountDoesNotExistError(Exception):
-    """dostring"""
+    """Raised when an operation is trying to be made in a not existing account."""
 
     def __init__(self, acc_name, acc_currency):
         self.acc_name = acc_name
@@ -62,7 +62,7 @@ class AccountDoesNotExistError(Exception):
 
 
 class AccountAlreadyExistsError(Exception):
-    """dostring"""
+    """Raised when an account is trying be created with the name of an existing account."""
 
     def __init__(self, acc_name, acc_currency):
         self.acc_name = acc_name
@@ -82,18 +82,18 @@ class NoConfirmationToDeleteAccountError(Exception):
         self.acc_currency = acc_currency
 
     def __str__(self):
-        return f"Account {self.acc_name}_{self.acc_currency.upper()} can not be deleted withouth confirmation."
+        return f"Account {self.acc_name}_{self.acc_currency.upper()} can't be deleted without confirmation."
 
 
 class NotOpenSessionError(Exception):
-    """dostring"""
+    """Raised when an account is trying to be created without being logged in."""
 
     def __str__(self):
         return "Can not create an account without an open session."
 
 
 class UserAlreadyExistsError(Exception):
-    """dostring"""
+    """Raised when trying to create an user with a name that already exists."""
 
     def __init__(self, user):
         self.user = user
@@ -113,7 +113,7 @@ class UserCouldNotBeDeletedError(Exception):
 
 
 class UserDoesNotExistsError(Exception):
-    """dostring"""
+    """Raised when an operation is trying to be performed in an user that does not existi."""
 
     def __init__(self, user):
         self.user = user
@@ -123,21 +123,21 @@ class UserDoesNotExistsError(Exception):
 
 
 class WrongDirectoryError(Exception):
-    """dostring"""
+    """Raised when the current working directory is no /data. This error should not be raised."""
 
     def __str__(self):
         return "Make sure you are inside '/data' directory before continuing."
 
 
 class WrongPasswordError(Exception):
-    """dostring"""
+    """Raised when the input password is wrong."""
 
     def __str__(self):
         return "Invalid password."
 
 
 class PasswdsDontMatchError(Exception):
-    """dostring"""
+    """Raised when the two input passwords does not match when creating an user."""
 
     def __str__(self):
         return "Password do not match."
@@ -145,7 +145,7 @@ class PasswdsDontMatchError(Exception):
 
 class InvalidEmailError(Exception):
     """
-    21/02/2023: Raised when an email without standard format is entered being:
+    Raised when an email without standard format is entered being:
     standard: something@other.thing
     """
 
@@ -154,7 +154,7 @@ class InvalidEmailError(Exception):
 
 
 class InvalidNameError(Exception):
-    """21/02/2023: Raised when a name is and empty string ''"""
+    """Raised when a name is and empty string ''"""
 
     def __str__(self):
         return "An empty string '' is not a valid name for account or user."
