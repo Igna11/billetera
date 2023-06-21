@@ -22,16 +22,18 @@ def currencies_values(verbose=False) -> dict:
     url_1 = "http://www.bna.com.ar/Personas"
     url_2 = "https://www.bna.com.ar/Cotizador/MonedasHistorico"
     try:
-        text_response = urlopen(url_1).read()
+        with urlopen(url_1) as main_url:
+            text_response = main_url.read()
     except URLError:
         try:
-            text_response = urlopen(url_2).read()
+            with urlopen(url_2) as back_up_url:
+                text_response = back_up_url.read()
         except URLError:
             if verbose:
                 print(
                     "There was an error with 2 different URLs. Check internet connection."
                 )
-            return
+            return 0
     bs4_object = BeautifulSoup(text_response, "html.parser")
     # cleaning of the bs4 object to form headers and body:
     header = (
