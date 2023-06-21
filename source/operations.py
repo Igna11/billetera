@@ -125,7 +125,7 @@ def income(
             f"\nDinero total {totals:.2f}\n",
         )
         set_new_balance()
-        return
+        return 0
     if test_mode:
         return new_row
 
