@@ -70,6 +70,7 @@ class CalendarDialog(QDialog):
         self.bottom_layout.addWidget(self.select_button)
         self.bottom_layout.addWidget(self.cancel_button)
         self.select_button.clicked.connect(self.get_date_range)
+        self.cancel_button.clicked.connect(self.close_on_cancel)
 
         main_layout = QVBoxLayout()
         main_layout.addLayout(self.top_layout)
@@ -87,3 +88,6 @@ class CalendarDialog(QDialog):
             self.final_d = max(
                 self.calendar.initial_date.toPyDate(), self.calendar.final_date.toPyDate()
             )
+    
+    def close_on_cancel(self):
+        self.close()
