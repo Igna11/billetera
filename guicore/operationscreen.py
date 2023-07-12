@@ -62,12 +62,12 @@ class OperationScreen(QMainWindow):
         # Modifiers
         # self.text_item = QGraphicsTextItem("0")
         self.chart = categorypiechart.CategoricalPieChart()
-        self.chartView = QChartView(self.chart)
+        self.chart_view = QChartView(self.chart)
         self.current_month_chart()
-        self.chartView.setRenderHint(QPainter.Antialiasing)
+        self.chart_view.setRenderHint(QPainter.Antialiasing)
 
-        # Add the chartView to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chartView)
+        # Add the chart_view to the central_VR_layout
+        self.central_VR_Layout.addWidget(self.chart_view)
 
         # checks if any account exists.
         if not acc.AccountParser().acc_list:
@@ -141,10 +141,11 @@ class OperationScreen(QMainWindow):
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
-        # Add the chartView to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chartView)
+        # Add the chart_view to the central_VR_layout
+        self.central_VR_Layout.addWidget(self.chart_view)
         # reset the chart mode in case the period mode was activated
         self.chart_mode = "monthly"
+        return 0
 
     def previous_month_chart(self) -> None:
         """
@@ -174,10 +175,11 @@ class OperationScreen(QMainWindow):
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
-        # Add the chartView to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chartView)
+        # Add the chart_view to the central_VR_layout
+        self.central_VR_Layout.addWidget(self.chart_view)
         # reset the chart mode in case the period mode was activated
         self.chart_mode = "monthly"
+        return 0
 
     def next_month_chart(self) -> None:
         """
@@ -210,10 +212,11 @@ class OperationScreen(QMainWindow):
         )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
-        # Add the chartView to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chartView)
+        # Add the chart_view to the central_VR_layout
+        self.central_VR_Layout.addWidget(self.chart_view)
         # reset the chart mode in case the period mode was activated
         self.chart_mode = "monthly"
+        return 0
 
     def custom_date_range(self) -> None:
         """
@@ -251,7 +254,7 @@ class OperationScreen(QMainWindow):
                 )
                 self.chart.add_slices(data_inner, data_outer)
                 self.chart.update_labels()
-                self.central_VR_Layout.addWidget(self.chartView)
+                self.central_VR_Layout.addWidget(self.chart_view)
             except errors.UserHasNotAccountsError:
                 print("No data to display")
                 return 0
@@ -302,8 +305,8 @@ class OperationScreen(QMainWindow):
             )
         self.chart.add_slices(data_inner, data_outer)
         self.chart.update_labels()
-        # Add the chartView to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chartView)
+        # Add the chart_view to the central_VR_layout
+        self.central_VR_Layout.addWidget(self.chart_view)
 
     def back(self) -> None:
         """Returns to the LoginScreen Menu"""
