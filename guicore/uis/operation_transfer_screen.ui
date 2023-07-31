@@ -22,8 +22,7 @@
     <item>
      <widget class="QWidget" name="widget" native="true">
       <property name="styleSheet">
-       <string notr="true">QWidget#widget{
-background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, stop:0.132159 rgba(156, 178, 178, 255), stop:1 rgba(255, 255, 255, 255))}</string>
+       <string notr="true"/>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout" stretch="7,7,0,1">
        <item>
@@ -292,7 +291,7 @@ border-radius:5px;
      <x>0</x>
      <y>0</y>
      <width>745</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

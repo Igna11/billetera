@@ -88,6 +88,6 @@ class CalendarDialog(QDialog):
             self.final_d = max(
                 self.calendar.initial_date.toPyDate(), self.calendar.final_date.toPyDate()
             )
-    
+
     def close_on_cancel(self):
         self.close()

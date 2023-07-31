@@ -22,8 +22,7 @@
     <item>
      <widget class="QWidget" name="verticalWidget" native="true">
       <property name="styleSheet">
-       <string notr="true">QWidget#verticalWidget{
-background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:0.207, y2:0.954545, stop:0.132159 rgba(156, 178, 178, 255), stop:1 rgba(255, 255, 255, 255))}</string>
+       <string notr="true"/>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
@@ -299,7 +298,7 @@ QPushButton:disabled {
      <x>0</x>
      <y>0</y>
      <width>472</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

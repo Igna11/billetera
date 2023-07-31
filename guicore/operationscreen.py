@@ -20,6 +20,8 @@ from guicore import transferscreen
 from guicore import createaccountscreen
 from guicore import categorypiechart
 from guicore import calendardialog
+from guicore import transition
+from guicore import accounts_dashlet_widget
 from source import account_core as acc
 from source import analysis
 from source import errors
@@ -47,6 +49,8 @@ class OperationScreen(QMainWindow):
         self.selected_datetime = self.curr_datetime
         self.custom_initial_date = None
         self.custom_final_date = None
+        self.acc_items_list = acc.AccountParser().get_acc_pretty_names()
+        self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
         # Buttons
         self.income_button.clicked.connect(self.pre_income)
         self.expense_button.clicked.connect(self.pre_expense)
@@ -59,6 +63,11 @@ class OperationScreen(QMainWindow):
         self.previous_month_button.clicked.connect(self.previous_month_chart)
         self.next_month_button.clicked.connect(self.next_month_chart)
         self.reset_month_button.clicked.connect(self.current_month_chart)
+        # transition for accounts
+        self.account_dashlet = accounts_dashlet_widget.AccountDashletWidget(acc.AccountParser())
+        self.animated_widget = transition.TransitionAnimation()
+        self.animated_widget.addWidget(self.account_dashlet)
+        self.central_VL_Layout.insertWidget(0, self.animated_widget)
         # Modifiers
         # self.text_item = QGraphicsTextItem("0")
         self.chart = categorypiechart.CategoricalPieChart()
