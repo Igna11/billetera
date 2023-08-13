@@ -12,19 +12,19 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtChart import QChartView
 from PyQt5.QtWidgets import QMainWindow
 
-from guicore import users_gui
-from guicore import loginscreen
-from guicore import incomeexpensescreen
-from guicore import readjustmentscreen
-from guicore import transferscreen
-from guicore import createaccountscreen
-from guicore import categorypiechart
-from guicore import calendardialog
-from guicore import transition
-from guicore import accounts_dashlet_widget
-from source import account_core as acc
-from source import analysis
-from source import errors
+from guicore import (
+    users_gui,
+    loginscreen,
+    incomeexpensescreen,
+    readjustmentscreen,
+    createaccountscreen,
+    categorypiechart,
+    calendardialog,
+    transferscreen,
+    transition,
+    accounts_dashlet_widget,
+)
+from source import analysis, errors, account_core as acc
 
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -39,30 +39,11 @@ class OperationScreen(QMainWindow):
 
     def __init__(self, widget=None) -> None:
         super().__init__()
-        operation_screen = os.path.join(GUI_PATH, "operation_screen.ui")
-        loadUi(operation_screen, self)
         self.widget = widget
-        self.operation = None
-        self.chart_mode = "monthly"
-        self.chart_type = "expenses"
-        self.curr_datetime = datetime.now()
-        self.selected_datetime = self.curr_datetime
-        self.custom_initial_date = None
-        self.custom_final_date = None
-        self.acc_items_list = acc.AccountParser().get_acc_pretty_names()
-        self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
-        # Buttons
-        self.income_button.clicked.connect(self.pre_income)
-        self.expense_button.clicked.connect(self.pre_expense)
-        self.transfer_button.clicked.connect(self.pre_transfer)
-        self.readjustment_button.clicked.connect(self.pre_readjustment)
-        self.create_new_account_button.clicked.connect(self.create_account)
-        self.back_button.clicked.connect(self.back)
-        self.custom_period_button.clicked.connect(self.custom_date_range)
-        self.switch_type_button.clicked.connect(self.switch_chart_type)
-        self.previous_month_button.clicked.connect(self.previous_month_chart)
-        self.next_month_button.clicked.connect(self.next_month_chart)
-        self.reset_month_button.clicked.connect(self.current_month_chart)
+        self.setup_ui()
+        self.initialize_variables()
+        self.setup_buttons()
+
         # transition for accounts
         self.account_dashlet = accounts_dashlet_widget.AccountDashletWidget(acc.AccountParser())
         self.animated_widget = transition.TransitionAnimation()
@@ -85,37 +66,75 @@ class OperationScreen(QMainWindow):
             self.transfer_button.setEnabled(False)
             self.readjustment_button.setEnabled(False)
 
-    def pre_income(self) -> None:
-        """Takes the user to the income/expense screen and sets the flag operation to income"""
-        self.operation = "income"
-        operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
-            self.operation, widget=self.widget
-        )
+    def setup_ui(self) -> None:
+        """Loads the ui file"""
+        operation_screen = os.path.join(GUI_PATH, "operation_screen.ui")
+        loadUi(operation_screen, self)
+
+    def initialize_variables(self) -> None:
+        """Set up the initial variables"""
+        self.operation = None
+        self.chart_mode = "monthly"
+        self.chart_type = "expenses"
+        self.curr_datetime = datetime.now()
+        self.selected_datetime = self.curr_datetime
+        self.custom_initial_date = None
+        self.custom_final_date = None
+        self.acc_items_list = acc.AccountParser().get_acc_pretty_names()
+        self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
+
+    def setup_buttons(self) -> None:
+        """Sets the signals for the buttons of the window."""
+        buttons_function_pairs = [
+            (self.income_button, self.pre_income),
+            (self.expense_button, self.pre_expense),
+            (self.transfer_button, self.pre_transfer),
+            (self.readjustment_button, self.pre_readjustment),
+            (self.create_new_account_button, self.create_account),
+            (self.back_button, self.back),
+            (self.custom_period_button, self.custom_date_range),
+            (self.switch_type_button, self.switch_chart_type),
+            (self.previous_month_button, self.previous_month_chart),
+            (self.next_month_button, self.next_month_chart),
+            (self.reset_month_button, self.current_month_chart),
+        ]
+        for button, function in buttons_function_pairs:
+            button.clicked.connect(function)
+
+    def pre_operation(self, operation) -> None:
+        self.operation = operation
+        if operation == "income":
+            operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
+                self.operation, widget=self.widget
+            )
+        elif operation == "expense":
+            operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
+                self.operation, widget=self.widget
+            )
+        elif operation == "transfer":
+            operation_inputs = transferscreen.TransferScreen(self.operation, widget=self.widget)
+        elif operation == "readjustment":
+            operation_inputs = readjustmentscreen.ReadjustmentScreen(
+                self.operation, widget=self.widget
+            )
         self.widget.addWidget(operation_inputs)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+
+    def pre_income(self) -> None:
+        """Takes the user to the income/expense screen and sets the flag operation to income"""
+        self.pre_operation("income")
 
     def pre_expense(self) -> None:
         """Takes the user to the income/expense screen and sets the flag operation to expense"""
-        self.operation = "expense"
-        operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
-            self.operation, widget=self.widget
-        )
-        self.widget.addWidget(operation_inputs)
-        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+        self.pre_operation("expense")
 
     def pre_transfer(self) -> None:
         """Takes the user to the transfer screen and sets the flag operation to transfer"""
-        self.operation = "transfer"
-        operation_inputs = transferscreen.TransferScreen(self.operation, widget=self.widget)
-        self.widget.addWidget(operation_inputs)
-        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+        self.pre_operation("transfer")
 
     def pre_readjustment(self) -> None:
         """Takes the user to the readjustment screen and sets the flag operation to readjustment"""
-        self.operation = "readjustment"
-        operation_inputs = readjustmentscreen.ReadjustmentScreen(self.operation, widget=self.widget)
-        self.widget.addWidget(operation_inputs)
-        self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
+        self.pre_operation("readjustment")
 
     def create_account(self) -> None:
         """Takes the user to the CreateAccount screen"""
