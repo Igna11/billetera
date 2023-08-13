@@ -32,10 +32,13 @@ class AccountDashletWidget(QWidget):
 
     def set_labels(self):
         """Sets the values of acc_name, acc_currency and the value of total label."""
-        self.acc_label.setText(self.acc_name_list[self.acc_index])
-        self.total_label.setText(
-            f"Total: <b>{self.acc_object.get_acc_total(self.acc_list[self.acc_index])}</b>"
-        )
+        if not self.acc_list:
+            self.acc_label.setText("None")
+        else:
+            self.acc_label.setText(self.acc_name_list[self.acc_index])
+            self.total_label.setText(
+                f"Total: <b>{self.acc_object.get_acc_total(self.acc_list[self.acc_index])}</b>"
+            )
 
     def next_acc(self):
         """Increments the index number that determines which account data will be displayed"""
