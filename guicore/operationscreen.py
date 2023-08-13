@@ -43,6 +43,7 @@ class OperationScreen(QMainWindow):
         self.setup_ui()
         self.initialize_variables()
         self.setup_buttons()
+        self.disable_operation_buttons()
 
         # transition for accounts
         self.account_dashlet = accounts_dashlet_widget.AccountDashletWidget(acc.AccountParser())
@@ -58,13 +59,6 @@ class OperationScreen(QMainWindow):
 
         # Add the chart_view to the central_VR_layout
         self.central_VR_Layout.addWidget(self.chart_view)
-
-        # checks if any account exists.
-        if not acc.AccountParser().acc_list:
-            self.income_button.setEnabled(False)
-            self.expense_button.setEnabled(False)
-            self.transfer_button.setEnabled(False)
-            self.readjustment_button.setEnabled(False)
 
     def setup_ui(self) -> None:
         """Loads the ui file"""
@@ -101,7 +95,16 @@ class OperationScreen(QMainWindow):
         for button, function in buttons_function_pairs:
             button.clicked.connect(function)
 
+    def disable_operation_buttons(self):
+        """checks if any account exists"""
+        if not acc.AccountParser().acc_list:
+            self.income_button.setEnabled(False)
+            self.expense_button.setEnabled(False)
+            self.transfer_button.setEnabled(False)
+            self.readjustment_button.setEnabled(False)
+
     def pre_operation(self, operation) -> None:
+        """Sets the UIs according to the operation value"""
         self.operation = operation
         if operation == "income":
             operation_inputs = incomeexpensescreen.IncomeExpenseScreen(
