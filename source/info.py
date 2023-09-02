@@ -17,10 +17,8 @@ def precio_dolar(verbose=False):
     Gets the current dollar price by scrapping from web or inferring it from
     previuos data from Balances.txt
     """
-    # Creo el objeto que maneja la consulta y me devuelve el precio
     exchange = currency.currencies_values()
     try:
-        # Trato de conseguir el precio de internet, si no, handleo el error
         usd_value = exchange["Dolar U.S.A"]["Compra"]
     except TypeError as error:
         if verbose is True:
