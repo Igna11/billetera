@@ -60,8 +60,8 @@ class LoginScreen(QMainWindow):
         self.widget.addWidget(welcome)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def key_press_event(self, e):
-        """Returns to the WelcomeScvreen menu when Esc Key is pressed."""
+    def keyPressEvent(self, e):
+        """Returns to the WelcomeScreen menu when Esc Key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             welcome = welcomescreen.WelcomeScreen(widget=self.widget)
             self.widget.addWidget(welcome)
