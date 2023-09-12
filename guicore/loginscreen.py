@@ -30,6 +30,8 @@ class LoginScreen(QMainWindow):
         loadUi(login_screen, self)
         self.widget = widget
         self.password_line.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.password_line.returnPressed.connect(self.login)
+        self.user_name_line.returnPressed.connect(self.login)
         self.login_button.clicked.connect(self.login)
         self.back_button.clicked.connect(self.back)
 
@@ -58,7 +60,7 @@ class LoginScreen(QMainWindow):
         self.widget.addWidget(welcome)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def keyPressEvent(self, e):
+    def key_press_event(self, e):
         """Returns to the WelcomeScvreen menu when Esc Key is pressed."""
         if e.key() == QtCore.Qt.Key_Escape:
             welcome = welcomescreen.WelcomeScreen(widget=self.widget)
