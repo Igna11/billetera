@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QPainter
 from PyQt5.QtChart import QChartView
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QStackedWidget
 
 from guicore import (
     users_gui,
@@ -21,7 +21,6 @@ from guicore import (
     categorypiechart,
     calendardialog,
     transferscreen,
-    transition,
     accounts_dashlet_widget,
 )
 from source import analysis, errors, account_core as acc
@@ -47,9 +46,9 @@ class OperationScreen(QMainWindow):
 
         # transition for accounts
         self.account_dashlet = accounts_dashlet_widget.AccountDashletWidget(acc.AccountParser())
-        self.animated_widget = transition.TransitionAnimation()
-        self.animated_widget.addWidget(self.account_dashlet)
-        self.central_VL_Layout.insertWidget(0, self.animated_widget)
+        self.acc_totals_widget = QStackedWidget()
+        self.acc_totals_widget.addWidget(self.account_dashlet)
+        self.central_VL_Layout.insertWidget(0, self.acc_totals_widget)
         # Modifiers
         # self.text_item = QGraphicsTextItem("0")
         self.chart = categorypiechart.CategoricalPieChart()
