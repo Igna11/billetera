@@ -25,6 +25,7 @@ class AccountDashletWidget(QWidget):
         self.acc_object = account
         self.acc_list = account.acc_list
         self.acc_name_list = account.get_acc_pretty_names()
+        self.acc_object.get_totals()
         # buttons
         self.acc_next_button.clicked.connect(self.next_acc)
         self.acc_prev_button.clicked.connect(self.prev_acc)
@@ -39,6 +40,7 @@ class AccountDashletWidget(QWidget):
             self.total_label.setText(
                 f"Total: <b>{self.acc_object.get_acc_total(self.acc_list[self.acc_index])}</b>"
             )
+            self.acc_total_label.setText(f"<b>Totals: ${self.acc_object.ars_total:.2f} </b>")
 
     def next_acc(self):
         """Increments the index number that determines which account data will be displayed"""
