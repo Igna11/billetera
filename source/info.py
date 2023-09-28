@@ -15,7 +15,7 @@ from source import currency
 def precio_dolar(verbose=False):
     """
     Gets the current dollar price by scrapping from web or inferring it from
-    previuos data from Balances.txt
+    previuos data from Balances.csv
     """
     exchange = currency.currencies_values()
     try:
@@ -30,8 +30,8 @@ def precio_dolar(verbose=False):
             "red",
         )
         # Como no pude conseguir el precio de internet, lo infiero de el último
-        # balance en la cuenta Balance.txt
-        with open("Balance.txt", "r", encoding="UTF-8") as balance_file:
+        # balance en la cuenta Balance.csv
+        with open("Balance.csv", "r", encoding="UTF-8") as balance_file:
             file_lines = balance_file.read().splitlines()
         headers = file_lines[0].split("\t")
         last_line = file_lines[-1].split("\t")
@@ -98,7 +98,7 @@ def info(verbose=False):
             info_msg += f"\n{elem}: $ {total[i]:.2f} (ARS)"
     # Limpio los strings que molestan
     info_msg = (
-        info_msg.replace(".txt", "")
+        info_msg.replace(".csv", "")
         .replace("_ACC", "")
         .replace("_USD", "")
         .replace("_ARS", "")

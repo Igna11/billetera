@@ -23,7 +23,7 @@ class TestAccount(unittest.TestCase):
         acc_name = "Test_Account"
         account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
         account.add_account()
-        final_acc_name = f"{acc_name}_ACC_ARS.txt"
+        final_acc_name = f"{acc_name}_ACC_ARS.csv"
         self.assertTrue(os.path.isfile(final_acc_name))
 
     def test_add_account2(self):
@@ -43,7 +43,7 @@ class TestAccount(unittest.TestCase):
         acc_name = "Test_Account"
         account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
         account.remove_account()
-        final_acc_name = f"{acc_name}_ACC_ARS.txt"
+        final_acc_name = f"{acc_name}_ACC_ARS.csv"
         self.assertTrue(not os.path.isfile(final_acc_name))
 
 

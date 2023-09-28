@@ -14,7 +14,7 @@ from source.account_core import AccountsCreator
 
 
 def create_account(name_acc: str = None, currency_acc: str = None) -> None:
-    """Creates a .txt file which name will be the account name"""
+    """Creates a .csv file which name will be the account name"""
     if not name_acc:
         name_acc = input("\nIntroduzca el nombre para la nueva cuenta\n")
     if not currency_acc:
@@ -27,7 +27,7 @@ def create_account(name_acc: str = None, currency_acc: str = None) -> None:
 
 
 def delete_account(name_acc: str = None, currency_acc: str = None) -> None:
-    """Deletes the .txt file of the given account name"""
+    """Deletes the .csv file of the given account name"""
     if not name_acc:
         name_acc = input("\nIntroduzca el nombre de la cuenta a eliminar\n")
     if not currency_acc:

@@ -26,7 +26,7 @@ class Accounts:
     def __init__(self, acc_name: str, acc_currency: str) -> None:
         self.acc_name = acc_name
         self.acc_currency = acc_currency.upper()
-        self.acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.txt"
+        self.acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.csv"
         self.exists = self.acc_file_name in os.listdir()
         self.acc_data_len = 1
         self.acc_column_headers = [
@@ -76,7 +76,7 @@ class AccountsCreator(Accounts):
 
     def add_account(self) -> None:
         """
-        Creates the account file where all data will be stored as .txt file
+        Creates the account file where all data will be stored as .csv file
         only if there is an user loged.
         """
         if not "USR" in os.getcwd():
@@ -162,7 +162,7 @@ class AccountParser:
         return pretty_list
 
     def get_acc_total(self, account):
-        """Returns the last line of the balance.txt file."""
+        """Returns the last line of the balance.csv file."""
         with open(account, "r", encoding="latin-1") as acc:
             account_lines = acc.read().splitlines()
         self.acc_data_len = len(account_lines)

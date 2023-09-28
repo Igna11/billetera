@@ -30,7 +30,7 @@ def account_data(acc_name: str, acc_currency: str) -> pd.DataFrame:
     Analysis function:
     Return a pandas DataFrame with data of a given account
     """
-    acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.txt"
+    acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.csv"
     data = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
     return data
 
@@ -42,7 +42,7 @@ def account_balances(account: str, month: int, year: int):
     and balance: income - expenses
     Inputs:
         account: str
-        Acccount name as file or path, ej: MercadoPagoCUENTA.txt
+        Acccount name as file or path, ej: MercadoPagoCUENTA.csv
         month: int
         Month number to check balance: Valids from 1 to 12
         year: int
@@ -116,8 +116,8 @@ def balance_graf():
         Total pesos only,
         Total dollars only,
     """
-    data = pd.read_csv("Balance.txt", sep="\t")
-    # Armo un string con la fecha y la hora en el formato del .txt
+    data = pd.read_csv("Balance.csv", sep="\t")
+    # Armo un string con la fecha y la hora en el formato del .csv
     str_time = data["Date"] + "-" + data["Time"]
     formato = "%d-%m-%Y-%H:%M:%S"
     # transformo el string a un objeto datetime usando el formato dado
@@ -159,7 +159,7 @@ def data_filter(acc_name: str, acc_currency: str) -> pd.DataFrame:
     Analysis function:
     Easy way to filter data from a given account by category and subcategory
     """
-    acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.txt"
+    acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.csv"
     data = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
     categoria = input("\nIngrese la categoría\n")
     data = data[data["Categoria"] == categoria]
@@ -263,13 +263,13 @@ class DataAnalyzer:
         if not self.acc_list:
             raise errors.UserHasNotAccountsError
         self.acc_currencies = set(
-            acc.strip(".txt")[-3:] for acc in self.acc_list
+            acc.strip(".csv")[-3:] for acc in self.acc_list
         )
         # Loading data
         df_list = []
         for acc in self.acc_list:
             df_raw = pd.read_csv(acc, sep="\t")
-            df_raw["account"] = acc.replace(".txt", "").replace("_ACC", "")
+            df_raw["account"] = acc.replace(".csv", "").replace("_ACC", "")
             df_list.append(df_raw)
         self.main_df = pd.concat(df_list, axis=0, ignore_index=True)
         # add a column with datetime type to the dataframe

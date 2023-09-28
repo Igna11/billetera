@@ -59,20 +59,20 @@ def calculate_totals():
 
 def set_new_balance():
     """
-    Saves the new balances into the balance.txt file when any operation is
+    Saves the new balances into the balance.csv file when any operation is
     performed.
     """
     ars_total, usd_total, total = calculate_totals()
     time = datetime.now().time().strftime("%H:%M:%S")
     date = datetime.now().date().strftime("%d-%m-%Y")
-    if not os.path.isfile("Balance.txt"):
-        with open("Balance.txt", "x") as balance:
+    if not os.path.isfile("Balance.csv"):
+        with open("Balance.csv", "x") as balance:
             balance.write("Time\tDate\tTotal\tTotal(ARS)\tTotal(USD)\n")
             balance.write(
                 f"{time}\t{date}\t{total:.2f}\t{ars_total:.2f}\t{usd_total:.2f}\n"
             )
-    elif os.path.isfile("Balance.txt"):
-        with open("Balance.txt", "a") as balance:
+    elif os.path.isfile("Balance.csv"):
+        with open("Balance.csv", "a") as balance:
             balance.write(
                 f"{time}\t{date}\t{total:.2f}\t{ars_total:.2f}\t{usd_total:.2f}\n"
             )
