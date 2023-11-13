@@ -73,6 +73,7 @@ class OperationScreen(QMainWindow):
         self.selected_datetime = self.curr_datetime
         self.custom_initial_date = None
         self.custom_final_date = None
+        self.username_label.setText(f"<b>Hello {self.widget.user_name}!</b>")
         self.acc_items_list = acc.AccountParser().get_acc_pretty_names()
         self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
 

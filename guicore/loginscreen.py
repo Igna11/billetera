@@ -42,6 +42,7 @@ class LoginScreen(QMainWindow):
         try:
             users_gui.login(user_name, password)
             self.login_label.setText("<font color='green'>Log in successfull</font>")
+            self.widget.user_name = user_name
             operation_screen = operationscreen.OperationScreen(widget=self.widget)
             self.widget.addWidget(operation_screen)
             self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
