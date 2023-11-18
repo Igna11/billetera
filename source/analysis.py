@@ -312,7 +312,13 @@ class DataAnalyzer:
         return mask
 
     # data of a given arbitrary period of time
-    def get_period_operations(self, initial_datetime: datetime, final_datetime: datetime, operation: str, type: str):
+    def get_period_operations(
+        self,
+        initial_datetime: datetime,
+        final_datetime: datetime,
+        operation: str,
+        type: str,
+    ):
         """
         Returns a dataframe with the incomes or expenses in every category and/or subcategory
         for a given custom period of time
@@ -323,16 +329,18 @@ class DataAnalyzer:
             return filtered_df.groupby(["Categoria"])[operation].sum()
         elif type == "subcategory":
             return filtered_df.groupby(["Categoria", "Subcategoria"])[operation].sum()
-        
+
     # data of a given month and year
-    def get_monthly_operations(self, month: int, year: int, operation:str, type:str) -> pd.DataFrame:
+    def get_monthly_operations(
+        self, month: int, year: int, operation: str, type: str
+    ) -> pd.DataFrame:
         """
         Returns a dataframe with the incomes or expenses in every category and/or subcategory
         for a given month and year.
         """
         mask = self.monthly_mask(month, year, operation)
         filtered_df = self.main_df[mask].copy()
-        if type=="category":
+        if type == "category":
             return filtered_df.groupby(["Categoria"])[operation].sum()
-        elif type=="subcategory":
+        elif type == "subcategory":
             return filtered_df.groupby(["Categoria", "Subcategoria"])[operation].sum()
