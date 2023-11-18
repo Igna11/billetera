@@ -83,9 +83,9 @@ def total_balances(month: int, year: int, verbose=False):
     It uses balances()
     Inputs:
         month: int
-        Month number to check balance: Valids from 1 to 12
+        Month number to check balance: Valid values from 1 to 12
         year: int
-        Year numberto check balance: Valids 2019, 2020, 2021
+        Year number to check balance: Valid values 2019, 2020, 2021
     returns: dic
         Ingresos, Gastos y Balances mensuales por usuario: float
     """
@@ -287,6 +287,41 @@ class DataAnalyzer:
         mask = self.main_df["account"].str.upper().str.contains(currency)
         self.main_df = self.main_df[mask]
 
+    def monthly_mask(
+        self, month: int, year: int, operation: str
+    ) -> pd.DataFrame:
+        """
+        Creates the mask that will be used by:
+            get_month_incomes_by_category,
+            get_month_incomes_by_subcategory,
+            get_month_expenses_by_category,
+            get_month_expenses_by_subcategory
+        """
+        mask = (
+            (self.main_df["datetime"].dt.month == month)
+            & (self.main_df["datetime"].dt.year == year)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df[operation] != 0)
+        )
+        return mask
+
+    def period_mask(
+        self, initial_time: datetime, final_time: datetime, operation: str
+    ) -> pd.DataFrame:
+        """
+        Creates the mask that will be used by:
+            get_period_expenses_by_category,
+            get_period_expenses_by_subcategory,
+            get_period_incomes_by_category,
+            get_period_incomes_by_subcategory
+        """
+        mask = (
+            self.main_df["datetime"].between(initial_time, final_time)
+            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df[operation] != 0)
+        )
+        return mask
+
     # data of a given arbitrary period of time
     def get_period_expenses_by_category(
         self, initial_time: datetime, final_time: datetime
@@ -297,11 +332,7 @@ class DataAnalyzer:
         initial_time: datatime object - sets the date and time for the lower limit data
         final_time: datatime object - sets the date and time for the upper limit data
         """
-        mask = (
-            self.main_df["datetime"].between(initial_time, final_time)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Gasto"] != 0)
-        )
+        mask = self.period_mask(initial_time, final_time, "Gasto")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria"])["Gasto"].sum()
 
@@ -314,11 +345,7 @@ class DataAnalyzer:
         initial_time: datatime object - sets the date and time for the lower limit data
         final_time: datatime object - sets the date and time for the upper limit data
         """
-        mask = (
-            self.main_df["datetime"].between(initial_time, final_time)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Gasto"] != 0)
-        )
+        mask = self.period_mask(initial_time, final_time, "Gasto")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria", "Subcategoria"])[
             "Gasto"
@@ -333,11 +360,7 @@ class DataAnalyzer:
         initial_time: datatime object - sets the date and time for the lower limit data
         final_time: datatime object - sets the date and time for the upper limit data
         """
-        mask = (
-            self.main_df["datetime"].between(initial_time, final_time)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Ingresos"] != 0)
-        )
+        mask = self.period_mask(initial_time, final_time, "Ingresos")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria"])["Ingresos"].sum()
 
@@ -350,11 +373,7 @@ class DataAnalyzer:
         initial_time: datatime object - sets the date and time for the lower limit data
         final_time: datatime object - sets the date and time for the upper limit data
         """
-        mask = (
-            self.main_df["datetime"].between(initial_time, final_time)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Ingresos"] != 0)
-        )
+        mask = self.period_mask(initial_time, final_time, "Ingresos")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria", "Subcategoria"])[
             "Ingresos"
@@ -365,12 +384,7 @@ class DataAnalyzer:
         self, month: int, year: int
     ) -> pd.DataFrame:
         """Returns a DataFrame containing the sum of expenses by category in one month"""
-        mask = (
-            (self.main_df["datetime"].dt.month == month)
-            & (self.main_df["datetime"].dt.year == year)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Gasto"] != 0)
-        )
+        mask = self.monthly_mask(month, year, "Gasto")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria"])["Gasto"].sum()
 
@@ -378,12 +392,7 @@ class DataAnalyzer:
         self, month: int, year: int
     ) -> pd.DataFrame:
         """Return a DataFrame containing the sum of expenses by subcategory in one month"""
-        mask = (
-            (self.main_df["datetime"].dt.month == month)
-            & (self.main_df["datetime"].dt.year == year)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Gasto"] != 0)
-        )
+        mask = self.monthly_mask(month, year, "Gasto")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria", "Subcategoria"])[
             "Gasto"
@@ -393,12 +402,7 @@ class DataAnalyzer:
         self, month: int, year: int
     ) -> pd.DataFrame:
         """Returns a DataFrame containing the sum of incomes by category in one month"""
-        mask = (
-            (self.main_df["datetime"].dt.month == month)
-            & (self.main_df["datetime"].dt.year == year)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Ingresos"] != 0)
-        )
+        mask = self.monthly_mask(month, year, "Ingresos")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria"])["Ingresos"].sum()
 
@@ -406,12 +410,7 @@ class DataAnalyzer:
         self, month: int, year: int
     ) -> pd.DataFrame:
         """Return a DataFrame containing the sum of incomes by subcategory in one month"""
-        mask = (
-            (self.main_df["datetime"].dt.month == month)
-            & (self.main_df["datetime"].dt.year == year)
-            & (self.main_df["Categoria"] != "Transferencia")
-            & (self.main_df["Ingresos"] != 0)
-        )
+        mask = self.monthly_mask(month, year, "Ingresos")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria", "Subcategoria"])[
             "Ingresos"
