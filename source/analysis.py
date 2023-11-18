@@ -292,10 +292,8 @@ class DataAnalyzer:
     ) -> pd.DataFrame:
         """
         Creates the mask that will be used by:
-            get_month_incomes_by_category,
-            get_month_incomes_by_subcategory,
-            get_month_expenses_by_category,
-            get_month_expenses_by_subcategory
+        get_month_incomes_by_category, get_month_incomes_by_subcategory,
+        get_month_expenses_by_category, get_month_expenses_by_subcategory
         """
         mask = (
             (self.main_df["datetime"].dt.month == month)
@@ -310,10 +308,8 @@ class DataAnalyzer:
     ) -> pd.DataFrame:
         """
         Creates the mask that will be used by:
-            get_period_expenses_by_category,
-            get_period_expenses_by_subcategory,
-            get_period_incomes_by_category,
-            get_period_incomes_by_subcategory
+        get_period_expenses_by_category, get_period_expenses_by_subcategory,
+        get_period_incomes_by_category, get_period_incomes_by_subcategory
         """
         mask = (
             self.main_df["datetime"].between(initial_time, final_time)
