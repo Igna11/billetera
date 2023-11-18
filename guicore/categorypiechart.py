@@ -54,22 +54,16 @@ class CategoricalPieChart(QtChart.QChart):
         in order to create the desired piechart
         """
         raw_data.get_data_per_currency(curr)
+        if chart_type=="expenses": chart_type = "Gasto"
+        if chart_type=="incomes": chart_type= "Ingresos"
         if chart_mode == "monthly":
             month, year = time_period_object.month, time_period_object.year
-            if chart_type == "expenses":
-                data_outer = raw_data.get_month_expenses_by_category(month, year)
-                data_inner = raw_data.get_month_expenses_by_subcategory(month, year)
-            elif chart_type == "incomes":
-                data_outer = raw_data.get_month_incomes_by_category(month, year)
-                data_inner = raw_data.get_month_incomes_by_subcategory(month, year)
+            data_outer = raw_data.get_monthly_operations(month, year, chart_type,"category")
+            data_inner = raw_data.get_monthly_operations(month, year, chart_type,"subcategory")
         elif chart_mode == "period":
             ci_date, cf_date = time_period_object.values()
-            if chart_type == "expenses":
-                data_outer = raw_data.get_period_expenses_by_category(ci_date, cf_date)
-                data_inner = raw_data.get_period_expenses_by_subcategory(ci_date, cf_date)
-            elif chart_type == "incomes":
-                data_outer = raw_data.get_period_incomes_by_category(ci_date, cf_date)
-                data_inner = raw_data.get_period_incomes_by_subcategory(ci_date, cf_date)
+            data_outer = raw_data.get_period_operations(ci_date, cf_date, chart_type, "category")
+            data_inner = raw_data.get_period_operations(ci_date, cf_date, chart_type, "subcategory")
         else:
             raise ValueError("Valid modes: 'expenses', 'incomes'. Valid types: 'monthly', 'period'")
         return data_inner, data_outer
@@ -153,20 +147,16 @@ class CategoricalPieChart(QtChart.QChart):
         except errors.UserHasNotAccountsError:
             print("No data to display")
             return 0
+        if chart_type=="expenses": chart_type = "Gasto"
+        if chart_type=="incomes": chart_type= "Ingresos"
         if chart_mode == "monthly":
             selected_period = time_period_object.strftime(format="%B %Y").capitalize()
             month, year = time_period_object.month, time_period_object.year
-            if chart_type == "expenses":
-                total = raw_data.get_month_expenses_by_category(month, year).sum()
-            elif chart_type == "incomes":
-                total = raw_data.get_month_incomes_by_category(month, year).sum()
+            total = raw_data.get_monthly_operations(month, year, chart_type,"category").sum()
         elif chart_mode == "period":
             ci_date, cf_date = time_period_object.values()
             selected_period = f"Period: {ci_date} -- {cf_date}"
-            if chart_type == "expenses":
-                total = raw_data.get_period_expenses_by_category(ci_date, cf_date).sum()
-            elif chart_type == "incomes":
-                total = raw_data.get_period_incomes_by_category(ci_date, cf_date).sum()
+            total = raw_data.get_period_operations(ci_date, cf_date, chart_type, "category").sum()
         title_type = chart_type.capitalize()
         total = str(round(total, 2)).replace(".", "<sup>") + "</sup>"
         title = f"<h3><p align='center' style='color:black'><b>{title_type}: ${total}<br>{selected_period}</b></p>"
