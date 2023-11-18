@@ -54,12 +54,14 @@ class CategoricalPieChart(QtChart.QChart):
         in order to create the desired piechart
         """
         raw_data.get_data_per_currency(curr)
-        if chart_type=="expenses": chart_type = "Gasto"
-        if chart_type=="incomes": chart_type= "Ingresos"
+        if chart_type == "expenses":
+            chart_type = "Gasto"
+        if chart_type == "incomes":
+            chart_type = "Ingresos"
         if chart_mode == "monthly":
             month, year = time_period_object.month, time_period_object.year
-            data_outer = raw_data.get_monthly_operations(month, year, chart_type,"category")
-            data_inner = raw_data.get_monthly_operations(month, year, chart_type,"subcategory")
+            data_outer = raw_data.get_monthly_operations(month, year, chart_type, "category")
+            data_inner = raw_data.get_monthly_operations(month, year, chart_type, "subcategory")
         elif chart_mode == "period":
             ci_date, cf_date = time_period_object.values()
             data_outer = raw_data.get_period_operations(ci_date, cf_date, chart_type, "category")
@@ -147,12 +149,14 @@ class CategoricalPieChart(QtChart.QChart):
         except errors.UserHasNotAccountsError:
             print("No data to display")
             return 0
-        if chart_type=="expenses": chart_type = "Gasto"
-        if chart_type=="incomes": chart_type= "Ingresos"
+        if chart_type == "expenses":
+            chart_type = "Gasto"
+        if chart_type == "incomes":
+            chart_type = "Ingresos"
         if chart_mode == "monthly":
             selected_period = time_period_object.strftime(format="%B %Y").capitalize()
             month, year = time_period_object.month, time_period_object.year
-            total = raw_data.get_monthly_operations(month, year, chart_type,"category").sum()
+            total = raw_data.get_monthly_operations(month, year, chart_type, "category").sum()
         elif chart_mode == "period":
             ci_date, cf_date = time_period_object.values()
             selected_period = f"Period: {ci_date} -- {cf_date}"
