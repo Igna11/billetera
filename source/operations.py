@@ -30,15 +30,11 @@ def account_selector() -> dict:
         acc_number = int(input("\nElija la cuenta\n"))
         try:
             account_dict = acc_properties[acc_number]
-            color.cprint(
-                f"Cuenta elegida: {account_dict['acc_name']}", color="ambar"
-            )
+            color.cprint(f"Cuenta elegida: {account_dict['acc_name']}", color="ambar")
             return account_dict
         except KeyError:
             print("=" * 79)
-            print(
-                f"\nValor elegido: '{acc_number}' erroneo, intente de nuevo."
-            )
+            print(f"\nValor elegido: '{acc_number}' erroneo, intente de nuevo.")
             print("Presione Ctrol+C para salir\n")
             print("=" * 79)
 
@@ -254,9 +250,7 @@ def transfer(
     if value is None:
         value = float(input("\nCantidad de dinero a transferir\n"))
     new_transfer = operation.Operations(origin_acc, origin_currency, value)
-    dest_new_transfer = new_transfer.transfer_operation(
-        dest_acc, dest_currency
-    )
+    dest_new_transfer = new_transfer.transfer_operation(dest_acc, dest_currency)
     category = "Transferencia"
     origin_subcategory = "Transferencia de salida"
     dest_subcategory = "Transferencia de entrada"
@@ -304,9 +298,7 @@ def transfer(
         return origin_new_row, dest_new_row
 
 
-def readjustment(
-    value=None, acc_name=None, acc_currency=None, test_mode=False
-) -> None:
+def readjustment(value=None, acc_name=None, acc_currency=None, test_mode=False) -> None:
     """Saves into the account file the readjustment information."""
     if acc_name is None or acc_currency is None:
         account_dict = account_selector()

@@ -41,9 +41,7 @@ def precio_dolar(verbose=False):
         usd_total = float(balance_data["Total(USD)"])
         try:
             usd_value = str(round((total - ars_total) / usd_total, 2))
-            color.cprint(
-                f"Última cotización: 1 u$d = $ {usd_value}\n", "green", "bold"
-            )
+            color.cprint(f"Última cotización: 1 u$d = $ {usd_value}\n", "green", "bold")
         except ZeroDivisionError:
             print("No hay dolares, asi que no importa cuanto vale")
             usd_value = "0.00"

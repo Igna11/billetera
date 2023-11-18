@@ -211,8 +211,7 @@ def category_spendings(cat: str, subcat="", desc=""):
                 df_ = df_data[df_data["Categoria"] == cat]
             elif subcat:
                 df_ = df_data[
-                    (df_data["Categoria"] == cat)
-                    & (df_data["Subcategoria"] == subcat)
+                    (df_data["Categoria"] == cat) & (df_data["Subcategoria"] == subcat)
                 ]
 
             if len(df_):
@@ -220,9 +219,7 @@ def category_spendings(cat: str, subcat="", desc=""):
     return df_final.sort_index()
 
 
-def monthly_categorical_spendings(
-    month: int, year: int, cat: str, subcat="", desc=""
-):
+def monthly_categorical_spendings(month: int, year: int, cat: str, subcat="", desc=""):
     """
     Analysis function:
         Easy way to get the total expenses for a given category and/or subcat.
@@ -262,9 +259,7 @@ class DataAnalyzer:
         self.acc_list = [acc for acc in os.listdir() if "ACC" in acc]
         if not self.acc_list:
             raise errors.UserHasNotAccountsError
-        self.acc_currencies = set(
-            acc.strip(".csv")[-3:] for acc in self.acc_list
-        )
+        self.acc_currencies = set(acc.strip(".csv")[-3:] for acc in self.acc_list)
         # Loading data
         df_list = []
         for acc in self.acc_list:
@@ -287,9 +282,7 @@ class DataAnalyzer:
         mask = self.main_df["account"].str.upper().str.contains(currency)
         self.main_df = self.main_df[mask]
 
-    def monthly_mask(
-        self, month: int, year: int, operation: str
-    ) -> pd.DataFrame:
+    def monthly_mask(self, month: int, year: int, operation: str) -> pd.DataFrame:
         """
         Creates the mask that will be used by:
         get_month_incomes_by_category, get_month_incomes_by_subcategory,
@@ -343,9 +336,7 @@ class DataAnalyzer:
         """
         mask = self.period_mask(initial_time, final_time, "Gasto")
         filtered_df = self.main_df[mask].copy()
-        return filtered_df.groupby(["Categoria", "Subcategoria"])[
-            "Gasto"
-        ].sum()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])["Gasto"].sum()
 
     def get_period_incomes_by_category(
         self, initial_time: datetime, final_time: datetime
@@ -371,43 +362,29 @@ class DataAnalyzer:
         """
         mask = self.period_mask(initial_time, final_time, "Ingresos")
         filtered_df = self.main_df[mask].copy()
-        return filtered_df.groupby(["Categoria", "Subcategoria"])[
-            "Ingresos"
-        ].sum()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])["Ingresos"].sum()
 
     # data of a given month and year
-    def get_month_expenses_by_category(
-        self, month: int, year: int
-    ) -> pd.DataFrame:
+    def get_month_expenses_by_category(self, month: int, year: int) -> pd.DataFrame:
         """Returns a DataFrame containing the sum of expenses by category in one month"""
         mask = self.monthly_mask(month, year, "Gasto")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria"])["Gasto"].sum()
 
-    def get_month_expenses_by_subcategory(
-        self, month: int, year: int
-    ) -> pd.DataFrame:
+    def get_month_expenses_by_subcategory(self, month: int, year: int) -> pd.DataFrame:
         """Return a DataFrame containing the sum of expenses by subcategory in one month"""
         mask = self.monthly_mask(month, year, "Gasto")
         filtered_df = self.main_df[mask].copy()
-        return filtered_df.groupby(["Categoria", "Subcategoria"])[
-            "Gasto"
-        ].sum()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])["Gasto"].sum()
 
-    def get_month_incomes_by_category(
-        self, month: int, year: int
-    ) -> pd.DataFrame:
+    def get_month_incomes_by_category(self, month: int, year: int) -> pd.DataFrame:
         """Returns a DataFrame containing the sum of incomes by category in one month"""
         mask = self.monthly_mask(month, year, "Ingresos")
         filtered_df = self.main_df[mask].copy()
         return filtered_df.groupby(["Categoria"])["Ingresos"].sum()
 
-    def get_month_incomes_by_subcategory(
-        self, month: int, year: int
-    ) -> pd.DataFrame:
+    def get_month_incomes_by_subcategory(self, month: int, year: int) -> pd.DataFrame:
         """Return a DataFrame containing the sum of incomes by subcategory in one month"""
         mask = self.monthly_mask(month, year, "Ingresos")
         filtered_df = self.main_df[mask].copy()
-        return filtered_df.groupby(["Categoria", "Subcategoria"])[
-            "Ingresos"
-        ].sum()
+        return filtered_df.groupby(["Categoria", "Subcategoria"])["Ingresos"].sum()

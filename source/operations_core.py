@@ -33,16 +33,12 @@ class Operations(account.Accounts):
         self.opdate = datetime.now().date().strftime("%d-%m-%Y")
 
     def __repr__(self) -> str:
-        return (
-            f"Operations({self.acc_name}, {self.acc_currency}, {self.value})"
-        )
+        return f"Operations({self.acc_name}, {self.acc_currency}, {self.value})"
 
     def income_operation(self) -> None:
         """Defines the logic behind the income operation."""
         if not self.exists:
-            raise errors.AccountDoesNotExistError(
-                self.acc_name, self.acc_currency
-            )
+            raise errors.AccountDoesNotExistError(self.acc_name, self.acc_currency)
         if self.value <= 0:
             raise errors.NegativeOrZeroValueError
         self.get_last_line()
@@ -56,9 +52,7 @@ class Operations(account.Accounts):
     def expense_operation(self) -> None:
         """Defines the logic behind the expense operation."""
         if not self.exists:
-            raise errors.AccountDoesNotExistError(
-                self.acc_name, self.acc_currency
-            )
+            raise errors.AccountDoesNotExistError(self.acc_name, self.acc_currency)
         if self.value <= 0:
             raise errors.NegativeOrZeroValueError
         self.get_last_line()
@@ -78,9 +72,7 @@ class Operations(account.Accounts):
         Same as expense operation.
         """
         if not self.exists:
-            raise errors.AccountDoesNotExistError(
-                self.acc_name, self.acc_currency
-            )
+            raise errors.AccountDoesNotExistError(self.acc_name, self.acc_currency)
         if self.value <= 0:
             raise errors.NegativeOrZeroValueError
         self.get_last_line()
@@ -94,9 +86,7 @@ class Operations(account.Accounts):
                 self.new_total = str(total)
                 self.new_extraction = str(self.value)
 
-    def transfer_operation(
-        self, dest_acc: str, dest_currency: str
-    ) -> account.Accounts:
+    def transfer_operation(self, dest_acc: str, dest_currency: str) -> account.Accounts:
         """
         Defines the logic of the transfer operation.
         arguments:
@@ -106,9 +96,7 @@ class Operations(account.Accounts):
             Currency used by the destination account.
         """
         if not self.exists:
-            raise errors.AccountDoesNotExistError(
-                self.acc_name, self.acc_currency
-            )
+            raise errors.AccountDoesNotExistError(self.acc_name, self.acc_currency)
         if self.value <= 0:
             raise errors.NegativeOrZeroValueError
         self.get_last_line()
@@ -121,9 +109,7 @@ class Operations(account.Accounts):
         dest_acc = account.Accounts(dest_acc, dest_currency)
         dest_acc.get_last_line()
         if self.acc_currency != dest_acc.acc_currency:
-            raise errors.NotEqualCurrencyError(
-                self.acc_currency, dest_acc.acc_currency
-            )
+            raise errors.NotEqualCurrencyError(self.acc_currency, dest_acc.acc_currency)
         self.new_total = str(round(float(self.Total) - self.value, 2))
         self.new_extraction = str(self.value)
         if dest_acc.acc_data_len == 1:
@@ -136,9 +122,7 @@ class Operations(account.Accounts):
     def readjustment_operation(self) -> None:
         """Defines the logic behind the readjustment operation."""
         if not self.exists:
-            raise errors.AccountDoesNotExistError(
-                self.acc_name, self.acc_currency
-            )
+            raise errors.AccountDoesNotExistError(self.acc_name, self.acc_currency)
         if self.value < 0:
             raise errors.NegativeOrZeroValueError
         self.get_last_line()

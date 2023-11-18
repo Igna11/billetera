@@ -90,9 +90,7 @@ class UsersDB:
         Changes the password hash of a given user
         """
         pwhash = sha256(new_passwd).hexdigest()
-        query = (
-            f"UPDATE users SET passwd = '{pwhash}' WHERE name = '{self.user}';"
-        )
+        query = f"UPDATE users SET passwd = '{pwhash}' WHERE name = '{self.user}';"
         sql.execute_query(connection, query)
 
     def passwd_validation_indb(self, passwd: bytes) -> bool:

@@ -40,22 +40,18 @@ def create_user(
         if not os.path.isdir(user_dir.absdirname):
             # Password input and encode to utf-8
             if not password:
-                password = pwinput(prompt="Ingrese una password: ").encode(
+                password = pwinput(prompt="Ingrese una password: ").encode("utf-8")
+            if not password_check:
+                password_check = pwinput(prompt="Ingrese la password otra vez: ").encode(
                     "utf-8"
                 )
-            if not password_check:
-                password_check = pwinput(
-                    prompt="Ingrese la password otra vez: "
-                ).encode("utf-8")
             if password == password_check:
                 user_dir.create_user_dir()
                 user_db.add_user_to_db(passwd=password)
                 if user_db.creation_status:
                     print(f"\nSe creo el usuario '{username}'\n")
                 else:
-                    print(
-                        "\nFalló la creación del usuario en la base de datos\n"
-                    )
+                    print("\nFalló la creación del usuario en la base de datos\n")
             else:
                 print("Las contraseñas no coinciden, vuelva a intentarlo.")
         else:
@@ -111,21 +107,15 @@ def change_password() -> None:
     Uses inputs for name of the user, old password and new password.
     """
     if os.getcwd() == DATA_PATH:
-        username = input(
-            "\nIngrese el nombre de usuario para cambiar passwd.\n"
-        )
+        username = input("\nIngrese el nombre de usuario para cambiar passwd.\n")
         useremail = input("\nIngrese el e-mail del usuario\n")
         user_dir = users_core.UsersDirs(username)
         user_db = users_core.UsersDB(username, useremail)
         if os.path.isdir(user_dir.absdirname):
-            old_password = pwinput("\nIngrese la contraseña actual: ").encode(
-                "utf-8"
-            )
+            old_password = pwinput("\nIngrese la contraseña actual: ").encode("utf-8")
             user_db.passwd_validation_indb(passwd=old_password)
             if user_db.passwdvalidation:
-                new_password = pwinput(
-                    "\nIngrese la nueva contraseña: "
-                ).encode("utf-8")
+                new_password = pwinput("\nIngrese la nueva contraseña: ").encode("utf-8")
                 check_new_password = pwinput(
                     "\nIngrese nuevamente la nueva contraseña: "
                 ).encode("utf-8")
@@ -133,9 +123,7 @@ def change_password() -> None:
                     user_db.change_pass_indb(new_passwd=new_password)
                     print("\nLa contraseña fue cambiada con exito\n")
                 else:
-                    print(
-                        "\nLas contraseñas no coinciden! Vuelva a intentar.\n"
-                    )
+                    print("\nLas contraseñas no coinciden! Vuelva a intentar.\n")
             else:
                 print("\nPassword incorrecta, vuelva a intentarlo\n")
         else:

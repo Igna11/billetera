@@ -36,13 +36,7 @@ def currencies_values(verbose=False) -> dict:
             return 0
     bs4_object = BeautifulSoup(text_response, "html.parser")
     # cleaning of the bs4 object to form headers and body:
-    header = (
-        bs4_object.find("thead")
-        .get_text()
-        .strip()
-        .replace("\n", "\t")
-        .split("\t")
-    )
+    header = bs4_object.find("thead").get_text().strip().replace("\n", "\t").split("\t")
     body = (
         bs4_object.find("tbody")
         .get_text()
