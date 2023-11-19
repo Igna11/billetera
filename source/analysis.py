@@ -53,7 +53,7 @@ def account_balances(account: str, month: int, year: int):
     df_data = pd.read_csv(
         account,
         sep="\t",
-        index_col=("Fecha"),
+        index_col=("Date"),
         parse_dates=True,
         dayfirst=True,
         encoding="latin1",
@@ -61,11 +61,11 @@ def account_balances(account: str, month: int, year: int):
     monthly_src = df_data[
         (df_data.index.month == month)
         & (df_data.index.year == year)
-        & (df_data["Categoria"] != "Transferencia")
+        & (df_data["Category"] != "Transferencia")
     ]
-    monthly_spend = monthly_src["Gasto"].sum()
-    monthly_spend += monthly_src["Extracciones"].astype("float32").sum()
-    monthly_earn = monthly_src["Ingresos"].astype("float32").sum()
+    monthly_spend = monthly_src["Expenses"].sum()
+    monthly_spend += monthly_src["Extractions"].astype("float32").sum()
+    monthly_earn = monthly_src["Incomes"].astype("float32").sum()
     balance = monthly_earn - monthly_spend
 
     return {
@@ -162,12 +162,12 @@ def data_filter(acc_name: str, acc_currency: str) -> pd.DataFrame:
     acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.csv"
     data = pd.read_csv(acc_file_name, sep="\t", encoding="latin1")
     categoria = input("\nIngrese la categoría\n")
-    data = data[data["Categoria"] == categoria]
+    data = data[data["Category"] == categoria]
     print(data)
     user_answer = input("\n\nSeguir filtrando?\n\nsi/no\n\n")
     if user_answer == "si":
         subcategory = input("\nIngrese la subcategoría\n")
-        data = data[data["Subcategoria"] == subcategory]
+        data = data[data["Subcategory"] == subcategory]
         return data
     return data
 
@@ -200,7 +200,7 @@ def category_spendings(cat: str, subcat="", desc=""):
             df_data = pd.read_csv(
                 account,
                 sep="\t",
-                index_col=("Fecha"),
+                index_col=("Date"),
                 parse_dates=True,
                 dayfirst=True,
                 encoding="latin1",
@@ -208,10 +208,10 @@ def category_spendings(cat: str, subcat="", desc=""):
             df_data["Account"] = account
 
             if not subcat:
-                df_ = df_data[df_data["Categoria"] == cat]
+                df_ = df_data[df_data["Category"] == cat]
             elif subcat:
                 df_ = df_data[
-                    (df_data["Categoria"] == cat) & (df_data["Subcategoria"] == subcat)
+                    (df_data["Category"] == cat) & (df_data["Subcategory"] == subcat)
                 ]
 
             if len(df_):
@@ -269,11 +269,11 @@ class DataAnalyzer:
         self.main_df = pd.concat(df_list, axis=0, ignore_index=True)
         # add a column with datetime type to the dataframe
         self.main_df["datetime"] = pd.to_datetime(
-            self.main_df["Fecha"] + " " + self.main_df["hora"],
+            self.main_df["Date"] + " " + self.main_df["Time"],
             format="%d-%m-%Y %H:%M:%S",
         )
         # drop of unnecesary columns
-        self.main_df.drop(columns=["Fecha", "hora", "Balance"], inplace=True)
+        self.main_df.drop(columns=["Date", "Time", "Balance"], inplace=True)
         # sort data by datetime
         self.main_df.sort_values(by="datetime", inplace=True)
 
@@ -291,7 +291,7 @@ class DataAnalyzer:
         mask = (
             (self.main_df["datetime"].dt.month == month)
             & (self.main_df["datetime"].dt.year == year)
-            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Category"] != "Transferencia")
             & (self.main_df[operation] != 0)
         )
         return mask
@@ -306,7 +306,7 @@ class DataAnalyzer:
         """
         mask = (
             self.main_df["datetime"].between(initial_time, final_time)
-            & (self.main_df["Categoria"] != "Transferencia")
+            & (self.main_df["Category"] != "Transferencia")
             & (self.main_df[operation] != 0)
         )
         return mask
@@ -317,7 +317,7 @@ class DataAnalyzer:
         initial_datetime: datetime,
         final_datetime: datetime,
         operation: str,
-        type: str,
+        category_type: str,
     ):
         """
         Returns a dataframe with the incomes or expenses in every category and/or subcategory
@@ -325,14 +325,14 @@ class DataAnalyzer:
         """
         mask = self.period_mask(initial_datetime, final_datetime, operation)
         filtered_df = self.main_df[mask].copy()
-        if type == "category":
-            return filtered_df.groupby(["Categoria"])[operation].sum()
-        elif type == "subcategory":
-            return filtered_df.groupby(["Categoria", "Subcategoria"])[operation].sum()
+        if category_type == "Category":
+            return filtered_df.groupby(["Category"])[operation].sum()
+        elif category_type == "Subcategory":
+            return filtered_df.groupby(["Category", "Subcategory"])[operation].sum()
 
     # data of a given month and year
     def get_monthly_operations(
-        self, month: int, year: int, operation: str, type: str
+        self, month: int, year: int, operation: str, category_type: str
     ) -> pd.DataFrame:
         """
         Returns a dataframe with the incomes or expenses in every category and/or subcategory
@@ -340,7 +340,7 @@ class DataAnalyzer:
         """
         mask = self.monthly_mask(month, year, operation)
         filtered_df = self.main_df[mask].copy()
-        if type == "category":
-            return filtered_df.groupby(["Categoria"])[operation].sum()
-        elif type == "subcategory":
-            return filtered_df.groupby(["Categoria", "Subcategoria"])[operation].sum()
+        if category_type == "Category":
+            return filtered_df.groupby(["Category"])[operation].sum()
+        elif category_type == "Subcategory":
+            return filtered_df.groupby(["Category", "Subcategory"])[operation].sum()
