@@ -30,15 +30,15 @@ class Accounts:
         self.exists = self.acc_file_name in os.listdir()
         self.acc_data_len = 1
         self.acc_column_headers = [
-            "Fecha",
-            "hora",
+            "Date",
+            "Time",
             "Total",
-            "Ingresos",
-            "Extracciones",
-            "Gasto",
-            "Categoria",
-            "Subcategoria",
-            "Descripcion",
+            "Incomes",
+            "Extractions",
+            "Expenses",
+            "Category",
+            "Subcategory",
+            "Description",
             "Balance",
         ]
 
@@ -164,7 +164,7 @@ class AccountParser:
         with open(account, "r", encoding="latin-1") as acc:
             account_lines = acc.read().splitlines()
         self.acc_data_len = len(account_lines)
-        headers = ["Hora", "Fecha", "Total", "Total(ARS)", "Total(USD)"]
+        headers = ["Hora", "Date", "Total", "Total(ARS)", "Total(USD)"]
         last_acc_line = account_lines[-1].split("\t")
         last_line_dict = dict(zip(headers, last_acc_line))
         return last_line_dict["Total"]
