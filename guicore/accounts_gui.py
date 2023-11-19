@@ -14,7 +14,7 @@ from source import errors
 
 def create_account(name_acc: str = None, currency_acc: str = None) -> None:
     """
-    Creates a .txt file which name will be the account name. Currencies must
+    Creates a .csv file which name will be the account name. Currencies must
     follow the ISO 4217 standard.
     """
     if name_acc.strip() == "":
@@ -23,13 +23,12 @@ def create_account(name_acc: str = None, currency_acc: str = None) -> None:
         raise ValueError
     account = accounts.AccountsCreator(acc_name=name_acc, acc_currency=currency_acc)
     account.add_account()
-    print(f"\nSe ha creado la cuenta '{name_acc}'\n")
 
 
 def delete_account(
     name_acc: str = None, currency_acc: str = None, confirmation: bool = False
 ) -> None:
-    """Deletes the .txt file of the given account name"""
+    """Deletes the .csv file of the given account name"""
     if name_acc.strip() == "":
         raise errors.InvalidNameError
     if currency_acc == "":
@@ -40,4 +39,3 @@ def delete_account(
     if not confirmation:
         raise errors.NoConfirmationToDeleteAccountError
     account.remove_account()
-    print(f"\nSe eliminó la cuenta '{name_acc}'\n")
