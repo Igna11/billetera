@@ -68,7 +68,7 @@ class OperationScreen(QMainWindow):
         """Set up the initial variables"""
         self.operation = None
         self.chart_mode = "monthly"
-        self.chart_type = "expenses"
+        self.chart_type = "Expenses"
         self.curr_datetime = datetime.now()
         self.selected_datetime = self.curr_datetime
         self.custom_initial_date = None
@@ -145,28 +145,38 @@ class OperationScreen(QMainWindow):
         self.widget.addWidget(create_account_window)
         self.widget.setCurrentIndex(self.widget.currentIndex() + 1)
 
-    def current_month_chart(self) -> None:
+    def generate_chart(self,mode:str, time_period: str) -> None:
         """
-        Generates a new piechart of the current month and updates the variable
+        docstring
+        """
         self.selected_datetime
-        """
-        self.selected_datetime = self.curr_datetime
         try:
             raw_data = analysis.DataAnalyzer()
         except errors.UserHasNotAccountsError:
             print("No data to display")
             return 0
         self.chart.clear_slices()
+
+        if mode == "current":
+            self.selected_datetime = self.curr_datetime
+        elif mode == "previous":
+            cur_date = self.selected_datetime.day
+            # last day of the previous month
+            self.selected_datetime = self.selected_datetime - timedelta(days=cur_date)
+        elif mode == "next":
+            cur_date = self.selected_datetime.day
+            # first days of the next month
+            self.selected_datetime = self.selected_datetime - timedelta(days=cur_date - 1) + timedelta(days=32)
         self.chart.update_title(
             raw_data,
             chart_mode="monthly",
             chart_type=self.chart_type,
-            time_period_object=self.curr_datetime,
+            time_period_object=self.selected_datetime,
         )
         data_inner, data_outer = self.chart.load_data(
             raw_data,
             chart_mode="monthly",
-            time_period_object=self.curr_datetime,
+            time_period_object=self.selected_datetime,
             curr="ARS",
             chart_type=self.chart_type,
         )
@@ -177,77 +187,28 @@ class OperationScreen(QMainWindow):
         # reset the chart mode in case the period mode was activated
         self.chart_mode = "monthly"
         return 0
+
+
+    def current_month_chart(self) -> None:
+        """
+        Generates a new piechart of the current month and updates the variable
+        self.selected_datetime
+        """
+        self.generate_chart(mode="current", time_period=1)
 
     def previous_month_chart(self) -> None:
         """
         Generates a new piechart of the previous month and updates the
         variable self.selected_datetime
         """
-        try:
-            raw_data = analysis.DataAnalyzer()
-        except errors.UserHasNotAccountsError:
-            print("No data to display")
-            return 0
-        self.chart.clear_slices()
-        cur_date = self.selected_datetime.day
-        self.selected_datetime = self.selected_datetime - timedelta(days=cur_date)
-        self.chart.update_title(
-            raw_data,
-            chart_mode="monthly",
-            chart_type=self.chart_type,
-            time_period_object=self.selected_datetime,
-        )
-        data_inner, data_outer = self.chart.load_data(
-            raw_data,
-            chart_mode="monthly",
-            time_period_object=self.selected_datetime,
-            curr="ARS",
-            chart_type=self.chart_type,
-        )
-        self.chart.add_slices(data_inner, data_outer)
-        self.chart.update_labels()
-        # Add the chart_view to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chart_view)
-        # reset the chart mode in case the period mode was activated
-        self.chart_mode = "monthly"
-        return 0
+        self.generate_chart(mode="previous", time_period=1)
 
-    def next_month_chart(self) -> None:
+    def next_month_chart(self) ->None:
         """
         Generates a new piechart of the next month and updates the
         variable self.selected_datetime
         """
-        try:
-            raw_data = analysis.DataAnalyzer()
-        except errors.UserHasNotAccountsError:
-            print("No data to display")
-            return 0
-        self.chart.clear_slices()
-        cur_date = self.selected_datetime.day
-        # sets the first day of the month
-        self.selected_datetime = self.selected_datetime - timedelta(days=cur_date - 1)
-        # sums 32 days to make sure to get next month
-        self.selected_datetime = self.selected_datetime + timedelta(days=32)
-        self.chart.update_title(
-            raw_data,
-            chart_mode="monthly",
-            chart_type=self.chart_type,
-            time_period_object=self.selected_datetime,
-        )
-        data_inner, data_outer = self.chart.load_data(
-            raw_data,
-            chart_mode="monthly",
-            time_period_object=self.selected_datetime,
-            curr="ARS",
-            chart_type=self.chart_type,
-        )
-        self.chart.add_slices(data_inner, data_outer)
-        self.chart.update_labels()
-        # Add the chart_view to the central_VR_layout
-        self.central_VR_Layout.addWidget(self.chart_view)
-        # reset the chart mode in case the period mode was activated
-        self.chart_mode = "monthly"
-        return 0
+        self.generate_chart(mode="next", time_period=1)
 
     def custom_date_range(self) -> None:
         """
@@ -300,10 +261,10 @@ class OperationScreen(QMainWindow):
             print("No data to display")
             return 0
         self.chart.clear_slices()
-        if self.chart_type == "expenses":
-            self.chart_type = "incomes"
-        elif self.chart_type == "incomes":
-            self.chart_type = "expenses"
+        if self.chart_type == "Expenses":
+            self.chart_type = "Incomes"
+        elif self.chart_type == "Incomes":
+            self.chart_type = "Expenses"
         time = self.selected_datetime
         if self.chart_mode == "monthly":
             self.chart.update_title(
