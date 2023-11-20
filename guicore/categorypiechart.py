@@ -54,7 +54,7 @@ class CategoricalPieChart(QtChart.QChart):
         in order to create the desired piechart
         """
         raw_data.get_data_per_currency(curr)
-        if chart_mode == "monthly":
+        if chart_mode == "month":
             month, year = time_period_object.month, time_period_object.year
             data_outer = raw_data.get_monthly_operations(month, year, chart_type, "Category")
             data_inner = raw_data.get_monthly_operations(month, year, chart_type, "Subcategory")
@@ -63,7 +63,7 @@ class CategoricalPieChart(QtChart.QChart):
             data_outer = raw_data.get_period_operations(ci_date, cf_date, chart_type, "Category")
             data_inner = raw_data.get_period_operations(ci_date, cf_date, chart_type, "Subcategory")
         else:
-            raise ValueError("Valid modes: 'Expenses', 'Incomes'. Valid types: 'monthly', 'period'")
+            raise ValueError("Valid types: 'Expenses', 'Incomes'. Valid modes: 'month', 'period'")
         return data_inner, data_outer
 
     def clear_slices(self):
@@ -145,7 +145,7 @@ class CategoricalPieChart(QtChart.QChart):
         except errors.UserHasNotAccountsError:
             print("No data to display")
             return 0
-        if chart_mode == "monthly":
+        if chart_mode == "month":
             selected_period = time_period_object.strftime(format="%B %Y").capitalize()
             month, year = time_period_object.month, time_period_object.year
             total = raw_data.get_monthly_operations(month, year, chart_type, "Category").sum()
