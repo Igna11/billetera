@@ -113,7 +113,11 @@ class TransferScreen(QMainWindow):
                 self.status_label.setText("<font color='red'>Origin account is empty.")
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
-                    "<font color='red'>Quantity to transfer must be greater that 0."
+                    "<font color='red'>Quantity to transfer must be greater than 0."
+                )
+            except errors.NegativeTotalError:
+                self.status_label.setText(
+                    "<font color='red'>Quantity to transfer can't be greater than the total."
                 )
             print("trasnfer successfull")
 
