@@ -24,9 +24,9 @@ class Accounts:
     """
 
     def __init__(self, acc_name: str, acc_currency: str) -> None:
-        self.acc_name = acc_name
+        self.acc_name = acc_name.replace(" ", "_")
         self.acc_currency = acc_currency.upper()
-        self.acc_file_name = f"{acc_name}_ACC_{acc_currency.upper()}.csv"
+        self.acc_file_name = f"{self.acc_name}_ACC_{self.acc_currency.upper()}.csv"
         self.exists = self.acc_file_name in os.listdir()
         self.acc_data_len = 1
         self.acc_column_headers = [

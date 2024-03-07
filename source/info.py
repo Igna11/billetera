@@ -12,13 +12,37 @@ from source import colorizer as color
 from source import currency
 
 
+def currency_price_inferrer():
+    """
+    Infers the price of the currency (by now, only ARS-USD) by searching the last
+    operation.
+    """
+    # Como no pude conseguir el precio de internet, lo infiero de el último
+    # balance en la cuenta Balance.csv
+    with open("Balance.csv", "r", encoding="UTF-8") as balance_file:
+        file_lines = balance_file.read().splitlines()
+    headers = file_lines[0].split("\t")
+    last_line = file_lines[-1].split("\t")
+    balance_data = dict(zip(headers, last_line))
+    total = float(balance_data["Total"])
+    ars_total = float(balance_data["Total(ARS)"])
+    usd_total = float(balance_data["Total(USD)"])
+    try:
+        currency_value = str(round((total - ars_total) / usd_total, 2))
+        color.cprint(f"Última cotización: 1 u$d = $ {currency_value}\n", "green", "bold")
+    except ZeroDivisionError:
+        print("No hay dolares, asi que no importa cuanto vale")
+        currency_value = "0.00"
+    return currency_value
+
+
 def precio_dolar(verbose=False):
     """
     Gets the current dollar price by scrapping from web or inferring it from
     previuos data from Balances.csv
     """
-    exchange = currency.currencies_values()
     try:
+        exchange = currency.currencies_values()
         usd_value = exchange["Dolar U.S.A"]["Compra"]
     except TypeError as error:
         if verbose is True:
@@ -29,22 +53,10 @@ def precio_dolar(verbose=False):
             "No se pudo obtener el precio del dolar de internet, se usará la última cotización.",
             "red",
         )
-        # Como no pude conseguir el precio de internet, lo infiero de el último
-        # balance en la cuenta Balance.csv
-        with open("Balance.csv", "r", encoding="UTF-8") as balance_file:
-            file_lines = balance_file.read().splitlines()
-        headers = file_lines[0].split("\t")
-        last_line = file_lines[-1].split("\t")
-        balance_data = dict(zip(headers, last_line))
-        total = float(balance_data["Total"])
-        ars_total = float(balance_data["Total(ARS)"])
-        usd_total = float(balance_data["Total(USD)"])
-        try:
-            usd_value = str(round((total - ars_total) / usd_total, 2))
-            color.cprint(f"Última cotización: 1 u$d = $ {usd_value}\n", "green", "bold")
-        except ZeroDivisionError:
-            print("No hay dolares, asi que no importa cuanto vale")
-            usd_value = "0.00"
+        usd_value = currency_price_inferrer()
+    except AttributeError as error:
+        print("Something went wrong when scrapping the BNA website")
+        usd_value = currency_price_inferrer()
 
     return float(usd_value.replace(",", "."))
 
