@@ -491,6 +491,38 @@ insert_new_operation(
     installments_payed=0,
     is_active=1,
 )
+
+insert_new_operation(
+    connection,
+    operation_date="29/03/2023",
+    operation_time="12:15",
+    operation_amount=20000,
+    operation_category="VISA",
+    operation_subcategory="Combustible",
+    operation_description="Carga gasoil estanciera para ir a buscar el sillon",
+    other="Estanciera, Gasoil, Combustible",
+    operation_card_id=2455,
+    operation_card_brand="VISA",
+    operation_installments=1,
+    installments_payed=0,
+    is_active=1,
+)
+
+insert_new_operation(
+    connection,
+    operation_date="29/03/2023",
+    operation_time="13:22",
+    operation_amount=6300,
+    operation_category="VISA",
+    operation_subcategory="Supermercado",
+    operation_description="Cafe nesface instantaneo barato no torrado",
+    other="Cafe",
+    operation_card_id=2455,
+    operation_card_brand="VISA",
+    operation_installments=1,
+    installments_payed=0,
+    is_active=1,
+)
 t1 = time.time() - t0
 print(f"tarde {t1:.2f} en llenar las bases de datos")
 
