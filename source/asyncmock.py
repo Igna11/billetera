@@ -523,6 +523,38 @@ insert_new_operation(
     installments_payed=0,
     is_active=1,
 )
+
+insert_new_operation(
+    connection,
+    operation_date="30/03/2023",
+    operation_time="12:49",
+    operation_amount=17680,
+    operation_category="VISA",
+    operation_subcategory="Restaurant",
+    operation_description="Hamburguesa en hutch con pauis",
+    other="Comida, Hamburguesa, Hutch",
+    operation_card_id=2455,
+    operation_card_brand="VISA",
+    operation_installments=1,
+    installments_payed=0,
+    is_active=1,
+)
+
+insert_new_operation(
+    connection,
+    operation_date="30/03/2023",
+    operation_time="17:26",
+    operation_amount=9000,
+    operation_category="VISA",
+    operation_subcategory="Perfumeria",
+    operation_description="Compra de 2 repelentes marca pirulo",
+    other="Repelente",
+    operation_card_id=2455,
+    operation_card_brand="VISA",
+    operation_installments=2,
+    installments_payed=0,
+    is_active=1,
+)
 t1 = time.time() - t0
 print(f"tarde {t1:.2f} en llenar las bases de datos")
 
