@@ -78,7 +78,7 @@ def update_cc_closingdue_dates_table(connection):
 def update_is_active(connection):
     """
     Checks if the operation still active based on:
-    - The number of installments payed and the total number of installments,
+    - The number of installments paid and the total number of installments,
     - The current date
     - The date the purchase was made
     - The closing dates
@@ -168,7 +168,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=3,
-    installments_payed=2,
+    installments_paid=2,
     is_active=1,
 )
 
@@ -184,7 +184,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=6,
-    installments_payed=2,
+    installments_paid=2,
     is_active=1,
 )
 
@@ -200,7 +200,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=3,
-    installments_payed=2,
+    installments_paid=2,
     is_active=1,
 )
 
@@ -216,7 +216,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 
@@ -232,7 +232,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 
@@ -248,7 +248,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 insert_new_operation(
@@ -263,7 +263,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 
@@ -279,7 +279,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=3,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 
@@ -295,7 +295,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 
@@ -311,7 +311,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=1,
+    installments_paid=1,
     is_active=1,
 )
 
@@ -327,7 +327,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=6,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -343,7 +343,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 insert_new_operation(
@@ -358,7 +358,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=3,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -374,7 +374,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -390,7 +390,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -407,7 +407,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 insert_new_operation(
@@ -422,7 +422,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -438,7 +438,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -454,7 +454,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -471,7 +471,7 @@ insert_new_operation(
     operation_card_id=1234,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -488,7 +488,7 @@ insert_new_operation(
     operation_card_id=1234,
     operation_card_brand="VISA",
     operation_installments=18,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -504,7 +504,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -520,7 +520,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -536,7 +536,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=1,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 
@@ -552,7 +552,7 @@ insert_new_operation(
     operation_card_id=2455,
     operation_card_brand="VISA",
     operation_installments=2,
-    installments_payed=0,
+    installments_paid=0,
     is_active=1,
 )
 t1 = time.time() - t0
@@ -564,7 +564,7 @@ SELECT
   operation_date,
   operation_time,
   operation_amount,
-  installments_payed || '/' || operation_installments as installments,
+  installments_paid || '/' || operation_installments as installments,
   installments_amount,
   card_closing_date,
   operation_description
@@ -591,7 +591,7 @@ print(df)
 print("=" * 140, "\n", "printing only active operations")
 df2 = pd.read_sql_query(query, connection)
 print(df2)
-os.remove("operationsDB.sqlite")
+#os.remove("operationsDB.sqlite")
 print("database deleted")
 total = df2.installments_amount.sum()
 print("A pagar el proximo vencimiento: ", f"${total:.2f}")

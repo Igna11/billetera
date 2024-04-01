@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS credit_card_operations (
   operation_card_id INT NOT NULL,
   operation_card_brand TEXT NOT NULL,
   operation_installments INT NOT NULL,
-  installments_payed INT NOT NULL,
+  installments_paid INT NOT NULL,
   installments_amount REAL GENERATED ALWAYS AS (operation_amount / operation_installments) NULL,
   is_active INT NOT NULL,
   FOREIGN KEY (operation_card_id) REFERENCES credit_cards (card_id)

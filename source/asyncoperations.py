@@ -148,32 +148,31 @@ def insert_new_operation(
     operation_card_id: int,
     operation_card_brand: str,
     operation_installments: int,
-    installments_payed: int,
+    installments_paid: int,
     is_active: int,
 ):
     """docstring"""
     cursor = connection.cursor()
-    cursor.execute(
-        """
+    query = """
         INSERT INTO
-          credit_card_operations (operation_date, operation_time, operation_amount, operation_category, operation_subcategory, operation_description, other, operation_card_id, operation_card_brand, operation_installments, installments_payed, is_active)
+          credit_card_operations (operation_date, operation_time, operation_amount, operation_category, operation_subcategory, operation_description, other, operation_card_id, operation_card_brand, operation_installments, installments_paid, is_active)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-        (
-            operation_date,
-            operation_time,
-            operation_amount,
-            operation_category,
-            operation_subcategory,
-            operation_description,
-            other,
-            operation_card_id,
-            operation_card_brand,
-            operation_installments,
-            installments_payed,
-            is_active,
-        ),
+        """
+    values = (
+        operation_date,
+        operation_time,
+        operation_amount,
+        operation_category,
+        operation_subcategory,
+        operation_description,
+        other,
+        operation_card_id,
+        operation_card_brand,
+        operation_installments,
+        installments_paid,
+        is_active,
     )
+    cursor.execute(query, values)
     connection.commit()
 
 
