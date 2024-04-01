@@ -597,8 +597,8 @@ total = df2.installments_amount.sum()
 print("A pagar el proximo vencimiento: ", f"${total:.2f}")
 
 
-# first = "29/02/2024"
-# for i in range(10):
-#    due = calc_due_date(first, "AR", "prev")
-#    first = calc_closing_date(first, "AR", "prev")
-#    print(f"Cierre: {first} -> Vencimiento: {due}")
+first = "29/02/2024"
+for i in range(10):
+    due = calc_due_date(first, "AR", "next")
+    first = calc_closing_date(first, "AR", "next")
+    print(f"Cierre: {first} -> Vencimiento: {due}")
