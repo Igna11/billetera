@@ -12,8 +12,8 @@ import os
 import re
 from hashlib import sha256
 
-from source import sqlpasswd as sql
-from source import errors
+from src import sqlpasswd as sql
+from src import errors
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")

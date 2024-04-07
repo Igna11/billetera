@@ -9,7 +9,7 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
-from source import errors
+from src import errors
 from guicore import users_gui
 from guicore import accounts_gui
 from guicore import operationscreen
@@ -50,7 +50,9 @@ class CreateAccount(QMainWindow):
                 f"<font color='red'>Invalid account name <b>'{acc_name}'</b>.</font>"
             )
         except ValueError:
-            self.create_account_label.setText(f"<font color='red'>Invalid currency'</b>.</font>")
+            self.create_account_label.setText(
+                f"<font color='red'>Invalid currency'</b>.</font>"
+            )
 
     def cancel(self):
         """Cancel creation of account and returns to OperationScreen"""

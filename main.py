@@ -34,31 +34,31 @@ import os
 
 import pandas as pd
 
-from source.info import info
-from source.info import precio_dolar
+from src.info import info
+from src.info import precio_dolar
 
-from source.users import log_in
-from source.users import log_out
-from source.users import create_user
-from source.users import delete_user
-from source.users import change_password
+from src.users import log_in
+from src.users import log_out
+from src.users import create_user
+from src.users import delete_user
+from src.users import change_password
 
-from source.accounts import create_account
-from source.accounts import delete_account
+from src.accounts import create_account
+from src.accounts import delete_account
 
-from source.operations import income
-from source.operations import expense
-from source.operations import extraction
-from source.operations import transfer
-from source.operations import readjustment
+from src.operations import income
+from src.operations import expense
+from src.operations import extraction
+from src.operations import transfer
+from src.operations import readjustment
 
-from source.analysis import data_filter
-from source.analysis import account_balances
-from source.analysis import balance_graf
-from source.analysis import account_data
-from source.analysis import total_balances
-from source.analysis import category_spendings
-from source.analysis import monthly_categorical_spendings
+from src.analysis import data_filter
+from src.analysis import account_balances
+from src.analysis import balance_graf
+from src.analysis import account_data
+from src.analysis import total_balances
+from src.analysis import category_spendings
+from src.analysis import monthly_categorical_spendings
 
 
 pd.set_option("display.max_columns", 11)

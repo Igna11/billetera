@@ -8,7 +8,7 @@ import os
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QLineEdit, QMessageBox, QMainWindow
-from source import errors
+from src import errors
 from guicore import users_gui
 from guicore import welcomescreen
 from guicore import operationscreen
@@ -59,7 +59,9 @@ class CreateUserScreen(QMainWindow):
             if popup_message == QMessageBox.No:
                 self.back()
         except errors.PasswdsDontMatchError:
-            self.create_user_label.setText(f"<font color='red'>Passwords do not match.</font>")
+            self.create_user_label.setText(
+                f"<font color='red'>Passwords do not match.</font>"
+            )
         except errors.UserAlreadyExistsError:
             self.create_user_label.setText(
                 f"<font color='red'>User {username} already exists.</font>"

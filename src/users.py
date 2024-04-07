@@ -13,8 +13,8 @@ import os
 
 from pwinput import pwinput
 
-from source import info
-from source import users_core
+from src import info
+from src import users_core
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")

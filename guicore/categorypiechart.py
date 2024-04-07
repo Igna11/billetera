@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 from PyQt5 import QtChart
 
-from source import errors
+from src import errors
 
 
 class CategoricalPieChart(QtChart.QChart):
@@ -56,14 +56,24 @@ class CategoricalPieChart(QtChart.QChart):
         raw_data.get_data_per_currency(curr)
         if chart_mode == "month":
             month, year = time_period_object.month, time_period_object.year
-            data_outer = raw_data.get_monthly_operations(month, year, chart_type, "Category")
-            data_inner = raw_data.get_monthly_operations(month, year, chart_type, "Subcategory")
+            data_outer = raw_data.get_monthly_operations(
+                month, year, chart_type, "Category"
+            )
+            data_inner = raw_data.get_monthly_operations(
+                month, year, chart_type, "Subcategory"
+            )
         elif chart_mode == "period":
             ci_date, cf_date = time_period_object.values()
-            data_outer = raw_data.get_period_operations(ci_date, cf_date, chart_type, "Category")
-            data_inner = raw_data.get_period_operations(ci_date, cf_date, chart_type, "Subcategory")
+            data_outer = raw_data.get_period_operations(
+                ci_date, cf_date, chart_type, "Category"
+            )
+            data_inner = raw_data.get_period_operations(
+                ci_date, cf_date, chart_type, "Subcategory"
+            )
         else:
-            raise ValueError("Valid types: 'Expenses', 'Incomes'. Valid modes: 'month', 'period'")
+            raise ValueError(
+                "Valid types: 'Expenses', 'Incomes'. Valid modes: 'month', 'period'"
+            )
         return data_inner, data_outer
 
     def clear_slices(self):
@@ -91,7 +101,9 @@ class CategoricalPieChart(QtChart.QChart):
             ):
                 slice_inner = QtChart.QPieSlice(idx_inner, val_inner)
                 slice_inner.hovered.connect(
-                    lambda is_hovered, slice_=slice_inner: slice_.setLabelVisible(is_hovered)
+                    lambda is_hovered, slice_=slice_inner: slice_.setLabelVisible(
+                        is_hovered
+                    )
                 )
                 slice_inner.hovered.connect(
                     lambda is_hovered, slice_=slice_inner: slice_.setExploded(is_hovered)
@@ -113,14 +125,14 @@ class CategoricalPieChart(QtChart.QChart):
         for pie_slice in self.series_outer.slices():
             slice_lbl = pie_slice.label()
             slice_val = pie_slice.value()
-            label = (
-                f"<p align='center' style='color:black'>{slice_lbl}<br><b>${slice_val:.2f}</b></p>"
-            )
+            label = f"<p align='center' style='color:black'>{slice_lbl}<br><b>${slice_val:.2f}</b></p>"
             if pie_slice.percentage() > 0.05:
                 pie_slice.setLabelVisible()
             elif pie_slice.percentage() <= 0.05:
                 pie_slice.hovered.connect(
-                    lambda is_hovered, slice_=pie_slice: slice_.setLabelVisible(is_hovered)
+                    lambda is_hovered, slice_=pie_slice: slice_.setLabelVisible(
+                        is_hovered
+                    )
                 )
             pie_slice.setLabel(label)
 
@@ -148,11 +160,15 @@ class CategoricalPieChart(QtChart.QChart):
         if chart_mode == "month":
             selected_period = time_period_object.strftime(format="%B %Y").capitalize()
             month, year = time_period_object.month, time_period_object.year
-            total = raw_data.get_monthly_operations(month, year, chart_type, "Category").sum()
+            total = raw_data.get_monthly_operations(
+                month, year, chart_type, "Category"
+            ).sum()
         elif chart_mode == "period":
             ci_date, cf_date = time_period_object.values()
             selected_period = f"Period: {ci_date} -- {cf_date}"
-            total = raw_data.get_period_operations(ci_date, cf_date, chart_type, "Category").sum()
+            total = raw_data.get_period_operations(
+                ci_date, cf_date, chart_type, "Category"
+            ).sum()
         title_type = chart_type.capitalize()
         total = str(round(total, 2)).replace(".", "<sup>") + "</sup>"
         title = f"<h3><p align='center' style='color:black'><b>{title_type}: ${total}<br>{selected_period}</b></p>"

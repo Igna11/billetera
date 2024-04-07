@@ -22,7 +22,7 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from source import errors
+from src import errors
 
 
 def account_data(acc_name: str, acc_currency: str) -> pd.DataFrame:

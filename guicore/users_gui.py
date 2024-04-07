@@ -12,16 +12,18 @@ Refactored on Sun Oct 16 16:00:00 2022
 import os
 
 
-from source import info
-from source import users_core
-from source import errors
+from src import info
+from src import users_core
+from src import errors
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")
 os.chdir(DATA_PATH)
 
 
-def create_user(username: str, useremail: str, password: bytes, password_check: bytes) -> None:
+def create_user(
+    username: str, useremail: str, password: bytes, password_check: bytes
+) -> None:
     """
     Creates an user with its directories and entries in the data base.
     Uses inputs for name of the user and password.
@@ -40,7 +42,9 @@ def create_user(username: str, useremail: str, password: bytes, password_check: 
     user_db.add_user_to_db(passwd=password)
 
 
-def delete_user(username: str, useremail: str, password: bytes, confirmation: bool) -> None:
+def delete_user(
+    username: str, useremail: str, password: bytes, confirmation: bool
+) -> None:
     """
     Deletes an user and all its information stored in its directories and
     data base.

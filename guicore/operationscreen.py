@@ -23,7 +23,7 @@ from guicore import (
     transferscreen,
     accounts_dashlet_widget,
 )
-from source import analysis, errors, account_core as acc
+from src import analysis, errors, account_core as acc
 
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -45,7 +45,9 @@ class OperationScreen(QMainWindow):
         self.disable_operation_buttons()
 
         # transition for accounts
-        self.account_dashlet = accounts_dashlet_widget.AccountDashletWidget(acc.AccountParser())
+        self.account_dashlet = accounts_dashlet_widget.AccountDashletWidget(
+            acc.AccountParser()
+        )
         self.acc_totals_widget = QStackedWidget()
         self.acc_totals_widget.addWidget(self.account_dashlet)
         self.central_VL_Layout.insertWidget(0, self.acc_totals_widget)
@@ -115,7 +117,9 @@ class OperationScreen(QMainWindow):
                 self.operation, widget=self.widget
             )
         elif operation == "transfer":
-            operation_inputs = transferscreen.TransferScreen(self.operation, widget=self.widget)
+            operation_inputs = transferscreen.TransferScreen(
+                self.operation, widget=self.widget
+            )
         elif operation == "readjustment":
             operation_inputs = readjustmentscreen.ReadjustmentScreen(
                 self.operation, widget=self.widget
@@ -149,7 +153,7 @@ class OperationScreen(QMainWindow):
         """
         docstring
         """
-        
+
         try:
             raw_data = analysis.DataAnalyzer()
         except errors.UserHasNotAccountsError:
@@ -177,7 +181,7 @@ class OperationScreen(QMainWindow):
             time = self.selected_datetime
         elif mode == "period" and time_period:
             time = time_period
-        
+
         data_inner, data_outer = self.chart.load_data(
             raw_data,
             chart_mode=mode,
@@ -236,7 +240,10 @@ class OperationScreen(QMainWindow):
         self.custom_initial_date = calendar_dialog.initial_d
         self.custom_final_date = calendar_dialog.final_d
         if self.custom_initial_date and self.custom_final_date:
-            period_dict = {"initial": str(self.custom_initial_date), "final": str(self.custom_final_date)}
+            period_dict = {
+                "initial": str(self.custom_initial_date),
+                "final": str(self.custom_final_date),
+            }
             self.generate_chart(mode="period", time_period=period_dict)
             self.chart_mode = "period"
 
@@ -270,7 +277,10 @@ class OperationScreen(QMainWindow):
                 time_period_object=time,
             )
         elif self.chart_mode == "period":
-            period_dict = {"initial": str(self.custom_initial_date), "final": str(self.custom_final_date)}
+            period_dict = {
+                "initial": str(self.custom_initial_date),
+                "final": str(self.custom_final_date),
+            }
             data_inner, data_outer = self.chart.load_data(
                 raw_data,
                 chart_mode=self.chart_mode,

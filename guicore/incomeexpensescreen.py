@@ -10,9 +10,9 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
-from source import account_core as account
-from source import operations
-from source import errors
+from src import account_core as account
+from src import operations
+from src import errors
 from guicore import operationscreen
 
 
@@ -28,7 +28,9 @@ class IncomeExpenseScreen(QMainWindow):
 
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(IncomeExpenseScreen, self).__init__(parent)
-        operation_incomeexpense_screen = os.path.join(GUI_PATH, "operation_incomeexpense_screen.ui")
+        operation_incomeexpense_screen = os.path.join(
+            GUI_PATH, "operation_incomeexpense_screen.ui"
+        )
         loadUi(operation_incomeexpense_screen, self)
         self.widget = widget
         self.operation_flag = operation_flag
@@ -83,9 +85,13 @@ class IncomeExpenseScreen(QMainWindow):
                     subcategory,
                     description,
                 )
-                self.status_label.setText(f"<font color='green'>Operation successfull</font>")
+                self.status_label.setText(
+                    f"<font color='green'>Operation successfull</font>"
+                )
             except ValueError:
-                self.status_label.setText(f"<font color='red'>Invalid value entered.</font>")
+                self.status_label.setText(
+                    f"<font color='red'>Invalid value entered.</font>"
+                )
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     f"<font color='red'>Quantity must be greater than 0!</font>"
@@ -101,9 +107,13 @@ class IncomeExpenseScreen(QMainWindow):
                     subcategory,
                     description,
                 )
-                self.status_label.setText(f"<font color='green'>Operation successfull</font>")
+                self.status_label.setText(
+                    f"<font color='green'>Operation successfull</font>"
+                )
             except ValueError:
-                self.status_label.setText(f"<font color='red'>Invalid value entered.</font>")
+                self.status_label.setText(
+                    f"<font color='red'>Invalid value entered.</font>"
+                )
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     f"<font color='red'>Quantity must be greater than 0!</font>"

@@ -9,7 +9,7 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QLineEdit, QMessageBox, QMainWindow
 
-from source import errors
+from src import errors
 from guicore import users_gui
 from guicore import welcomescreen
 
@@ -52,7 +52,9 @@ class DeleteUserScreen(QMainWindow):
                 self.back()
             if popup_message == QMessageBox.No:
                 pass
-            self.delete_label.setText(f"<font color='green'>User {username} deleted.</font>")
+            self.delete_label.setText(
+                f"<font color='green'>User {username} deleted.</font>"
+            )
         except errors.UserDoesNotExistsError:
             self.delete_label.setText(
                 f"<font color='red'>User <b>{username}</b> does not exist</font>"
@@ -60,7 +62,9 @@ class DeleteUserScreen(QMainWindow):
         except errors.WrongPasswordError:
             self.delete_label.setText("<font color='red'>Wrong password</font>")
         except errors.UserCouldNotBeDeletedError:
-            self.delete_label.setText(f"<font color='red'>Please mark 'I am sure'.</font>")
+            self.delete_label.setText(
+                f"<font color='red'>Please mark 'I am sure'.</font>"
+            )
         except errors.InvalidEmailError:
             self.delete_label.setText(f"<font color='red'>Invalid email format.</font>")
 

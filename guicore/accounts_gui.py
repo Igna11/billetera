@@ -8,8 +8,8 @@ create_account()
 delete_account()
 """
 
-from source import account_core as accounts
-from source import errors
+from src import account_core as accounts
+from src import errors
 
 
 def create_account(name_acc: str = None, currency_acc: str = None) -> None:

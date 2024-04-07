@@ -10,9 +10,9 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
-from source import account_core as account
-from source import operations
-from source import errors
+from src import account_core as account
+from src import operations
+from src import errors
 from guicore import operationscreen
 
 
@@ -46,7 +46,9 @@ class TransferScreen(QMainWindow):
         # origin accounts comboBox
         self.accounts_origin_comboBox.addItems(self.acc_item_list)
         self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
-        self.accounts_origin_comboBox.currentIndexChanged.connect(self.set_origin_acc_data)
+        self.accounts_origin_comboBox.currentIndexChanged.connect(
+            self.set_origin_acc_data
+        )
         # dest accounts comboBox
         self.accounts_dest_comboBox.addItems(self.acc_item_list)
         self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
@@ -93,14 +95,18 @@ class TransferScreen(QMainWindow):
                     self.dest_acc_name,
                     self.dest_acc_currency,
                 )
-                self.status_label.setText("<font color='green'>Transfer successful!</font>")
+                self.status_label.setText(
+                    "<font color='green'>Transfer successful!</font>"
+                )
                 # Display the new totals in the origin account
                 self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
 
                 # Display the new totals in the destination account
                 self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
             except ValueError:
-                self.status_label.setText("<font color='red'>Invalid value entered.</font>")
+                self.status_label.setText(
+                    "<font color='red'>Invalid value entered.</font>"
+                )
             except errors.SameAccountTransferError:
                 self.status_label.setText(
                     "<font color='red'>Origin and destination accounts can't be the same.</font>"

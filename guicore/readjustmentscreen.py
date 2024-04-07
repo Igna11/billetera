@@ -10,9 +10,9 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
-from source import account_core as account
-from source import operations
-from source import errors
+from src import account_core as account
+from src import operations
+from src import errors
 from guicore import operationscreen
 
 
@@ -28,7 +28,9 @@ class ReadjustmentScreen(QMainWindow):
 
     def __init__(self, operation_flag: str, parent=None, widget=None):
         super(ReadjustmentScreen, self).__init__(parent)
-        operation_readjustment_screen = os.path.join(GUI_PATH, "operation_readjustment_screen.ui")
+        operation_readjustment_screen = os.path.join(
+            GUI_PATH, "operation_readjustment_screen.ui"
+        )
         loadUi(operation_readjustment_screen, self)
         self.widget = widget
         self.index = 0
@@ -64,7 +66,9 @@ class ReadjustmentScreen(QMainWindow):
                     self.acc_name,
                     self.acc_currency,
                 )
-                self.status_label.setText(f"<font color='green'>Operation successfull</font>")
+                self.status_label.setText(
+                    f"<font color='green'>Operation successfull</font>"
+                )
                 print(
                     self.acc_name,
                     self.acc_currency,
@@ -73,7 +77,9 @@ class ReadjustmentScreen(QMainWindow):
             except ValueError:
                 self.status_label.setText(f"<font color='red'>Invalid value.</font>")
             except errors.NotReadjustmentError:
-                self.status_label.setText(f"<font color='red'>The balance is up to date!</font>")
+                self.status_label.setText(
+                    f"<font color='red'>The balance is up to date!</font>"
+                )
             except errors.NegativeOrZeroValueError:
                 self.status_label.setText(
                     f"<font color='red'>Quantity must be greater than 0!</font>"
