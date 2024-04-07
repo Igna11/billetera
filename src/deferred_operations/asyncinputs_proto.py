@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sqlite3 as sql
-from asyncoperations import (
-    create_connection,
-    execute_query,
-    execute_read_query,
+from src.deferred_operations.db_handlers import (
     insert_new_cc,
     update_cc,
     delete_cc,
@@ -93,49 +90,3 @@ def new_cc_operation(connection: sql.connect) -> None:
         other,
         is_active,
     )
-
-
-#
-#
-## first credit card testing querie
-# card_query = """
-# INSERT INTO
-#  credit_cards (card_id, card_brand, card_issuer, card_expiration, card_closing_date, card_due_date)
-# VALUES
-#  (2444, 'VISA', 'Santander', '09-29', '29-02-2024', '05-03-2024');
-# """
-#
-## creation of the tables
-# execute_query(connection=connection, query=card_query)
-# print("firts credit card saved")
-#
-# operation_dict = {
-#    "date": "2024-02-15",
-#    "time": "09:35:30",
-#    "card": "VISA",
-#    "card_id": 2444,
-#    "repetitions": 6,
-#    "amount": 5640.43,
-#    "category": "Pagos",
-#    "subcategory": "VISA",
-#    "description": "motor nuevo para la renoletá",
-#    "other": "Auto-Repuestos",
-# }
-#
-# data1, data2 = data_split(operation_dict)
-#
-# insert_operation(connection, data1, data2)
-#
-# query = """SELECT * FROM credit_card_operations WHERE is_active=1;"""
-#
-# df = pd.read_sql_query(query, connection)
-# print(df)
-#
-# result = execute_read_query(connection, query)
-#
-# df["date"] = pd.to_datetime(df["date"])
-# df["time"] = pd.to_datetime(df["time"])
-#
-# total = df["amount"].sum()
-# date = df["date"][0].strftime("%d/%m/%Y")
-# print(f"El total a pagar el {date} es {total:.2f}")
