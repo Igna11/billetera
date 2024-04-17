@@ -23,7 +23,9 @@ from guicore import (
     transferscreen,
     accounts_dashlet_widget,
 )
-from src import analysis, errors, account_core as acc
+from src import analysis
+from src.errors import errors
+from src.accounts import account_core as acc
 
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))

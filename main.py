@@ -43,14 +43,14 @@ from src.users import create_user
 from src.users import delete_user
 from src.users import change_password
 
-from src.accounts import create_account
-from src.accounts import delete_account
+from src.accounts.accounts import create_account
+from src.accounts.accounts import delete_account
 
-from src.operations import income
-from src.operations import expense
-from src.operations import extraction
-from src.operations import transfer
-from src.operations import readjustment
+from src.operations.operations import income
+from src.operations.operations import expense
+from src.operations.operations import extraction
+from src.operations.operations import transfer
+from src.operations.operations import readjustment
 
 from src.analysis import data_filter
 from src.analysis import account_balances

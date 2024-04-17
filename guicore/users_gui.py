@@ -13,8 +13,8 @@ import os
 
 
 from src import info
-from src import users_core
-from src import errors
+from src.users import users_core
+from src.errors import errors
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
 DATA_PATH = os.path.join(BASE_PATH, "data")

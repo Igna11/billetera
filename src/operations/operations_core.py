@@ -6,8 +6,8 @@ Created on Sun Oct 30 19:00:00 2022
 @author: igna
 """
 from datetime import datetime
-from src import errors
-from src import account_core as account
+from src.errors import errors
+from src.accounts import account_core as account
 
 
 class Operations(account.Accounts):

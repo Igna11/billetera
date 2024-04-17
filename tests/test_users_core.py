@@ -9,7 +9,7 @@ import os
 import unittest
 from src import users_core
 from src import sqlpasswd as sql
-from src import errors
+from src.errors import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_BASE = os.path.join(BASE_DIR, "data", "passwords.sqlite")

@@ -10,7 +10,7 @@ create_account()
 delete_account()
 """
 
-from src.account_core import AccountsCreator
+from .account_core import AccountsCreator
 
 
 def create_account(name_acc: str = None, currency_acc: str = None) -> None:

@@ -10,9 +10,9 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
-from src import account_core as account
-from src import operations
-from src import errors
+from src.accounts import account_core as account
+from src.operations import operations
+from src.errors import errors
 from guicore import operationscreen
 
 
@@ -96,13 +96,14 @@ class TransferScreen(QMainWindow):
                     self.dest_acc_currency,
                 )
                 self.status_label.setText(
-                    "<font color='green'>Transfer successful!</font>"
+                    "<font color='green'>Transfer successfull!</font>"
                 )
                 # Display the new totals in the origin account
                 self.set_origin_acc_data(self.accounts_origin_comboBox.currentIndex())
 
                 # Display the new totals in the destination account
                 self.set_dest_acc_data(self.accounts_dest_comboBox.currentIndex())
+                print("trasnfer successfull")
             except ValueError:
                 self.status_label.setText(
                     "<font color='red'>Invalid value entered.</font>"
@@ -125,7 +126,6 @@ class TransferScreen(QMainWindow):
                 self.status_label.setText(
                     "<font color='red'>Quantity to transfer can't be greater than the total."
                 )
-            print("trasnfer successfull")
 
     def cancel(self):
         """Returns to previous screen OperationScreen menu."""

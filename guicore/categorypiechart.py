@@ -8,7 +8,7 @@ from datetime import datetime
 import pandas as pd
 from PyQt5 import QtChart
 
-from src import errors
+from src.errors import errors
 
 
 class CategoricalPieChart(QtChart.QChart):

@@ -10,7 +10,7 @@ Core module of accounts and its operations
 import os
 import re
 
-from src import errors
+from src.errors import errors
 
 
 class Accounts:

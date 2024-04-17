@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sqlite3 as sql
-from src.deferred_operations.db_handlers import (
+from db_handlers import (
     insert_new_cc,
     update_cc,
     delete_cc,

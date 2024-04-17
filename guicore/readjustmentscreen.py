@@ -10,9 +10,9 @@ from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QMainWindow
 
-from src import account_core as account
-from src import operations
-from src import errors
+from src.accounts import account_core as account
+from src.operations import operations
+from src.errors import errors
 from guicore import operationscreen
 
 

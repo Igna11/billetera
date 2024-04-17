@@ -8,9 +8,9 @@ Created on Sun Oct 30 16:16:00 2022
 import os
 import unittest
 from datetime import datetime
-from src import errors
-from src import operations
-from src import account_core as account
+from src.errors import errors
+from src.operations import operations
+from src.accounts import account_core as account
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")

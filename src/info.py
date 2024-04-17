@@ -7,7 +7,7 @@ Created on Sun Sep  4 11:24:19 2022
 
 """
 
-from src import account_core as account
+from src.accounts import account_core as account
 from src import colorizer as color
 from src import currency
 

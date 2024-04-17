@@ -15,8 +15,8 @@ readjustment()
 import os
 from datetime import datetime
 from src import info
-from src import account_core as account
-from src import operations_core as operation
+from src.accounts import account_core as account
+from src.operations import operations_core as operation
 from src import colorizer as color
 
 

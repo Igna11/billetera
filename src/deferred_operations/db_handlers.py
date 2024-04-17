@@ -123,6 +123,9 @@ def update_cc(connection: sql.connect, id: int, **kwargs):
 
 
 def delete_cc(connection: sql.connect, id: int, brand: str, issuer: str) -> None:
+    """
+    Deletes the desired credit card from the credit_card table.
+    """
     cursor = connection.cursor()
     query = """
     DELETE FROM 
@@ -151,11 +154,14 @@ def insert_new_operation(
     installments_paid: int,
     is_active: int,
 ):
-    """docstring"""
+    """Creates a new entry in the credit_card_operations table with all the necessary data"""
     cursor = connection.cursor()
     query = """
         INSERT INTO
-          credit_card_operations (operation_date, operation_time, operation_amount, operation_category, operation_subcategory, operation_description, other, operation_card_id, operation_card_brand, operation_installments, installments_paid, is_active)
+          credit_card_operations 
+          (operation_date, operation_time, operation_amount, operation_category, operation_subcategory, 
+          operation_description, other, operation_card_id, operation_card_brand, operation_installments, 
+          installments_paid, is_active)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
     values = (

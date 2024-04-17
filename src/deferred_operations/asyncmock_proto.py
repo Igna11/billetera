@@ -7,7 +7,7 @@ import time
 from datetime import datetime, timedelta
 import pandas as pd
 
-from src.deferred_operations.db_handlers import (
+from db_handlers import (
     create_connection,
     insert_new_cc,
     insert_new_operation,
@@ -38,10 +38,24 @@ t1 = time.time() - t0
 print(f"Tarde {t1:.2f} en crear la base de datos")
 
 
-def update_cc_closingdue_dates_table(connection):
+def manual_update_cc_closingdue_dates_table(
+    connection, id: int, cdate: str = "", ddate: str = ""
+) -> None:
+    """Manually update the closing and due dates of a credit card"""
+    if cdate and ddate:
+        update_cc(connection, id=id, card_closing_date=cdate, card_due_date=ddate)
+    elif cdate and not ddate:
+        update_cc(connection, id=id, card_closing_date=cdate)
+    elif not cdate and ddate:
+        update_cc(connection, id=id, card_due_date=ddate)
+
+
+def auto_update_cc_closingdue_dates_table(connection):
     """
     Checks if the closing and due date of the credit cards
     are up to date and, if not, updates it approximately.
+    Note: It needs to have the latest correct due a closing date
+    to work properly.
     """
     read_query = """
     SELECT 
@@ -65,7 +79,7 @@ def update_cc_closingdue_dates_table(connection):
                 card_closing_date=new_cdate,
             )
             print(f"new closing date: {new_cdate} for card id: {card_id}")
-        if due_datetime < datetime.now() and close_datetime > datetime.now():
+        if due_datetime < datetime.now():
             new_ddate = calc_due_date(closing_date, "AR")
             update_cc(
                 connection,
@@ -78,20 +92,20 @@ def update_cc_closingdue_dates_table(connection):
 def update_is_active(connection):
     """
     Checks if the operation still active based on:
-    - The number of installments paid and the total number of installments,
-    - The current date
-    - The date the purchase was made
-    - The closing dates
-    - The due dates
-    Case 1. The purchase is made today, with or without installments and the closing date
-    may be or may be not today: Then is active.
-    Case 2. The purchase is made today, with or without installments and the closing date
-    has been updated to the next one, while the due date is yet to come. So this purchase
-    belongs to the following card cycle: Then is not active until the due date is updated.
-    Case 3. The purchase was made in the past, before the last close date and without
-    installments. Then is not active
-    Case 4. The purchase was made in the past, before the last close date and with more
-    than 1 installments. Then is active
+    - The number of installments: N
+    - The date the purchase was made: pd
+    - The closing dates: cd
+    - The due dates: dd
+    Case A:
+        - cd < dd: This is the most common case
+        - N installments
+        Then if pd < cd - N => is_active = 0
+    Case B:
+        - cd > dd: this is the case when the closing date is updated but the due date is
+        yet to come so, the new cd y bigger than dd.
+        - N installaments
+        then if pd < cd - (N + 1) => is_active = 0
+    where cd - j means calculating the previus j closing dates and not substracting j days.
     """
     read_query = """
     SELECT 
@@ -104,13 +118,12 @@ def update_is_active(connection):
       credit_card_operations.operation_card_id=credit_cards.card_id
     WHERE
       is_active = 1;"""
-    today = datetime.now()
     print("checking active operations")
-    A = execute_read_query(connection, read_query)
+    data = execute_read_query(connection, read_query)
     # A : [(operation_id, operation_date, operation_installments, is_active),..]
-    for tup in A:
+    for tup in data:
         row = list(tup)
-        id, date, installments, active, closing_date, due_date = (
+        id, pdate, installments, active, closing_date, due_date = (
             row[0],
             row[1],
             row[2],
@@ -118,29 +131,32 @@ def update_is_active(connection):
             row[4],
             row[5],
         )
-        date = datetime.strptime(date, FORMAT)
-        current_due_datetime = datetime.strptime(due_date, FORMAT)
-        current_closing_datetime = datetime.strptime(closing_date, FORMAT)
+        pdatetime = datetime.strptime(pdate, FORMAT)
+        ddatetime = datetime.strptime(due_date, FORMAT)
+        cdatetime = datetime.strptime(closing_date, FORMAT)
         gen_cdate = closing_date_gen(closing_date, "AR")
+        print(f"id: {id}")
+        for i in range(installments - 1):
+            prev_cdate = next(gen_cdate)
+            print(prev_cdate)
 
-        # day_difference = today - date
-        # if day_difference.days >= 36 and installment == 1:
-        #    active = 0
-        prev_cdate = next(gen_cdate)
-        prev_ddate = calc_due_date(prev_cdate, "AR")
+        # Case A: dd < cd and pd < cd - (N + 1) (prev_cdate == N)
         prev_cdatetime = datetime.strptime(prev_cdate, FORMAT)
-        prev_ddatetime = datetime.strptime(prev_ddate, FORMAT)
-        # case 3
-        if date < prev_cdatetime and installments == 1 and date < current_due_datetime:
+        if cdatetime < ddatetime and pdatetime < prev_cdatetime:
             active = 0
-            update_operation(connection, id, is_active=active)
-            print(f"Compra Id: {id} inactivada por case 3")
-        # case 2
-        elif date < current_due_datetime < current_closing_datetime and installments == 1:
-            print(id)
+            print("Case A")
+            print(f"purchase date: {pdate}")
+            print(f"previus closing date: {prev_cdate}")
+            print(f"current closing date: {closing_date}")
+
+        prev_cdate = next(gen_cdate)
+        prev_cdatetime = datetime.strptime(prev_cdate, FORMAT)
+
+        # Case B: cd < dd and pd < cd - N
+        if ddatetime < cdatetime and pdatetime < prev_cdatetime:
             active = 0
-            update_operation(connection, id, is_active=active)
-            print(f"Compra Id: {id} inactivada case 2")
+            print("Case B")
+        update_operation(connection, id, is_active=active)
 
 
 t1 = time.time() - t0
@@ -170,22 +186,14 @@ WHERE
   );
 """
 df = pd.read_sql_query(query, connection)
-update_cc_closingdue_dates_table(connection)
+auto_update_cc_closingdue_dates_table(connection)
 # manually update credit card closing date:
 # update_cc(connection, id=2455, card_closing_date="27/03/2024")
-update_cc_closingdue_dates_table(connection)
+auto_update_cc_closingdue_dates_table(connection)
 update_is_active(connection)
 print(df)
 print("=" * 140, "\n", "printing only active operations")
 df2 = pd.read_sql_query(query, connection)
 print(df2)
-print("database deleted")
 total = df2.installments_amount.sum()
 print("A pagar el proximo vencimiento: ", f"${total:.2f}")
-
-
-# first = "29/02/2024"
-# for i in range(10):
-#    due = calc_due_date(first, "AR", "next")
-#    first = calc_closing_date(first, "AR", "next")
-#    print(f"Cierre: {first} -> Vencimiento: {due}")

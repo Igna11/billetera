@@ -8,7 +8,7 @@ import os
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 from PyQt5.QtWidgets import QLineEdit, QMessageBox, QMainWindow
-from src import errors
+from src.errors import errors
 from guicore import users_gui
 from guicore import welcomescreen
 from guicore import operationscreen
