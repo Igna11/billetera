@@ -7,25 +7,30 @@ La principal desventaja es que es un programa para usar en una PC, con lo cual n
 ### Estructura
 
 ```
-BilleteraAPP
+BilleteraAPP/
     |__ main.py
-    |__ source
+    |__ src/
+	|__ accounts/
+		|__ accounts.py
+		|__ account_core.py
+	|__ operations/
+        	|__ operations.py
+        	|__ operations_core.py
+	|__ errors/
+		|__ errors.py
+	|__ deferred_operations/
+		|__ under development*
         |__ info.py
         |__ users.py
-        |__ errors.py
-        |__ accounts.py
         |__ analysis.py
         |__ currency.py
         |__ colorizer.py
-        |__ operations.py
         |__ sqlpasswd.py
         |__ users_core.py
-        |__ account_core.py
-        |__ operations_core.py
-    |__ data
+    |__ data/
         |__ userUSR
         |__ passwords.sql
-    |__ guicore
+    |__ guicore/
 	|__ uis
 	|__ accounts_gui.py
 	|__ calendardialog.py
@@ -37,7 +42,7 @@ BilleteraAPP
 	|__ incomeexpensescreen.py
 	|__ loginscreen.py
 	|__ operationscreen.py
-    |__ tests
+    |__ tests/
         |__ tests_accounts_core.py
         |__ tests_accounts_users.py
         |__ tests_operations_core.py
