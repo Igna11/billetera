@@ -7,9 +7,9 @@ Created on Sat Oct 15 11:10:00 2022
 """
 import os
 import unittest
-from source import users_core
-from source import sqlpasswd as sql
-from source import errors
+from src import users_core
+from src import sqlpasswd as sql
+from src import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_BASE = os.path.join(BASE_DIR, "data", "passwords.sqlite")
@@ -46,9 +46,7 @@ class TestUserDB(unittest.TestCase):
     def test_user_not_valiremail(self):
         """Test that error InvalidEmailError is raised when an invalid email is entered"""
         with self.assertRaises(errors.InvalidEmailError):
-            user = users_core.UsersDB(
-                user="Test_bad_mail_user", email="badmail"
-            )
+            user = users_core.UsersDB(user="Test_bad_mail_user", email="badmail")
 
     def test_user_not_valid_username(self):
         """Test that error InvalidNameError is raised for the empty string '' as username"""
@@ -77,9 +75,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_changepass(self):
         """Test the change of password"""
-        user = users_core.UsersDB(
-            user="Test_User_changepwd", email="test@test.test"
-        )
+        user = users_core.UsersDB(user="Test_User_changepwd", email="test@test.test")
         first_password = b"test_password"
         user.add_user_to_db(passwd=first_password)
         connection = sql.create_connection(DATA_BASE)
@@ -93,9 +89,7 @@ class TestUserDB(unittest.TestCase):
 
     def test_user_passwdvalidation(self):
         """Test the validation of the passwd"""
-        user = users_core.UsersDB(
-            user="Test_User_pwdvalidation", email="test@test.test"
-        )
+        user = users_core.UsersDB(user="Test_User_pwdvalidation", email="test@test.test")
         password = b"test_password"
         user.add_user_to_db(passwd=password)
         self.assertEqual(user.passwdvalidation, False)

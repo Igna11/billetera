@@ -7,7 +7,7 @@ Created on Wed Mar 30 22:42:17 2022
 """
 import os
 import unittest
-from source.users import log_out
+from src.users import log_out
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

@@ -8,7 +8,7 @@ Created on Mon Oct 03 20:00:05 2022
 import os
 import unittest
 from unittest.mock import patch
-from source import accounts as acc
+from src import accounts as acc
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 USER_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
