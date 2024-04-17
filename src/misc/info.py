@@ -7,9 +7,9 @@ Created on Sun Sep  4 11:24:19 2022
 
 """
 
-from src.accounts import account_core as account
-from src import colorizer as color
-from src import currency
+from src.misc import colorizer as color
+from src.integrations import currency
+from src.portfolios import account_core as account
 
 
 def currency_price_inferrer():

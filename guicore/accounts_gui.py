@@ -8,7 +8,7 @@ create_account()
 delete_account()
 """
 
-from src.accounts import account_core as accounts
+from src.portfolios import account_core as accounts
 from src.errors import errors
 
 

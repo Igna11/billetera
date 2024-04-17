@@ -7,8 +7,8 @@ Created on Sat Oct 15 11:10:00 2022
 """
 import os
 import unittest
-from src import users_core
-from src import sqlpasswd as sql
+from src.users import users_core
+from src.users import sqlpasswd as sql
 from src.errors import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

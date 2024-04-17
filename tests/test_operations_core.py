@@ -8,7 +8,7 @@ Created on Sun Oct 30 16:16:00 2022
 import os
 import unittest
 from src.errors import errors
-from src.operations import operations_core as oper
+from src.portfolios.operations import operations_core as oper
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")

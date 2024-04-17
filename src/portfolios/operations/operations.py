@@ -14,10 +14,10 @@ readjustment()
 """
 import os
 from datetime import datetime
-from src import info
-from src.accounts import account_core as account
-from src.operations import operations_core as operation
-from src import colorizer as color
+from src.portfolios import account_core as account
+from src.portfolios.operations import operations_core as operation
+from src.misc import colorizer as color
+from src.misc import info
 
 
 def account_selector() -> dict:

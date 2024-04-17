@@ -7,7 +7,7 @@ Created on Sun Oct 30 19:00:00 2022
 """
 from datetime import datetime
 from src.errors import errors
-from src.accounts import account_core as account
+from src.portfolios import account_core as account
 
 
 class Operations(account.Accounts):

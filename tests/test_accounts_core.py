@@ -7,7 +7,7 @@ Created on Sun Oct 30 16:16:00 2022
 """
 import os
 import unittest
-from src.accounts import account_core as core
+from src.portfolios import account_core as core
 from src.errors import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

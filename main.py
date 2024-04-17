@@ -34,32 +34,31 @@ import os
 
 import pandas as pd
 
-from src.info import info
-from src.info import precio_dolar
+from src.misc.info import info
+from src.misc.info import precio_dolar
 
-from src.users import log_in
-from src.users import log_out
-from src.users import create_user
-from src.users import delete_user
-from src.users import change_password
+from src.users.users import log_in
+from src.users.users import log_out
+from src.users.users import create_user
+from src.users.users import delete_user
+from src.users.users import change_password
 
-from src.accounts.accounts import create_account
-from src.accounts.accounts import delete_account
+from src.portfolios.accounts import create_account
+from src.portfolios.accounts import delete_account
 
-from src.operations.operations import income
-from src.operations.operations import expense
-from src.operations.operations import extraction
-from src.operations.operations import transfer
-from src.operations.operations import readjustment
+from src.portfolios.operations.operations import income
+from src.portfolios.operations.operations import expense
+from src.portfolios.operations.operations import extraction
+from src.portfolios.operations.operations import transfer
+from src.portfolios.operations.operations import readjustment
 
-from src.analysis import data_filter
-from src.analysis import account_balances
-from src.analysis import balance_graf
-from src.analysis import account_data
-from src.analysis import total_balances
-from src.analysis import category_spendings
-from src.analysis import monthly_categorical_spendings
-
+from src.analysis.analysis import data_filter
+from src.analysis.analysis import account_balances
+from src.analysis.analysis import balance_graf
+from src.analysis.analysis import account_data
+from src.analysis.analysis import total_balances
+from src.analysis.analysis import category_spendings
+from src.analysis.analysis import monthly_categorical_spendings
 
 pd.set_option("display.max_columns", 11)
 

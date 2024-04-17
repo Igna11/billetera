@@ -12,7 +12,7 @@ Refactored on Sun Oct 16 16:00:00 2022
 import os
 
 
-from src import info
+from src.misc import info
 from src.users import users_core
 from src.errors import errors
 
