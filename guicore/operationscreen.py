@@ -23,7 +23,7 @@ from guicore import (
     transferscreen,
     accounts_dashlet_widget,
 )
-from src import analysis
+from src.analysis import analysis
 from src.errors import errors
 from src.portfolios import account_core as acc
 

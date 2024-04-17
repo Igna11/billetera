@@ -10,14 +10,20 @@ Created on Sat Sept 03 19:21:22 2022
 Refactored on Sun Oct 16 16:00:00 2022
 """
 import os
-
+from pathlib import Path
 from pwinput import pwinput
 
 from src.misc import info
 from src.users import users_core
 
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
-DATA_PATH = os.path.join(BASE_PATH, "data")
+BASE_PATH = Path(__file__).parents[2]
+DATA_PATH = A = os.path.join(BASE_PATH, "data")
+DATA_PATH = B = Path(BASE_PATH, "data")
+
+print(dir(A))
+print(dir(B))
+print(DATA_PATH)
 os.chdir(DATA_PATH)
 
 
