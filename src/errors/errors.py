@@ -57,7 +57,7 @@ class AccountDoesNotExistError(Exception):
 
     def __str__(self):
         return f"""
-        \rThe account {self.acc_name}({self.acc_currency}) does not exists.
+        \rThe account {self.acc_name}({self.acc_currency})-({self.acc_name}_ACC_{self.acc_currency}.csv) does not exists.
         """
 
 

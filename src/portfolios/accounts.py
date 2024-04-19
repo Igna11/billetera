@@ -26,7 +26,9 @@ def create_account(name_acc: str = None, currency_acc: str = None) -> None:
     print(f"\nSe ha creado la cuenta '{name_acc}'\n")
 
 
-def delete_account(name_acc: str = None, currency_acc: str = None) -> None:
+def delete_account(
+    name_acc: str = None, currency_acc: str = None, confirmation: bool = False
+) -> None:
     """Deletes the .csv file of the given account name"""
     if not name_acc:
         name_acc = input("\nIntroduzca el nombre de la cuenta a eliminar\n")
@@ -36,16 +38,20 @@ def delete_account(name_acc: str = None, currency_acc: str = None) -> None:
         ).upper()
     account = AccountsCreator(acc_name=name_acc, acc_currency=currency_acc)
     if account.exists:
-        warning = "¿Seguro que queres eliminar la cuenta?\n\n\
-        todos los datos contenidos en ella se perderán para siempre.\n\n\
-        Ingrese '1', 'si' o 'y' para borrar\n\
-        Ingrese cualquier otra cosa para cancelar\n"
-        user_answer = input(warning)
-        possible_answers = ["1", "si", "y"]
-        if user_answer in possible_answers:
+        if not confirmation:
+            warning = "¿Seguro que queres eliminar la cuenta?\n\n\
+            todos los datos contenidos en ella se perderán para siempre.\n\n\
+            Ingrese '1', 'si' o 'y' para borrar\n\
+            Ingrese cualquier otra cosa para cancelar\n"
+            user_answer = input(warning)
+            possible_answers = ["1", "si", "y"]
+            if user_answer in possible_answers:
+                account.remove_account()
+                print(f"\nSe eliminó la cuenta '{name_acc}'\n")
+            else:
+                print(f"\nNo se eliminó la cuenta '{name_acc}'\n")
+        if confirmation:
             account.remove_account()
             print(f"\nSe eliminó la cuenta '{name_acc}'\n")
-        else:
-            print(f"\nNo se eliminó la cuenta '{name_acc}'\n")
     else:
         print(f"\nNo existe la cuenta '{name_acc}'\n")
