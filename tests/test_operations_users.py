@@ -13,7 +13,7 @@ from src.portfolios.operations import operations
 from src.portfolios import account_core as account
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
+TEST_DIR = os.path.join(BASE_DIR, "data", "UnitTestingUSR")
 
 
 class TestUserIncome(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestUserIncome(unittest.TestCase):
     def test_account_income_plain(self):
         """Tests that a plain income is performed successfully."""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         value = 10
         category = subcategory = description = "test"
@@ -63,7 +63,7 @@ class TestUserIncome(unittest.TestCase):
         exists.
         """
         os.chdir(TEST_DIR)
-        name_acc = "No existo"
+        name_acc = "NotExistingAccountTest"
         currency_acc = "ARS"
         value = 0
         category = subcategory = description = "test"
@@ -83,7 +83,7 @@ class TestUserIncome(unittest.TestCase):
         provided.
         """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         value = -10
         category = subcategory = description = "test"
@@ -100,7 +100,7 @@ class TestUserIncome(unittest.TestCase):
     def test_account_income_zero_value(self):
         """Tests that NegativeOrZeroValueError is raised when zero is provided."""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         value = 0
         category = subcategory = description = "test"
@@ -121,7 +121,7 @@ class TestUserExpense(unittest.TestCase):
     def test_account_income_plain(self):
         """Tests that a plain expense is performed successfully."""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         value = 10
         category = subcategory = description = "test"
@@ -162,7 +162,7 @@ class TestUserExpense(unittest.TestCase):
         exists.
         """
         os.chdir(TEST_DIR)
-        name_acc = "No existo"
+        name_acc = "NotExistingAccountTest"
         currency_acc = "ARS"
         value = 0
         category = subcategory = description = "test"
@@ -182,7 +182,7 @@ class TestUserExpense(unittest.TestCase):
         provided.
         """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         value = -10
         category = subcategory = description = "test"
@@ -199,7 +199,7 @@ class TestUserExpense(unittest.TestCase):
     def test_account_expense_zero_value(self):
         """Tests that NegativeOrZeroValueError is raised when zero is provided."""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         value = 0
         category = subcategory = description = "test"
@@ -216,7 +216,7 @@ class TestUserExpense(unittest.TestCase):
     def test_account_expense_empty_account(self):
         """Tests that EmptyAccountError is raised when the account is empty."""
         os.chdir(TEST_DIR)
-        name_acc = "Empty"
+        name_acc = "Empty_Test"
         currency_acc = "ARS"
         value = 30
         category = subcategory = description = "test"
@@ -236,9 +236,9 @@ class TestUserExpense(unittest.TestCase):
         greater than the total amount.
         """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
-        value = 30
+        value = 30000000000000
         category = subcategory = description = "test"
         with self.assertRaises(errors.NegativeTotalError):
             operations.expense(
@@ -261,9 +261,9 @@ class TestUserTransfer(unittest.TestCase):
     def test_account_transfer_plain(self):
         """Tests that a plain transfer is performed successfully."""
         os.chdir(TEST_DIR)
-        origin_name_acc = "TEST"
+        origin_name_acc = "Unit_Test_Account"
         origin_currency_acc = "ARS"
-        dest_name_acc = "TEST2"
+        dest_name_acc = "Unit_Test_Account_Transfer"
         dest_currency_acc = "ARS"
         value = 10
         optime = datetime.now().time().strftime("%H:%M:%S")

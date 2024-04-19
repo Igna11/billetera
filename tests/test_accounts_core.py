@@ -12,6 +12,8 @@ from src.errors import errors
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
+TEST_ACC_NAME = "Test_Account"
+TEST_CURRENCY = "ARS"
 
 
 class TestAccount(unittest.TestCase):
@@ -20,10 +22,9 @@ class TestAccount(unittest.TestCase):
     def test_add_account(self):
         """Tests that the account file is correctly created"""
         os.chdir(TEST_DIR)
-        acc_name = "Test_Account"
-        account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
+        account = core.AccountsCreator(acc_name=TEST_ACC_NAME, acc_currency=TEST_CURRENCY)
         account.add_account()
-        final_acc_name = f"{acc_name}_ACC_ARS.csv"
+        final_acc_name = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY}.csv"
         self.assertTrue(os.path.isfile(final_acc_name))
 
     def test_add_account2(self):
@@ -32,18 +33,16 @@ class TestAccount(unittest.TestCase):
         with the same name as an existing one
         """
         os.chdir(TEST_DIR)
-        acc_name = "Test_Account"
-        account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
+        account = core.AccountsCreator(acc_name=TEST_ACC_NAME, acc_currency=TEST_CURRENCY)
         with self.assertRaises(errors.AccountAlreadyExistsError):
             account.add_account()
 
     def test_remove_account(self):
         """Tests that the account file is correctly deleted"""
         os.chdir(TEST_DIR)
-        acc_name = "Test_Account"
-        account = core.AccountsCreator(acc_name=acc_name, acc_currency="ARS")
+        account = core.AccountsCreator(acc_name=TEST_ACC_NAME, acc_currency=TEST_CURRENCY)
         account.remove_account()
-        final_acc_name = f"{acc_name}_ACC_ARS.csv"
+        final_acc_name = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY}.csv"
         self.assertTrue(not os.path.isfile(final_acc_name))
 
 

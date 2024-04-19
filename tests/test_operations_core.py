@@ -11,7 +11,7 @@ from src.errors import errors
 from src.portfolios.operations import operations_core as oper
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TEST_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
+TEST_DIR = os.path.join(BASE_DIR, "data", "UnitTestingUSR")
 
 
 class TestIncomeOperations(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestIncomeOperations(unittest.TestCase):
 
     def test_account_income_not_exists(self):
         """Tests that AccountDoesNotExistError is raised when the account does not exists"""
-        name_acc = "AccTest"
+        name_acc = "NoExistingAccountTest"
         currency_acc = "ARS"
         income = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=500)
         with self.assertRaises(errors.AccountDoesNotExistError):
@@ -28,7 +28,7 @@ class TestIncomeOperations(unittest.TestCase):
     def test_account_income_negative_value(self):
         """Tests that NegativeOrZeroValueError is raised when a negative value is provided"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         income = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=-500)
         with self.assertRaises(errors.NegativeOrZeroValueError):
@@ -37,7 +37,7 @@ class TestIncomeOperations(unittest.TestCase):
     def test_account_income_new_total_equals_value(self):
         """Tests that when an account is empty the new_total and income are equal"""
         os.chdir(TEST_DIR)
-        name_acc = "Empty"
+        name_acc = "Empty_Test"
         currency_acc = "ARS"
         income = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=100)
         income.income_operation()
@@ -49,7 +49,7 @@ class TestIncomeOperations(unittest.TestCase):
         and the income value
         """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         income = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=100)
         income.income_operation()
@@ -62,7 +62,7 @@ class TestExpenseOperations(unittest.TestCase):
 
     def test_account_expense_not_exists(self):
         """Tests that AccountDoesNotExistError is raised when the account does not exists"""
-        name_acc = "AccTest"
+        name_acc = "NoExistingAccountTest"
         currency_acc = "ARS"
         expense = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=500)
         with self.assertRaises(errors.AccountDoesNotExistError):
@@ -71,7 +71,7 @@ class TestExpenseOperations(unittest.TestCase):
     def test_account_expense_negative_value(self):
         """Tests that NegativeOrZeroValueError is raised when a negative value is provided"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         expense = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=-500
@@ -82,7 +82,7 @@ class TestExpenseOperations(unittest.TestCase):
     def test_account_expense_empty_acc(self):
         """Tests that EmptyAccountError ir raised when the account is empty"""
         os.chdir(TEST_DIR)
-        name_acc = "Empty"
+        name_acc = "Empty_Test"
         currency_acc = "ARS"
         expense = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=500)
         with self.assertRaises(errors.EmptyAccountError):
@@ -91,7 +91,7 @@ class TestExpenseOperations(unittest.TestCase):
     def test_account_expense_negative_total(self):
         """Tests that a NegativeTotalError is raised when the total is negative"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         expense = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=5000000000000
@@ -103,7 +103,7 @@ class TestExpenseOperations(unittest.TestCase):
         """Tests that when the account is not empty, the new_total equals the substraction of the
         value to the previuos total"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         expense = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=10)
         expense.expense_operation()
@@ -120,7 +120,7 @@ class TestTransferOperation(unittest.TestCase):
 
     def test_account_origin_transfer_not_exists(self):
         """Tests that AccountDoesNotExistError is raised when the account does not exists"""
-        name_acc = "AccTest"
+        name_acc = "NoExistingAccountTest"
         currency_acc = "ARS"
         transfer = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
@@ -133,7 +133,7 @@ class TestTransferOperation(unittest.TestCase):
         Test that SameAccountTransferError is raised when the same account is used as
         origin and destination
         """
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         transfer = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=400
@@ -144,7 +144,7 @@ class TestTransferOperation(unittest.TestCase):
     def test_account_transfer_negative_value(self):
         """Tests that NegativeOrZeroValueError is raised when a negative value is provided"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         transfer = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=-500
@@ -155,7 +155,7 @@ class TestTransferOperation(unittest.TestCase):
     def test_account_transfer_empty_acc(self):
         """Tests that EmptyAccountError is raised when the origin account is empty"""
         os.chdir(TEST_DIR)
-        name_acc = "Empty"
+        name_acc = "Empty_Test"
         currency_acc = "ARS"
         transfer = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=50)
         with self.assertRaises(errors.EmptyAccountError):
@@ -164,7 +164,7 @@ class TestTransferOperation(unittest.TestCase):
     def test_account_transfer_negative_total(self):
         """Tests that NegativeTotalError is raised when the total is negative"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         transfer = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=5000000000
@@ -176,22 +176,22 @@ class TestTransferOperation(unittest.TestCase):
         """Tests that NotEqualCurrencyError is raised when a transfer from an
         ARS account to a USD account is trying to be performed"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         transfer = oper.Operations(acc_name=name_acc, acc_currency=currency_acc, value=10)
         with self.assertRaises(errors.NotEqualCurrencyError):
-            transfer.transfer_operation(dest_acc="TEST", dest_currency="USD")
+            transfer.transfer_operation(dest_acc="Unit_Test_Account", dest_currency="USD")
 
     def test_account_transfer_new_totals_destination_empty(self):
         """Tests that the new totals of the origin and destination accounts
         are correct"""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         transfer = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=10.0
         )
-        dest_acc = transfer.transfer_operation(dest_acc="Empty", dest_currency="ARS")
+        dest_acc = transfer.transfer_operation(dest_acc="Empty_Test", dest_currency="ARS")
         origin_total = str(float(transfer.Total) - transfer.value)
         destination_total = str(float(dest_acc.Total))
         self.assertEqual(transfer.new_total, origin_total)
@@ -203,7 +203,7 @@ class TestReadjustmentOperation(unittest.TestCase):
 
     def test_account_readjusment_not_exists(self):
         """Tests that AccountDoesNotExistError is raised when account not exists."""
-        name_acc = "AccTest"
+        name_acc = "NoExistingAccountTest"
         currency_acc = "ARS"
         readjustment = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
@@ -214,7 +214,7 @@ class TestReadjustmentOperation(unittest.TestCase):
     def test_account_readjustment_negative_value(self):
         """Tests that NegativeOrZeroValueError is raised when a negative value is provided."""
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account"
         currency_acc = "ARS"
         readjustment = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=-500
@@ -225,7 +225,7 @@ class TestReadjustmentOperation(unittest.TestCase):
     def test_account_readjustment_empty_acc(self):
         """Tests that EmptyAccountError is raised when account is empty."""
         os.chdir(TEST_DIR)
-        name_acc = "Empty"
+        name_acc = "Empty_Test"
         currency_acc = "ARS"
         readjustment = oper.Operations(
             acc_name=name_acc, acc_currency=currency_acc, value=500
@@ -234,12 +234,15 @@ class TestReadjustmentOperation(unittest.TestCase):
             readjustment.readjustment_operation()
 
     def test_account_readjustment_not_readjustment(self):
-        """Tests that NotReadjustmentError is raised when value and total are the same"""
+        """
+        Tests that NotReadjustmentError is raised when value and total are the same
+        The testing account should have 50 as total.
+        """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account_Readjustment"
         currency_acc = "ARS"
         readjustment = oper.Operations(
-            acc_name=name_acc, acc_currency=currency_acc, value=19.00
+            acc_name=name_acc, acc_currency=currency_acc, value=50.00
         )
         with self.assertRaises(errors.NotReadjustmentError):
             readjustment.readjustment_operation()
@@ -247,14 +250,15 @@ class TestReadjustmentOperation(unittest.TestCase):
     def test_account_readjustment_positive(self):
         """
         Tests that when a new total is grater than the previous one:
+        The testing account should have 50 as total.
            1. a new income greater than 0 is generated,
            2. the new income is the difference between the new one and the previous one.
         """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account_Readjustment"
         currency_acc = "ARS"
         readjustment = oper.Operations(
-            acc_name=name_acc, acc_currency=currency_acc, value=39.00
+            acc_name=name_acc, acc_currency=currency_acc, value=100.00
         )
         readjustment.readjustment_operation()
         self.assertGreater(float(readjustment.new_income), 0)
@@ -266,14 +270,15 @@ class TestReadjustmentOperation(unittest.TestCase):
     def test_account_readjustment_negative(self):
         """
         Tests that when a new total is lower than the previous one:
+        The testing account should have 50 as total.
            1. a new extraction greater than 0 is generated,
            2. the new extraction is the difference between the previous one and the new one.
         """
         os.chdir(TEST_DIR)
-        name_acc = "TEST"
+        name_acc = "Unit_Test_Account_Readjustment"
         currency_acc = "ARS"
         readjustment = oper.Operations(
-            acc_name=name_acc, acc_currency=currency_acc, value=9.00
+            acc_name=name_acc, acc_currency=currency_acc, value=20.00
         )
         readjustment.readjustment_operation()
         self.assertGreater(float(readjustment.new_extraction), 0)

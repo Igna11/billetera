@@ -11,76 +11,79 @@ from unittest.mock import patch
 from src.portfolios import accounts as acc
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-USER_DIR = os.path.join(BASE_DIR, "data", "TestUSR")
-
-inputs_pesos = ["CuentaTest", "ARS"]
-inputs_dolar = ["CuentaTest", "USD"]
+USER_DIR = os.path.join(BASE_DIR, "data", "UnitTestingUSR")
+TEST_ACC_NAME = "Test_Account"
+DUMMY_ACC_NAME = "Dummy_Name"
+TEST_CURRENCY_1 = "ARS"
+TEST_CURRENCY_2 = "USD"
 
 
 class TestCreateAccounts(unittest.TestCase):
-    """Test the creation of accounts"""
+    """
+    Test the creation of accounts. If for any reason the account file already exists
+    it deletes to ensure that the test runs correctly."""
 
-    @patch("builtins.input", lambda _: inputs_pesos.pop(0))
-    def test_crear_cuenta_pesos(self):
-        """Tests that the account file (ARS) is created"""
+    def test_create_account_currency_1(self):
+        """Tests that the account file (ARS) is created. If the file already exists, it deletes it."""
         os.chdir(USER_DIR)
-        acc.create_account()
-        self.assertTrue(os.path.isfile("CuentaTest_ACC_ARS.csv"))
+        acc_filename = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY_1}.csv"
+        if acc_filename in os.listdir():
+            os.remove(acc_filename)
+        acc.create_account(name_acc=TEST_ACC_NAME, currency_acc=TEST_CURRENCY_1)
+        self.assertTrue(os.path.isfile(acc_filename))
 
-    @patch("builtins.input", lambda _: inputs_dolar.pop(0))
-    def test_crear_cuenta_dolar(self):
+    def test_create_account_currency_2(self):
         """Tests that the account file (USD) is created"""
         os.chdir(USER_DIR)
-        acc.create_account()
-        self.assertTrue(os.path.isfile("CuentaTest_ACC_USD.csv"))
-
-
-inputs_noeliminar_pesos = ["1", "cualquiercosaparanoeliminar"]
-inputs_noeliminar_dolar = ["2", "cualquiercosaparanoeliminar"]
+        acc_filename = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY_2}.csv"
+        if acc_filename in os.listdir():
+            os.remove(acc_filename)
+        acc.create_account(name_acc=TEST_ACC_NAME, currency_acc=TEST_CURRENCY_2)
+        self.assertTrue(os.path.isfile(acc_filename))
 
 
 class TestNotDeleteAccounts(unittest.TestCase):
     """Test that the accounts won't be deleted"""
 
-    @patch("builtins.input", lambda _: inputs_noeliminar_pesos.pop(0))
-    def test_eliminar_cuenta_pesos_no(self):
+    def test_not_delete_account_currency_1(self):
         """
         Tests that an account (ARS) still exists after trying to delete it with a wrong name
         """
         os.chdir(USER_DIR)
-        acc.delete_account()
-        self.assertTrue(os.path.isfile("CuentaTest_ACC_ARS.csv"))
+        acc_filename = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY_1}.csv"
+        acc.delete_account(name_acc=DUMMY_ACC_NAME, currency_acc=TEST_CURRENCY_1)
+        self.assertTrue(os.path.isfile(acc_filename))
 
-    @patch("builtins.input", lambda _: inputs_noeliminar_dolar.pop(0))
-    def test_no_eliminar_cuenta_dolar_no(self):
+    def test_not_delete_account_currency_2(self):
         """
         Tests that an account (USD) still exists after trying to delete it with a wrong name
         """
         os.chdir(USER_DIR)
-        acc.delete_account()
-        self.assertTrue(os.path.isfile("CuentaTest_ACC_USD.csv"))
-
-
-inputs_eliminar_pesos = ["CuentaTest", "ARS", "1"]
-inputs_eliminar_dolar = ["CuentaTest", "USD", "1"]
+        acc_filename = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY_2}.csv"
+        acc.delete_account(name_acc=DUMMY_ACC_NAME, currency_acc=TEST_CURRENCY_2)
+        self.assertTrue(os.path.isfile(acc_filename))
 
 
 class TestDeleteAccounts(unittest.TestCase):
     """Tests the deletion of the accounts"""
 
-    @patch("builtins.input", lambda _: inputs_eliminar_pesos.pop(0))
-    def test_eliminar_cuenta_pesos_si(self):
+    def test_delete_account_currency_1(self):
         """Test that an account (ARS) file does not exists after deletion"""
         os.chdir(USER_DIR)
-        acc.delete_account()
-        self.assertFalse(os.path.isfile("CuentaTest_ACC_ARS.csv"))
+        acc_filename = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY_1}.csv"
+        acc.delete_account(
+            name_acc=TEST_ACC_NAME, currency_acc=TEST_CURRENCY_1, confirmation=True
+        )
+        self.assertFalse(os.path.isfile(acc_filename))
 
-    @patch("builtins.input", lambda _: inputs_eliminar_dolar.pop(0))
-    def test_eliminar_cuenta_dolar_si(self):
+    def test_delete_account_currency_2(self):
         """Test that an account (USD) file does not exists after deletion"""
         os.chdir(USER_DIR)
-        acc.delete_account()
-        self.assertFalse(os.path.isfile("CuentaTest_ACC_USD.csv"))
+        acc_filename = f"{TEST_ACC_NAME}_ACC_{TEST_CURRENCY_2}.csv"
+        acc.delete_account(
+            name_acc=TEST_ACC_NAME, currency_acc=TEST_CURRENCY_2, confirmation=True
+        )
+        self.assertFalse(os.path.isfile(acc_filename))
 
 
 if __name__ == "__main__":
