@@ -65,28 +65,28 @@ def remove_cc(connection: sql.connect) -> None:
 def new_cc_operation(connection: sql.connect) -> None:
     operation_date = input("Date: ")
     operation_time = input("Time: ")
-    operation_card_name = input("Card brand: ")
-    operation_card_id = input("Card id: ")
-    operation_repetitions = input("Cuotas?: ")
     operation_amount = float(input("Amount spent: "))
     operation_category = input("Category: ")
     operation_subcategory = input("Subcategory: ")
     operation_description = input("Description: ")
     other = input("Other relevant data or tag?: ")
-    is_active = int(bool(input("Is active?: ")))
+    operation_card_id = int(input("Card id: "))
+    operation_card_name = input("Card brand: ")
+    operation_repetitions = int(input("Cuotas?: "))
+    is_active = 1
     remaining_repetitions = operation_repetitions
     insert_new_operation(
         connection,
         operation_date,
         operation_time,
-        operation_card_name,
-        operation_card_id,
-        operation_repetitions,
-        remaining_repetitions,
         operation_amount,
         operation_category,
         operation_subcategory,
         operation_description,
         other,
+        operation_card_id,
+        operation_card_name,
+        operation_repetitions,
+        remaining_repetitions,
         is_active,
     )

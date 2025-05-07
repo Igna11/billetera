@@ -26,3 +26,18 @@ CREATE TABLE IF NOT EXISTS credit_card_operations (
   is_active INT NOT NULL,
   FOREIGN KEY (operation_card_id) REFERENCES credit_cards (card_id)
 );
+
+SELECT
+  user_id,
+  first_name,
+  last_name,
+  birthdate,
+  gender,
+  region,
+  email,
+  created_at,
+  updated_at
+FROM
+  users
+WHERE
+  email = asd;

@@ -38,7 +38,7 @@ es No pagado, sigue quedando pendiente. En ese caso necesitaria una UI donde pue
 los pendientes vencidos y por vencer de forma de poder pagarlos antes o después si es
 necesario.
 """
-import os
+
 import sqlite3 as sql
 from sqlite3 import Error
 
@@ -197,6 +197,23 @@ def update_operation(connection: sql.connect, operation_id: int, **kwargs):
     cursor = connection.cursor()
     try:
         cursor.execute(query, values)
+        connection.commit()
+    except Error as e:
+        print(f"The error '{e}' ocurred.")
+
+
+def delete_operation(connection: sql.connect, operation_id: int) -> None:
+    """
+    Deletes the given operation from the credit_card_operations table.
+    """
+    cursor = connection.cursor()
+    query = """
+    DELETE FROM 
+      credit_card_operations
+    WHERE operation = ?;
+    """
+    try:
+        cursor.execute(query, operation_id)
         connection.commit()
     except Error as e:
         print(f"The error '{e}' ocurred.")
